@@ -901,108 +901,112 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
 
-      {/* ═══════ Layer 1: Video Background (70% width from the right) ═══════ */}
-      <div className="hidden lg:block absolute top-0 right-0 h-full" style={{ width: '70%' }}>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-          className="relative w-full h-full"
-        >
-          {content.heroVideoUrl ? (
-            isDirectVideo ? (
-              <video
-                ref={videoRef}
-                src={content.heroVideoUrl}
-                className="w-full h-full object-cover"
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
-            ) : (
-              <iframe
-                src={content.heroVideoUrl}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                title="Hero Video"
-                style={{ border: 'none' }}
-              />
-            )
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-slate-900/50">
-              <Video className="w-20 h-20 mb-4 opacity-20" />
-              <p className="text-sm opacity-40">영상을 설정해주세요</p>
-            </div>
-          )}
-
-          {/* ─── 10-step horizontal gradient: #0f172a → transparent (left to right) ─── */}
-          <div className="absolute inset-0 pointer-events-none" style={{
-            background: [
-              'linear-gradient(to right,',
-              '#0f172a 0%,',               // Step 1: 100% opaque
-              'rgba(15,23,42, 0.97) 3%,',  // Step 2
-              'rgba(15,23,42, 0.92) 7%,',  // Step 3
-              'rgba(15,23,42, 0.85) 12%,', // Step 4
-              'rgba(15,23,42, 0.74) 19%,', // Step 5
-              'rgba(15,23,42, 0.60) 28%,', // Step 6
-              'rgba(15,23,42, 0.44) 38%,', // Step 7
-              'rgba(15,23,42, 0.26) 50%,', // Step 8
-              'rgba(15,23,42, 0.12) 65%,', // Step 9
-              'rgba(15,23,42, 0.03) 82%,', // Step 10
-              'transparent 100%)'
-            ].join(' ')
-          }}></div>
-
-          {/* ─── 10-step vertical gradient: top/bottom edges fade ─── */}
-          <div className="absolute inset-0 pointer-events-none" style={{
-            background: [
-              'linear-gradient(to bottom,',
-              'rgba(15,23,42, 0.50) 0%,',   // Step 1: top edge
-              'rgba(15,23,42, 0.35) 4%,',   // Step 2
-              'rgba(15,23,42, 0.20) 8%,',   // Step 3
-              'rgba(15,23,42, 0.10) 14%,',  // Step 4
-              'rgba(15,23,42, 0.03) 22%,',  // Step 5
-              'transparent 32%,',            // Steps 6-7: clear
-              'transparent 70%,',
-              'rgba(15,23,42, 0.10) 80%,',  // Step 8
-              'rgba(15,23,42, 0.40) 90%,',  // Step 9
-              'rgba(15,23,42, 0.95) 100%)'  // Step 10: bottom edge
-            ].join(' ')
-          }}></div>
-
-          {/* Subtle decorative color wash */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
-
-          {/* Video Controls (inside video layer) */}
-          <div className="absolute top-24 right-6 z-30 flex items-center gap-2">
-            {content.heroVideoUrl && isDirectVideo && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={toggleVideoPlayback}
-                className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
-              >
-                {isVideoPlaying ? (
-                  <><span className="w-4 h-4 flex items-center justify-center"><span className="inline-flex gap-[3px]"><span className="w-[3px] h-3 bg-white rounded-sm"></span><span className="w-[3px] h-3 bg-white rounded-sm"></span></span></span> 일시정지</>
+      {/* ═══════ Layer 1: Video Background (70% of max-w-7xl container, from the right) ═══════ */}
+      <div className="hidden lg:block absolute inset-0">
+        <div className="relative w-full h-full max-w-7xl mx-auto">
+          <div className="absolute top-0 right-0 h-full" style={{ width: '70%' }}>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+              className="relative w-full h-full"
+            >
+              {content.heroVideoUrl ? (
+                isDirectVideo ? (
+                  <video
+                    ref={videoRef}
+                    src={content.heroVideoUrl}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
                 ) : (
-                  <><span className="w-4 h-4 flex items-center justify-center"><span className="w-0 h-0 border-l-[10px] border-l-white border-y-[6px] border-y-transparent"></span></span> 재생</>
+                  <iframe
+                    src={content.heroVideoUrl}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Hero Video"
+                    style={{ border: 'none' }}
+                  />
+                )
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-slate-900/50">
+                  <Video className="w-20 h-20 mb-4 opacity-20" />
+                  <p className="text-sm opacity-40">영상을 설정해주세요</p>
+                </div>
+              )}
+
+              {/* ─── 10-step horizontal gradient: #0f172a → transparent (left to right) ─── */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: [
+                  'linear-gradient(to right,',
+                  '#0f172a 0%,',               // Step 1: 100% opaque
+                  'rgba(15,23,42, 0.97) 3%,',  // Step 2
+                  'rgba(15,23,42, 0.92) 7%,',  // Step 3
+                  'rgba(15,23,42, 0.85) 12%,', // Step 4
+                  'rgba(15,23,42, 0.74) 19%,', // Step 5
+                  'rgba(15,23,42, 0.60) 28%,', // Step 6
+                  'rgba(15,23,42, 0.44) 38%,', // Step 7
+                  'rgba(15,23,42, 0.26) 50%,', // Step 8
+                  'rgba(15,23,42, 0.12) 65%,', // Step 9
+                  'rgba(15,23,42, 0.03) 82%,', // Step 10
+                  'transparent 100%)'
+                ].join(' ')
+              }}></div>
+
+              {/* ─── 10-step vertical gradient: top/bottom edges fade ─── */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: [
+                  'linear-gradient(to bottom,',
+                  'rgba(15,23,42, 0.50) 0%,',   // Step 1: top edge
+                  'rgba(15,23,42, 0.35) 4%,',   // Step 2
+                  'rgba(15,23,42, 0.20) 8%,',   // Step 3
+                  'rgba(15,23,42, 0.10) 14%,',  // Step 4
+                  'rgba(15,23,42, 0.03) 22%,',  // Step 5
+                  'transparent 32%,',            // Steps 6-7: clear
+                  'transparent 70%,',
+                  'rgba(15,23,42, 0.10) 80%,',  // Step 8
+                  'rgba(15,23,42, 0.40) 90%,',  // Step 9
+                  'rgba(15,23,42, 0.95) 100%)'  // Step 10: bottom edge
+                ].join(' ')
+              }}></div>
+
+              {/* Subtle decorative color wash */}
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+
+              {/* Video Controls (inside video layer) */}
+              <div className="absolute top-24 right-6 z-30 flex items-center gap-2">
+                {content.heroVideoUrl && isDirectVideo && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={toggleVideoPlayback}
+                    className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+                  >
+                    {isVideoPlaying ? (
+                      <><span className="w-4 h-4 flex items-center justify-center"><span className="inline-flex gap-[3px]"><span className="w-[3px] h-3 bg-white rounded-sm"></span><span className="w-[3px] h-3 bg-white rounded-sm"></span></span></span> 일시정지</>
+                    ) : (
+                      <><span className="w-4 h-4 flex items-center justify-center"><span className="w-0 h-0 border-l-[10px] border-l-white border-y-[6px] border-y-transparent"></span></span> 재생</>
+                    )}
+                  </motion.button>
                 )}
-              </motion.button>
-            )}
-            {isEditing && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsVideoSettingsOpen(true)}
-                className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
-              >
-                <Settings className="w-4 h-4" /> 영상 설정
-              </motion.button>
-            )}
+                {isEditing && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setIsVideoSettingsOpen(true)}
+                    className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+                  >
+                    <Settings className="w-4 h-4" /> 영상 설정
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* ═══════ Layer 2: Text content (higher z-index, floats OVER video) ═══════ */}
