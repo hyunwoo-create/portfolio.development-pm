@@ -742,6 +742,28 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
   );
 };
 
+// --- YouTube URL Helper ---
+const convertToEmbedUrl = (url: string): string => {
+  if (!url) return url;
+  // Already an embed URL
+  if (url.includes('/embed/')) return url;
+  // youtube.com/watch?v=VIDEO_ID
+  const watchMatch = url.match(/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]+)/);
+  if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${watchMatch[1]}`;
+  // youtu.be/VIDEO_ID
+  const shortMatch = url.match(/(?:youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${shortMatch[1]}`;
+  // youtube.com/shorts/VIDEO_ID
+  const shortsMatch = url.match(/(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]+)/);
+  if (shortsMatch) return `https://www.youtube.com/embed/${shortsMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${shortsMatch[1]}`;
+  return url;
+};
+
+const isDirectVideoUrl = (url: string): boolean => {
+  if (!url) return false;
+  return url.includes('.mp4') || url.includes('.webm') || url.startsWith('data:video/') || url.startsWith('blob:');
+};
+
 // --- Hero Video Settings Modal ---
 const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen: boolean, onClose: () => void, videoUrl: string, onSave: (url: string) => void }) => {
   const [url, setUrl] = useState(videoUrl);
@@ -757,6 +779,13 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
     // Use URL.createObjectURL for video files (FileReader may fail with large videos)
     const objectUrl = URL.createObjectURL(file);
     setUrl(objectUrl);
+  };
+
+  const handleSave = () => {
+    // Auto-convert YouTube URLs to embed format
+    const processedUrl = isDirectVideoUrl(url) ? url : convertToEmbedUrl(url);
+    onSave(processedUrl);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -820,15 +849,15 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
                 className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all placeholder-slate-600"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://www.youtube.com/embed/..."
+                placeholder="https://www.youtube.com/watch?v=... 또는 youtu.be/..."
               />
             </div>
-            <p className="text-xs text-slate-500">YouTube: 공유 &gt; 퍼가기에서 src URL을 복사하세요. 직접 영상 파일(.mp4, .webm)도 지원됩니다.</p>
+            <p className="text-xs text-slate-500">YouTube URL을 그대로 붙여넣으세요. 자동으로 변환됩니다. 직접 영상 파일(.mp4, .webm)도 지원됩니다.</p>
 
             {url && (
               <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
                 <p className="text-xs text-emerald-400 font-bold">✓ 영상이 설정되었습니다</p>
-                <p className="text-[10px] text-slate-500 mt-1 truncate">{url.startsWith('data:') ? '업로드된 파일' : url}</p>
+                <p className="text-[10px] text-slate-500 mt-1 truncate">{url.startsWith('data:') || url.startsWith('blob:') ? '업로드된 파일' : url}</p>
               </div>
             )}
 
@@ -840,7 +869,7 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
                 취소
               </button>
               <button
-                onClick={() => { onSave(url); onClose(); }}
+                onClick={handleSave}
                 className="flex-1 px-6 py-3 bg-indigo-600 rounded-xl text-white font-bold hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25"
               >
                 저장
@@ -855,6 +884,22 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
 
 const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent }: { onPortfolioClick: () => void, onResumeClick: () => void, isEditing: boolean, content: any, setContent: (c: any) => void }) => {
   const [isVideoSettingsOpen, setIsVideoSettingsOpen] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleVideoPlayback = () => {
+    const newState = !isVideoPlaying;
+    setIsVideoPlaying(newState);
+    [desktopVideoRef.current, mobileVideoRef.current].forEach(video => {
+      if (video) {
+        newState ? video.play() : video.pause();
+      }
+    });
+  };
+
+  // Determine if URL is a direct video file
+  const isDirectVideo = isDirectVideoUrl(content.heroVideoUrl || '');
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -867,8 +912,9 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
           className="relative w-full h-full"
         >
           {content.heroVideoUrl ? (
-            content.heroVideoUrl.includes('.mp4') || content.heroVideoUrl.includes('.webm') || content.heroVideoUrl.startsWith('data:video/') || content.heroVideoUrl.startsWith('blob:') ? (
+            isDirectVideo ? (
               <video
+                ref={desktopVideoRef}
                 src={content.heroVideoUrl}
                 className="w-full h-full object-cover"
                 autoPlay
@@ -898,16 +944,33 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
           {/* Subtle decorative glow */}
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
 
-          {isEditing && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsVideoSettingsOpen(true)}
-              className="absolute top-24 right-6 z-30 px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
-            >
-              <Settings className="w-4 h-4" /> 영상 설정
-            </motion.button>
-          )}
+          {/* Video Controls */}
+          <div className="absolute top-24 right-6 z-30 flex items-center gap-2">
+            {content.heroVideoUrl && isDirectVideo && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleVideoPlayback}
+                className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+              >
+                {isVideoPlaying ? (
+                  <><span className="w-4 h-4 flex items-center justify-center"><span className="inline-flex gap-[3px]"><span className="w-[3px] h-3 bg-white rounded-sm"></span><span className="w-[3px] h-3 bg-white rounded-sm"></span></span></span> 일시정지</>
+                ) : (
+                  <><span className="w-4 h-4 flex items-center justify-center"><span className="w-0 h-0 border-l-[10px] border-l-white border-y-[6px] border-y-transparent"></span></span> 재생</>
+                )}
+              </motion.button>
+            )}
+            {isEditing && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsVideoSettingsOpen(true)}
+                className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+              >
+                <Settings className="w-4 h-4" /> 영상 설정
+              </motion.button>
+            )}
+          </div>
         </motion.div>
       </div>
 
@@ -1041,13 +1104,13 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
             value={content.title} 
             onSave={(v) => setContent({...content, title: v})} 
             isEditing={isEditing} 
-            className="block"
+            className="block text-white"
           />
           <EditableText 
             value={content.subtitle} 
             onSave={(v) => setContent({...content, subtitle: v})} 
             isEditing={isEditing} 
-            className="text-slate-400 block"
+            className="block text-white"
           />
         </h2>
         <div className="space-y-6 text-slate-400 text-lg leading-relaxed font-medium">
@@ -1069,33 +1132,36 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
           </p>
         </div>
         
-        <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-6">
-          {content.stats.map((stat: any, idx: number) => (
-            <div key={idx} className="bento-card !p-6">
-              <div className="text-3xl font-bold text-indigo-400 mb-1">
-                <EditableText 
-                  value={stat.value} 
-                  onSave={(v) => {
-                    const newStats = [...content.stats];
-                    newStats[idx].value = v;
-                    setContent({...content, stats: newStats});
-                  }} 
-                  isEditing={isEditing} 
-                />
+        <div className="mt-12">
+          <div className="inline-block px-4 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 text-xs font-bold mb-6 uppercase tracking-widest">Point</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            {content.stats.map((stat: any, idx: number) => (
+              <div key={idx} className="bento-card !p-6">
+                <div className="text-3xl font-bold text-indigo-400 mb-1">
+                  <EditableText 
+                    value={stat.value} 
+                    onSave={(v) => {
+                      const newStats = [...content.stats];
+                      newStats[idx].value = v;
+                      setContent({...content, stats: newStats});
+                    }} 
+                    isEditing={isEditing} 
+                  />
+                </div>
+                <div className="text-xs font-bold text-slate-500 uppercase tracking-tighter">
+                  <EditableText 
+                    value={stat.label} 
+                    onSave={(v) => {
+                      const newStats = [...content.stats];
+                      newStats[idx].label = v;
+                      setContent({...content, stats: newStats});
+                    }} 
+                    isEditing={isEditing} 
+                  />
+                </div>
               </div>
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-tighter">
-                <EditableText 
-                  value={stat.label} 
-                  onSave={(v) => {
-                    const newStats = [...content.stats];
-                    newStats[idx].label = v;
-                    setContent({...content, stats: newStats});
-                  }} 
-                  isEditing={isEditing} 
-                />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
       
