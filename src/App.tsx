@@ -2301,54 +2301,16 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
     '논리적인 시스템 구조 설계',
     '플레이어 심리 분석 및 UX 설계'
   ];
-  const handleDownloadPdf = useCallback(async () => {
-    if (!resumeRef.current || isGeneratingPdf) return;
-    setIsGeneratingPdf(true);
-
-    try {
-      const html2pdf = (await import('html2pdf.js')).default;
-      const originalElement = resumeRef.current;
-      
-      // Clone the element to prevent html2pdf from mutating React's virtual DOM
-      const clonedElement = originalElement.cloneNode(true) as HTMLElement;
-      const cloneContainer = document.createElement('div');
-      cloneContainer.style.position = 'absolute';
-      cloneContainer.style.left = '-9999px';
-      cloneContainer.style.top = '-9999px';
-      cloneContainer.appendChild(clonedElement);
-      document.body.appendChild(cloneContainer);
-      
-      const opt = {
-        margin: [10, 10, 10, 10],
-        filename: `${data.name || '이력서'}_이력서.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2, 
-          useCORS: true,
-          letterRendering: true,
-          logging: false
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-        pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy'] as any,
-          before: '.pdf-page-break-before',
-          after: '.pdf-page-break-after',
-          avoid: ['.pdf-no-break', 'h3', 'h4']
-        }
-      };
-
-      try {
-        await html2pdf().set(opt).from(clonedElement).save();
-      } finally {
-        document.body.removeChild(cloneContainer);
-      }
-    } catch (error) {
-      console.error('PDF generation failed:', error);
-      alert('PDF 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  }, [data.name, isGeneratingPdf]);
+  const handleDownloadPdf = useCallback(() => {
+    // html2canvas incompatible with Tailwind CSS v4 oklch colors. 
+    // Fallback to native print dialog which accurately saves as PDF without crashing.
+    const originalTitle = document.title;
+    document.title = `${data.name || '이력서'}_이력서`;
+    window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 100);
+  }, [data.name]);
 
   return (
     <motion.section 
@@ -2368,19 +2330,9 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleDownloadPdf}
-          disabled={isGeneratingPdf}
-          className={`px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-white/10 transition-all ${isGeneratingPdf ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className="px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-white/10 transition-all"
         >
-          {isGeneratingPdf ? (
-            <>
-              <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
-              PDF 생성 중...
-            </>
-          ) : (
-            <>
-              <Download className="w-4 h-4 text-indigo-400" /> PDF 이력서 다운로드
-            </>
-          )}
+          <Download className="w-4 h-4 text-indigo-400" /> PDF 이력서 다운로드
         </motion.button>
       </div>
 
