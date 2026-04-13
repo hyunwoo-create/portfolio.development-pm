@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -42,7 +42,11 @@ import {
   Lock,
   Plus,
   Video,
-  Settings
+  Settings,
+  Trash2,
+  Upload,
+  Image as ImageIcon,
+  FolderOpen
 } from 'lucide-react';
 
 // --- Types ---
@@ -60,8 +64,21 @@ interface Project {
 interface Skill {
   name: string;
   level: number;
-  icon: React.ReactNode;
+  icon: string;
   caption?: string;
+}
+
+interface SkillTab {
+  id: string;
+  name: string;
+  skills: Skill[];
+}
+
+interface ToolItem {
+  id: string;
+  name: string;
+  iconUrl: string;
+  description: string;
 }
 
 interface GamePlay {
@@ -347,11 +364,52 @@ const PORTFOLIO_PROJECTS: Project[] = [
 ];
 
 const SKILLS: Skill[] = [
-  { name: "시스템 디자인", level: 90, icon: <Cpu className="w-5 h-5" />, caption: "복잡한 수치 체계 및 밸런싱 설계 가능" },
-  { name: "레벨 디자인", level: 85, icon: <Layers className="w-5 h-5" />, caption: "UE5 기반 수직적 동선 및 라이팅 가이드 설계" },
-  { name: "내러티브 디자인", level: 80, icon: <ScrollText className="w-5 h-5" />, caption: "세계관 설정 및 퀘스트 스크립트 작성" },
-  { name: "밸런싱 & QA", level: 95, icon: <Target className="w-5 h-5" />, caption: "시뮬레이션을 통한 정밀한 수치 검증" },
-  { name: "C# / Blueprint", level: 75, icon: <Code2 className="w-5 h-5" />, caption: "기능 구현 및 프로토타이핑 가능" },
+  { name: "시스템 디자인", level: 90, icon: 'Cpu', caption: "복잡한 수치 체계 및 밸런싱 설계 가능" },
+  { name: "레벨 디자인", level: 85, icon: 'Layers', caption: "UE5 기반 수직적 동선 및 라이팅 가이드 설계" },
+  { name: "내러티브 디자인", level: 80, icon: 'ScrollText', caption: "세계관 설정 및 퀘스트 스크립트 작성" },
+  { name: "밸런싱 & QA", level: 95, icon: 'Target', caption: "시뮬레이션을 통한 정밀한 수치 검증" },
+  { name: "C# / Blueprint", level: 75, icon: 'Code2', caption: "기능 구현 및 프로토타이핑 가능" },
+];
+
+const INITIAL_SKILL_TABS: SkillTab[] = [
+  {
+    id: 'tab-1',
+    name: '기획 역량',
+    skills: [
+      { name: "시스템 디자인", level: 90, icon: 'Cpu', caption: "복잡한 수치 체계 및 밸런싱 설계 가능" },
+      { name: "레벨 디자인", level: 85, icon: 'Layers', caption: "UE5 기반 수직적 동선 및 라이팅 가이드 설계" },
+      { name: "내러티브 디자인", level: 80, icon: 'ScrollText', caption: "세계관 설정 및 퀘스트 스크립트 작성" },
+    ]
+  },
+  {
+    id: 'tab-2',
+    name: '기술 역량',
+    skills: [
+      { name: "밸런싱 & QA", level: 95, icon: 'Target', caption: "시뮬레이션을 통한 정밀한 수치 검증" },
+      { name: "C# / Blueprint", level: 75, icon: 'Code2', caption: "기능 구현 및 프로토타이핑 가능" },
+    ]
+  }
+];
+
+const INITIAL_TOOLS: ToolItem[] = [
+  {
+    id: 'tool-1',
+    name: 'Figma',
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+    description: 'UI/UX 디자인 및 프로토타이핑. 와이어프레임부터 고해상도 목업까지 전반적인 디자인 작업에 활용합니다.'
+  },
+  {
+    id: 'tool-2',
+    name: 'Jira',
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jira/jira-original.svg',
+    description: '애자일 프로젝트 관리 및 이슈 트래킹. 스프린트 계획, 백로그 관리, 버그 추적 등에 활용합니다.'
+  },
+  {
+    id: 'tool-3',
+    name: 'Unity',
+    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/unity/unity-original.svg',
+    description: '게임 프로토타이핑 및 인터랙티브 시뮬레이션 제작. 핵심 루프 검증용 프로토타입 빌드에 사용합니다.'
+  }
 ];
 
 // --- Supabase Content API ---
@@ -571,21 +629,15 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-400">
           <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="hover:text-white transition-colors">소개</a>
-          <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="hover:text-white transition-colors">프로젝트</a>
+          <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="hover:text-white transition-colors">포트폴리오</a>
           <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="hover:text-white transition-colors">핵심역량</a>
+          <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="hover:text-white transition-colors">사용 Tool</a>
           <button 
             onClick={handleResumeClick} 
             className={`hover:text-white transition-colors cursor-pointer ${currentView === 'resume' ? 'text-white' : ''}`}
           >
             이력서
           </button>
-          <button 
-            onClick={handlePortfolioClick} 
-            className={`hover:text-white transition-colors cursor-pointer ${currentView === 'portfolio' ? 'text-white' : ''}`}
-          >
-            포트폴리오
-          </button>
-          <a href="#play-history" onClick={(e) => handleLinkClick(e, 'play-history')} className="hover:text-white transition-colors">플레이이력</a>
           <div className="flex items-center gap-2">
             <button 
               onClick={handleAdminClick}
@@ -624,21 +676,15 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
               className="absolute top-20 left-0 w-full glass rounded-2xl p-6 flex flex-col gap-4 lg:hidden"
             >
               <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="text-lg font-medium text-slate-400 hover:text-white">소개</a>
-              <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className="text-lg font-medium text-slate-400 hover:text-white">프로젝트</a>
+              <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="text-lg font-medium text-slate-400 hover:text-white">포트폴리오</a>
               <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="text-lg font-medium text-slate-400 hover:text-white">핵심역량</a>
+              <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="text-lg font-medium text-slate-400 hover:text-white">사용 Tool</a>
               <button 
                 onClick={handleResumeClick} 
                 className={`text-left text-lg font-medium text-slate-400 hover:text-white ${currentView === 'resume' ? 'text-white' : ''}`}
               >
                 이력서
               </button>
-              <button 
-                onClick={handlePortfolioClick} 
-                className={`text-left text-lg font-medium text-slate-400 hover:text-white ${currentView === 'portfolio' ? 'text-white' : ''}`}
-              >
-                포트폴리오
-              </button>
-              <a href="#play-history" onClick={(e) => handleLinkClick(e, 'play-history')} className="text-lg font-medium text-slate-400 hover:text-white">플레이이력</a>
               <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="glass px-4 py-3 rounded-xl text-white text-center font-bold">문의하기</a>
             </motion.div>
           )}
@@ -656,10 +702,19 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
 // --- Hero Video Settings Modal ---
 const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen: boolean, onClose: () => void, videoUrl: string, onSave: (url: string) => void }) => {
   const [url, setUrl] = useState(videoUrl);
+  const videoFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setUrl(videoUrl);
   }, [videoUrl]);
+
+  const handleVideoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Use URL.createObjectURL for video files (FileReader may fail with large videos)
+    const objectUrl = URL.createObjectURL(file);
+    setUrl(objectUrl);
+  };
 
   if (!isOpen) return null;
 
@@ -685,10 +740,36 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
             </div>
             <div>
               <h3 className="text-xl font-bold text-white">Hero 영상 설정</h3>
-              <p className="text-xs text-slate-400">YouTube, Vimeo 또는 직접 영상 URL을 입력하세요</p>
+              <p className="text-xs text-slate-400">영상 파일을 업로드하거나 URL을 입력하세요</p>
             </div>
           </div>
           <div className="space-y-4">
+            {/* File Upload */}
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-2">영상 파일 업로드</label>
+              <button
+                onClick={() => videoFileInputRef.current?.click()}
+                className="w-full flex items-center justify-center gap-3 bg-white/5 border-2 border-dashed border-white/20 rounded-xl px-4 py-4 text-white hover:bg-white/10 hover:border-indigo-500/50 transition-all"
+              >
+                <Upload className="w-5 h-5 text-indigo-400" />
+                <span className="text-sm font-bold">영상 파일 선택 (.mp4, .webm)</span>
+              </button>
+              <input
+                ref={videoFileInputRef}
+                type="file"
+                accept="video/mp4,video/webm"
+                className="hidden"
+                onChange={handleVideoFileUpload}
+              />
+            </div>
+
+            <div className="flex items-center gap-3 text-slate-500">
+              <div className="flex-1 h-px bg-white/10"></div>
+              <span className="text-xs font-bold">또는</span>
+              <div className="flex-1 h-px bg-white/10"></div>
+            </div>
+
+            {/* URL Input */}
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-2">영상 URL</label>
               <input
@@ -699,7 +780,15 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
                 placeholder="https://www.youtube.com/embed/..."
               />
             </div>
-            <p className="text-xs text-slate-500">YouTube: 공유 &gt; 퍼가기에서 src URL을 복사하세요. 직접 영상 파일(.mp4)도 지원됩니다.</p>
+            <p className="text-xs text-slate-500">YouTube: 공유 &gt; 퍼가기에서 src URL을 복사하세요. 직접 영상 파일(.mp4, .webm)도 지원됩니다.</p>
+
+            {url && (
+              <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <p className="text-xs text-emerald-400 font-bold">✓ 영상이 설정되었습니다</p>
+                <p className="text-[10px] text-slate-500 mt-1 truncate">{url.startsWith('data:') ? '업로드된 파일' : url}</p>
+              </div>
+            )}
+
             <div className="flex gap-3 pt-2">
               <button
                 onClick={onClose}
@@ -725,16 +814,69 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
   const [isVideoSettingsOpen, setIsVideoSettingsOpen] = useState(false);
 
   return (
-    <section className="relative min-h-screen flex items-center px-6 pt-20 overflow-hidden">
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse"></div>
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-pulse delay-700"></div>
-      
-      <div className="z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
-        {/* Left: Text */}
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Video Background Layer - 70% width from right */}
+      <div className="hidden lg:block absolute top-0 right-0 h-full" style={{ width: '70%' }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+          className="relative w-full h-full"
+        >
+          {content.heroVideoUrl ? (
+            content.heroVideoUrl.includes('.mp4') || content.heroVideoUrl.includes('.webm') || content.heroVideoUrl.startsWith('data:video/') || content.heroVideoUrl.startsWith('blob:') ? (
+              <video
+                src={content.heroVideoUrl}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <iframe
+                src={content.heroVideoUrl}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Hero Video"
+                style={{ border: 'none' }}
+              />
+            )
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-slate-900/50">
+              <Video className="w-20 h-20 mb-4 opacity-20" />
+              <p className="text-sm opacity-40">영상을 설정해주세요</p>
+            </div>
+          )}
+          {/* 10-step gradient overlay for ultra-smooth blend with #0f172a */}
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to right, #0f172a 0%, rgba(15,23,42,0.99) 4%, rgba(15,23,42,0.95) 8%, rgba(15,23,42,0.88) 14%, rgba(15,23,42,0.75) 22%, rgba(15,23,42,0.58) 32%, rgba(15,23,42,0.40) 44%, rgba(15,23,42,0.22) 58%, rgba(15,23,42,0.08) 74%, transparent 92%)' }}></div>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(15,23,42,0.45) 0%, rgba(15,23,42,0.25) 8%, rgba(15,23,42,0.08) 18%, transparent 30%, transparent 72%, rgba(15,23,42,0.12) 80%, rgba(15,23,42,0.40) 88%, rgba(15,23,42,0.75) 94%, rgba(15,23,42,0.95) 100%)' }}></div>
+          {/* Subtle decorative glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+
+          {isEditing && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsVideoSettingsOpen(true)}
+              className="absolute top-24 right-6 z-30 px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+            >
+              <Settings className="w-4 h-4" /> 영상 설정
+            </motion.button>
+          )}
+        </motion.div>
+      </div>
+
+      {/* Text content layer - floats on top of everything */}
+      <div className="relative z-20 w-full px-6 lg:px-16 pt-20">
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse"></div>
+        
         <motion.div 
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-2xl"
         >
           <h1 className="flex flex-col gap-3 mb-10">
             <EditableText 
@@ -778,43 +920,36 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
             </motion.button>
           </div>
         </motion.div>
+      </div>
 
-        {/* Right: Video */}
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          className="relative group"
-        >
-          <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-indigo-500/10 aspect-video bg-slate-900/50">
-            {content.heroVideoUrl ? (
-              content.heroVideoUrl.includes('.mp4') || content.heroVideoUrl.includes('.webm') ? (
-                <video
-                  src={content.heroVideoUrl}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-              ) : (
-                <iframe
-                  src={content.heroVideoUrl}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  title="Hero Video"
-                />
-              )
+      {/* Mobile: Video block below text */}
+      <div className="block lg:hidden w-full px-6 pb-8">
+        <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-indigo-500/10 aspect-video bg-slate-900/50 mt-8">
+          {content.heroVideoUrl ? (
+            content.heroVideoUrl.includes('.mp4') || content.heroVideoUrl.includes('.webm') || content.heroVideoUrl.startsWith('data:video/') || content.heroVideoUrl.startsWith('blob:') ? (
+              <video
+                src={content.heroVideoUrl}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-slate-500">
-                <Video className="w-16 h-16 mb-4 opacity-30" />
-                <p className="text-sm opacity-50">영상을 설정해주세요</p>
-              </div>
-            )}
-            {/* Decorative glow */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-xl -z-10 group-hover:opacity-100 opacity-50 transition-opacity duration-500"></div>
-          </div>
+              <iframe
+                src={content.heroVideoUrl}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Hero Video"
+              />
+            )
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-slate-500">
+              <Video className="w-16 h-16 mb-4 opacity-30" />
+              <p className="text-sm opacity-50">영상을 설정해주세요</p>
+            </div>
+          )}
           {isEditing && (
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -825,14 +960,14 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
               <Settings className="w-4 h-4" /> 영상 설정
             </motion.button>
           )}
-        </motion.div>
+        </div>
       </div>
 
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+        className="absolute bottom-10 left-1/4 -translate-x-1/2 flex flex-col items-center gap-3 z-10"
       >
         <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
           <motion.div 
@@ -945,17 +1080,31 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
 
 const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, setView }: { onProjectClick: (p: Project) => void, isEditing: boolean, projects: Project[], setProjects: (p: Project[]) => void, limit?: number, setView?: (v: any) => void }) => {
   const displayedProjects = limit ? projects.slice(0, limit) : projects;
+  const projectFileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+
+  const handleProjectImageUpload = (projectIdx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      const newProjects = [...projects];
+      newProjects[projectIdx].image = dataUrl;
+      setProjects(newProjects);
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <section id="projects" className="py-32 px-6 bg-white/[0.01]">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6">
           <div>
-            <div className="inline-block px-4 py-1 rounded-lg bg-pink-500/10 text-pink-400 text-xs font-bold mb-6">02_PROJECTS</div>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">주요 프로젝트.</h2>
+            <div className="inline-block px-4 py-1 rounded-lg bg-pink-500/10 text-pink-400 text-xs font-bold mb-6">02_PORTFOLIO</div>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">포트폴리오.</h2>
           </div>
           <p className="text-slate-500 max-w-md text-lg font-medium">
-            부트캠프 및 개인 연구를 통해 개발한 게임 컨셉과 프로토타입 결과물입니다.
+            기획 및 연구를 통해 개발한 프로젝트 결과물입니다.
           </p>
         </div>
 
@@ -968,11 +1117,11 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
             >
               {isEditing && (
                 <button 
-                  onClick={() => {
-                    if (confirm("이 프로젝트를 삭제하시겠습니까?")) {
-                      const newProjects = projects.filter(p => p.id !== project.id);
-                      setProjects(newProjects);
-                    }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const newProjects = projects.filter(p => p.id !== project.id);
+                    setProjects(newProjects);
                   }}
                   className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
                   title="삭제"
@@ -999,6 +1148,27 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
                     isEditing={isEditing} 
                   />
                 </div>
+                {isEditing && (
+                  <div className="absolute bottom-3 left-3 right-3 z-20">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        projectFileInputRefs.current[idx]?.click();
+                      }}
+                      className="w-full flex items-center justify-center gap-2 glass rounded-xl px-3 py-2.5 hover:bg-white/10 transition-all text-white"
+                    >
+                      <Upload className="w-4 h-4 text-indigo-400" />
+                      <span className="text-xs font-bold">이미지 업로드</span>
+                    </button>
+                    <input
+                      ref={(el) => { projectFileInputRefs.current[idx] = el; }}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleProjectImageUpload(idx, e)}
+                    />
+                  </div>
+                )}
               </div>
               
               <div className="p-8 flex-1 flex flex-col">
@@ -1195,6 +1365,27 @@ const Portfolio = ({ onProjectClick, isEditing, projects, setProjects, setView }
   );
 };
 
+const ICON_MAP: Record<string, React.ReactNode> = {
+  'Cpu': <Cpu className="w-5 h-5" />,
+  'Layers': <Layers className="w-5 h-5" />,
+  'ScrollText': <ScrollText className="w-5 h-5" />,
+  'Target': <Target className="w-5 h-5" />,
+  'Code2': <Code2 className="w-5 h-5" />,
+  'Zap': <Zap className="w-5 h-5" />,
+  'Monitor': <Monitor className="w-5 h-5" />,
+  'Smartphone': <Smartphone className="w-5 h-5" />,
+  'Gamepad2': <Gamepad2 className="w-5 h-5" />,
+  'Wrench': <Wrench className="w-5 h-5" />,
+};
+
+const resolveIcon = (iconName: string | React.ReactNode): React.ReactNode => {
+  if (typeof iconName === 'string') {
+    return ICON_MAP[iconName] || <Cpu className="w-5 h-5" />;
+  }
+  // Fallback for legacy data that might have JSX objects stored (they won't render, so use default)
+  return <Cpu className="w-5 h-5" />;
+};
+
 const ICON_OPTIONS = [
   { name: 'Cpu', icon: <Cpu className="w-5 h-5" /> },
   { name: 'Layers', icon: <Layers className="w-5 h-5" /> },
@@ -1208,130 +1399,389 @@ const ICON_OPTIONS = [
   { name: 'Wrench', icon: <Wrench className="w-5 h-5" /> }
 ];
 
-const Skills = ({ isEditing, skills, setSkills }: { isEditing: boolean, skills: Skill[], setSkills: (s: Skill[]) => void }) => {
+const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, skillTabs: SkillTab[], setSkillTabs: (s: SkillTab[]) => void }) => {
+  const [activeTabId, setActiveTabId] = useState<string>(skillTabs[0]?.id || '');
   const [showIconPicker, setShowIconPicker] = useState<number | null>(null);
+  const [editingTabId, setEditingTabId] = useState<string | null>(null);
+
+  // Make sure activeTabId is valid
+  useEffect(() => {
+    if (skillTabs.length > 0 && !skillTabs.find(t => t.id === activeTabId)) {
+      setActiveTabId(skillTabs[0].id);
+    }
+  }, [skillTabs, activeTabId]);
+
+  const activeTab = skillTabs.find(t => t.id === activeTabId);
+  const activeSkills = activeTab?.skills || [];
+
+  const updateTabSkills = (newSkills: Skill[]) => {
+    const newTabs = skillTabs.map(t => t.id === activeTabId ? { ...t, skills: newSkills } : t);
+    setSkillTabs(newTabs);
+  };
 
   return (
     <section id="skills" className="py-32 px-6 max-w-7xl mx-auto">
-      <div className="max-w-3xl">
+      <div className="max-w-4xl">
         <div className="flex items-center justify-between mb-10">
           <div>
             <div className="inline-block px-4 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-bold mb-6">03_SKILLS</div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight">핵심 역량.</h2>
           </div>
+        </div>
+
+        {/* Tab Bar */}
+        <div className="flex items-center gap-2 mb-10 flex-wrap">
+          {skillTabs.map((tab) => (
+            <div key={tab.id} className="relative flex items-center">
+              {isEditing && editingTabId === tab.id ? (
+                <input
+                  type="text"
+                  className="px-4 py-2.5 bg-white/10 border border-indigo-500 rounded-xl text-sm font-bold text-white focus:outline-none min-w-[80px]"
+                  value={tab.name}
+                  autoFocus
+                  onChange={(e) => {
+                    const newTabs = skillTabs.map(t => t.id === tab.id ? { ...t, name: e.target.value } : t);
+                    setSkillTabs(newTabs);
+                  }}
+                  onBlur={() => setEditingTabId(null)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') setEditingTabId(null); }}
+                />
+              ) : (
+                <button
+                  onClick={() => setActiveTabId(tab.id)}
+                  onDoubleClick={() => isEditing && setEditingTabId(tab.id)}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                    activeTabId === tab.id
+                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                      : 'glass text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {tab.name}
+                </button>
+              )}
+              {isEditing && skillTabs.length > 1 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setSkillTabs(skillTabs.filter(t => t.id !== tab.id));
+                  }}
+                  className="ml-1 p-1.5 text-red-400/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                  title="탭 삭제"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          ))}
           {isEditing && (
-            <button 
+            <button
               onClick={() => {
-                const newSkill: Skill = { name: "새 역량", level: 50, icon: <Cpu className="w-5 h-5" />, caption: "역량에 대한 설명을 입력하세요" };
-                setSkills([...skills, newSkill]);
+                const newTab: SkillTab = {
+                  id: `tab-${Date.now()}`,
+                  name: '새 탭',
+                  skills: []
+                };
+                setSkillTabs([...skillTabs, newTab]);
+                setActiveTabId(newTab.id);
               }}
-              className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-500 transition-all flex items-center gap-2"
+              className="px-4 py-2.5 border-2 border-dashed border-white/20 rounded-xl text-sm font-bold text-slate-500 hover:text-indigo-400 hover:border-indigo-500/50 transition-all flex items-center gap-1.5"
             >
-              <Plus className="w-4 h-4" /> 역량 추가
+              <Plus className="w-4 h-4" /> 탭 추가
             </button>
           )}
         </div>
-        <div className="space-y-10">
-          {skills.map((skill, idx) => (
-            <div key={idx} className="relative group/skill">
-              {isEditing && (
-                <button 
+
+        {/* Active Tab Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTabId}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {isEditing && (
+              <div className="mb-6 flex justify-end">
+                <button
                   onClick={() => {
-                    const newSkills = [...skills];
-                    newSkills.splice(idx, 1);
-                    setSkills(newSkills);
+                    const newSkill: Skill = { name: "새 역량", level: 50, icon: 'Cpu', caption: "역량에 대한 설명을 입력하세요" };
+                    updateTabSkills([...activeSkills, newSkill]);
                   }}
-                  className="absolute -left-12 top-1/2 -translate-y-1/2 p-2 text-red-500 opacity-0 group-hover/skill:opacity-100 transition-all hover:bg-red-500/10 rounded-lg"
-                  title="삭제"
+                  className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-500 transition-all flex items-center gap-2"
                 >
-                  <X className="w-5 h-5" />
+                  <Plus className="w-4 h-4" /> 역량 추가
                 </button>
-              )}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div 
-                    className={`w-10 h-10 glass rounded-xl flex items-center justify-center text-indigo-400 ${isEditing ? 'cursor-pointer hover:bg-white/10' : ''}`}
-                    onClick={() => isEditing && setShowIconPicker(showIconPicker === idx ? null : idx)}
-                  >
-                    {skill.icon}
-                  </div>
-                  {isEditing && showIconPicker === idx && (
-                    <div className="absolute top-12 left-0 z-30 glass p-3 rounded-2xl grid grid-cols-5 gap-2 shadow-2xl">
-                      {ICON_OPTIONS.map((opt) => (
-                        <button 
-                          key={opt.name}
-                          onClick={() => {
-                            const newSkills = [...skills];
-                            newSkills[idx].icon = opt.icon;
-                            setSkills(newSkills);
-                            setShowIconPicker(null);
-                          }}
-                          className="p-2 hover:bg-white/10 rounded-lg transition-colors text-indigo-400"
-                        >
-                          {opt.icon}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  <span className="font-bold text-lg">
-                    <EditableText 
-                      value={skill.name} 
-                      onSave={(v) => {
-                        const newSkills = [...skills];
-                        newSkills[idx].name = v;
-                        setSkills(newSkills);
-                      }} 
-                      isEditing={isEditing} 
-                    />
-                  </span>
-                </div>
-                <div className="flex items-center gap-6">
-                  <span className="text-xs text-slate-500 bg-white/5 px-3 py-1 rounded-lg border border-white/10 italic">
-                    <EditableText 
-                      value={skill.caption || ""} 
-                      onSave={(v) => {
-                        const newSkills = [...skills];
-                        newSkills[idx].caption = v;
-                        setSkills(newSkills);
-                      }} 
-                      isEditing={isEditing} 
-                    />
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm text-slate-500">
-                      <EditableText 
-                        value={skill.level.toString()} 
-                        onSave={(v) => {
-                          const newSkills = [...skills];
-                          newSkills[idx].level = parseInt(v) || 0;
-                          setSkills(newSkills);
-                        }} 
-                        isEditing={isEditing} 
-                      />%
-                    </span>
-                  </div>
-                </div>
               </div>
-              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${skill.level}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
-                />
+            )}
+            <div className="space-y-10">
+              {activeSkills.length === 0 && (
+                <div className="text-center py-16 text-slate-600">
+                  <Zap className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                  <p className="text-sm">이 탭에 역량을 추가해주세요.</p>
+                </div>
+              )}
+              {activeSkills.map((skill, idx) => (
+                <div key={idx} className="relative group/skill">
+                  {isEditing && (
+                    <button 
+                      onClick={() => {
+                        const newSkills = [...activeSkills];
+                        newSkills.splice(idx, 1);
+                        updateTabSkills(newSkills);
+                      }}
+                      className="absolute -left-12 top-1/2 -translate-y-1/2 p-2 text-red-500 opacity-0 group-hover/skill:opacity-100 transition-all hover:bg-red-500/10 rounded-lg"
+                      title="삭제"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className={`w-10 h-10 glass rounded-xl flex items-center justify-center text-indigo-400 ${isEditing ? 'cursor-pointer hover:bg-white/10' : ''}`}
+                        onClick={() => isEditing && setShowIconPicker(showIconPicker === idx ? null : idx)}
+                      >
+                        {resolveIcon(skill.icon)}
+                      </div>
+                      {isEditing && showIconPicker === idx && (
+                        <div className="absolute top-12 left-0 z-30 glass p-3 rounded-2xl grid grid-cols-5 gap-2 shadow-2xl">
+                          {ICON_OPTIONS.map((opt) => (
+                            <button 
+                              key={opt.name}
+                              onClick={() => {
+                                const newSkills = [...activeSkills];
+                                newSkills[idx].icon = opt.name;
+                                updateTabSkills(newSkills);
+                                setShowIconPicker(null);
+                              }}
+                              className="p-2 hover:bg-white/10 rounded-lg transition-colors text-indigo-400"
+                            >
+                              {opt.icon}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <span className="font-bold text-lg">
+                        <EditableText 
+                          value={skill.name} 
+                          onSave={(v) => {
+                            const newSkills = [...activeSkills];
+                            newSkills[idx].name = v;
+                            updateTabSkills(newSkills);
+                          }} 
+                          isEditing={isEditing} 
+                        />
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <span className="text-xs text-slate-500 bg-white/5 px-3 py-1 rounded-lg border border-white/10 italic">
+                        <EditableText 
+                          value={skill.caption || ""} 
+                          onSave={(v) => {
+                            const newSkills = [...activeSkills];
+                            newSkills[idx].caption = v;
+                            updateTabSkills(newSkills);
+                          }} 
+                          isEditing={isEditing} 
+                        />
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-sm text-slate-500">
+                          <EditableText 
+                            value={skill.level.toString()} 
+                            onSave={(v) => {
+                              const newSkills = [...activeSkills];
+                              newSkills[idx].level = parseInt(v) || 0;
+                              updateTabSkills(newSkills);
+                            }} 
+                            isEditing={isEditing} 
+                          />%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${skill.level}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+};
+
+const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: ToolItem[], setTools: (t: ToolItem[]) => void }) => {
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  const handleIconUpload = (toolId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      const newTools = tools.map(t => t.id === toolId ? { ...t, iconUrl: dataUrl } : t);
+      setTools(newTools);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <section id="my-tools" className="py-32 px-6 max-w-7xl mx-auto border-t border-white/5">
+      <div className="flex items-center justify-between mb-12">
+        <div>
+          <div className="inline-block px-4 py-1 rounded-lg bg-cyan-500/10 text-cyan-400 text-xs font-bold mb-6">04_TOOLS</div>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">나의 사용 Tool.</h2>
+        </div>
+        {isEditing && (
+          <button
+            onClick={() => {
+              const newTool: ToolItem = {
+                id: `tool-${Date.now()}`,
+                name: '새 Tool',
+                iconUrl: '',
+                description: '툴에 대한 설명을 입력하세요.'
+              };
+              setTools([...tools, newTool]);
+            }}
+            className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-500 transition-all flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> Tool 추가
+          </button>
+        )}
+      </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {tools.map((tool) => (
+          <motion.div
+            key={tool.id}
+            whileHover={{ y: -6 }}
+            className="group relative bento-card !rounded-[2rem] flex flex-col"
+          >
+            {isEditing && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setTools(tools.filter(t => t.id !== tool.id));
+                }}
+                className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                title="삭제"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Icon area */}
+            <div className="flex items-center gap-4 mb-6">
+              <div
+                className={`w-16 h-16 glass rounded-2xl flex items-center justify-center overflow-hidden shrink-0 ${
+                  isEditing ? 'cursor-pointer hover:bg-white/10 border-2 border-dashed border-white/20' : ''
+                }`}
+                onClick={() => {
+                  if (isEditing) {
+                    fileInputRefs.current[tool.id]?.click();
+                  }
+                }}
+              >
+                {tool.iconUrl ? (
+                  <img src={tool.iconUrl} alt={tool.name} className="w-10 h-10 object-contain" />
+                ) : (
+                  <div className="flex flex-col items-center text-slate-500">
+                    {isEditing ? (
+                      <Upload className="w-6 h-6" />
+                    ) : (
+                      <Wrench className="w-6 h-6" />
+                    )}
+                  </div>
+                )}
+                {isEditing && (
+                  <input
+                    ref={(el) => { fileInputRefs.current[tool.id] = el; }}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleIconUpload(tool.id, e)}
+                  />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-bold group-hover:text-cyan-400 transition-colors">
+                  <EditableText
+                    value={tool.name}
+                    onSave={(v) => {
+                      const newTools = tools.map(t => t.id === tool.id ? { ...t, name: v } : t);
+                      setTools(newTools);
+                    }}
+                    isEditing={isEditing}
+                  />
+                </h3>
+                {isEditing && (
+                  <p className="text-[10px] text-slate-600 mt-1">아이콘을 클릭하여 이미지를 업로드하세요</p>
+                )}
               </div>
             </div>
-          ))}
-        </div>
+
+            {/* Icon URL input for editing */}
+            {isEditing && (
+              <div className="mb-4">
+                <div className="flex items-center gap-2 glass rounded-xl px-3 py-2">
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  <input
+                    type="text"
+                    className="flex-1 bg-transparent border-none text-xs text-white placeholder-slate-600 focus:outline-none"
+                    value={tool.iconUrl}
+                    placeholder="또는 아이콘 URL을 직접 입력..."
+                    onChange={(e) => {
+                      const newTools = tools.map(t => t.id === tool.id ? { ...t, iconUrl: e.target.value } : t);
+                      setTools(newTools);
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            <p className="text-sm text-slate-400 leading-relaxed flex-1">
+              <EditableText
+                value={tool.description}
+                onSave={(v) => {
+                  const newTools = tools.map(t => t.id === tool.id ? { ...t, description: v } : t);
+                  setTools(newTools);
+                }}
+                isEditing={isEditing}
+                multiline
+              />
+            </p>
+
+            {/* Decorative bottom accent */}
+            <div className="mt-6 h-1 w-full bg-gradient-to-r from-cyan-500/40 via-indigo-500/40 to-purple-500/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </motion.div>
+        ))}
       </div>
+
+      {tools.length === 0 && (
+        <div className="text-center py-20 text-slate-600">
+          <Wrench className="w-16 h-16 mx-auto mb-4 opacity-20" />
+          <p className="text-sm">사용 중인 Tool을 추가해주세요.</p>
+        </div>
+      )}
     </section>
   );
 };
 
 const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, history: GameHistory, setHistory: (h: GameHistory) => void }) => (
   <section id="play-history" className="py-32 px-6 max-w-7xl mx-auto border-t border-white/5">
-    <div className="inline-block px-4 py-1 rounded-lg bg-purple-500/10 text-purple-400 text-xs font-bold mb-6">04_PLAY_HISTORY</div>
+    <div className="inline-block px-4 py-1 rounded-lg bg-purple-500/10 text-purple-400 text-xs font-bold mb-6">05_PLAY_HISTORY</div>
     <h2 className="text-4xl md:text-5xl font-bold mb-12 tracking-tight">게임 플레이 이력.</h2>
     
     <div className="grid md:grid-cols-3 gap-8">
@@ -2194,6 +2644,8 @@ export default function App() {
   const [projectsData, setProjectsData] = useEditableContent(PROJECTS, 'projects_data');
   const [portfolioData, setPortfolioData] = useEditableContent(PORTFOLIO_PROJECTS, 'portfolio_data');
   const [skillsData, setSkillsData] = useEditableContent(SKILLS, 'skills_data');
+  const [skillTabsData, setSkillTabsData] = useEditableContent(INITIAL_SKILL_TABS, 'skill_tabs_data');
+  const [toolsData, setToolsData] = useEditableContent(INITIAL_TOOLS, 'tools_data');
   const [historyData, setHistoryData] = useEditableContent(GAME_HISTORY, 'history_data');
   const [resumeData, setResumeData] = useEditableContent(RESUME_DATA, 'resume_data');
 
@@ -2297,23 +2749,25 @@ export default function App() {
                 content={aboutContent} 
                 setContent={setAboutContent} 
               />
-              <Projects 
-                onProjectClick={handleProjectClick} 
-                isEditing={isEditing} 
-                projects={projectsData} 
-                setProjects={setProjectsData}
-                limit={3}
-                setView={changeView}
-              />
+              <section id="portfolio-section">
+                <Projects 
+                  onProjectClick={handleProjectClick} 
+                  isEditing={isEditing} 
+                  projects={portfolioData} 
+                  setProjects={setPortfolioData}
+                  limit={6}
+                  setView={changeView}
+                />
+              </section>
               <Skills 
                 isEditing={isEditing} 
-                skills={skillsData} 
-                setSkills={setSkillsData} 
+                skillTabs={skillTabsData} 
+                setSkillTabs={setSkillTabsData} 
               />
-              <PlayHistory 
-                isEditing={isEditing} 
-                history={historyData} 
-                setHistory={setHistoryData} 
+              <MyTools
+                isEditing={isEditing}
+                tools={toolsData}
+                setTools={setToolsData}
               />
               <Contact />
             </motion.div>
@@ -2351,8 +2805,8 @@ export default function App() {
               <Projects 
                 onProjectClick={handleProjectClick} 
                 isEditing={isEditing} 
-                projects={projectsData} 
-                setProjects={setProjectsData}
+                projects={portfolioData} 
+                setProjects={setPortfolioData}
               />
             </div>
           )}
