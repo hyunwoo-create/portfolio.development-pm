@@ -899,16 +899,121 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
   const isDirectVideo = isDirectVideoUrl(content.heroVideoUrl || '');
 
   return (
-    <section className="relative min-h-screen flex items-center px-6 pt-20 overflow-hidden">
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse"></div>
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-pulse delay-700"></div>
-      
-      <div className="z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
-        {/* Left: Text */}
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+
+      {/* ═══════ Layer 1: Video Background (70% width from the right) ═══════ */}
+      <div className="hidden lg:block absolute top-0 right-0 h-full" style={{ width: '70%' }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+          className="relative w-full h-full"
+        >
+          {content.heroVideoUrl ? (
+            isDirectVideo ? (
+              <video
+                ref={videoRef}
+                src={content.heroVideoUrl}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <iframe
+                src={content.heroVideoUrl}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Hero Video"
+                style={{ border: 'none' }}
+              />
+            )
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-slate-900/50">
+              <Video className="w-20 h-20 mb-4 opacity-20" />
+              <p className="text-sm opacity-40">영상을 설정해주세요</p>
+            </div>
+          )}
+
+          {/* ─── 10-step horizontal gradient: #0f172a → transparent (left to right) ─── */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: [
+              'linear-gradient(to right,',
+              '#0f172a 0%,',               // Step 1: 100% opaque
+              'rgba(15,23,42, 0.97) 3%,',  // Step 2
+              'rgba(15,23,42, 0.92) 7%,',  // Step 3
+              'rgba(15,23,42, 0.85) 12%,', // Step 4
+              'rgba(15,23,42, 0.74) 19%,', // Step 5
+              'rgba(15,23,42, 0.60) 28%,', // Step 6
+              'rgba(15,23,42, 0.44) 38%,', // Step 7
+              'rgba(15,23,42, 0.26) 50%,', // Step 8
+              'rgba(15,23,42, 0.12) 65%,', // Step 9
+              'rgba(15,23,42, 0.03) 82%,', // Step 10
+              'transparent 100%)'
+            ].join(' ')
+          }}></div>
+
+          {/* ─── 10-step vertical gradient: top/bottom edges fade ─── */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: [
+              'linear-gradient(to bottom,',
+              'rgba(15,23,42, 0.50) 0%,',   // Step 1: top edge
+              'rgba(15,23,42, 0.35) 4%,',   // Step 2
+              'rgba(15,23,42, 0.20) 8%,',   // Step 3
+              'rgba(15,23,42, 0.10) 14%,',  // Step 4
+              'rgba(15,23,42, 0.03) 22%,',  // Step 5
+              'transparent 32%,',            // Steps 6-7: clear
+              'transparent 70%,',
+              'rgba(15,23,42, 0.10) 80%,',  // Step 8
+              'rgba(15,23,42, 0.40) 90%,',  // Step 9
+              'rgba(15,23,42, 0.95) 100%)'  // Step 10: bottom edge
+            ].join(' ')
+          }}></div>
+
+          {/* Subtle decorative color wash */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+
+          {/* Video Controls (inside video layer) */}
+          <div className="absolute top-24 right-6 z-30 flex items-center gap-2">
+            {content.heroVideoUrl && isDirectVideo && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleVideoPlayback}
+                className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+              >
+                {isVideoPlaying ? (
+                  <><span className="w-4 h-4 flex items-center justify-center"><span className="inline-flex gap-[3px]"><span className="w-[3px] h-3 bg-white rounded-sm"></span><span className="w-[3px] h-3 bg-white rounded-sm"></span></span></span> 일시정지</>
+                ) : (
+                  <><span className="w-4 h-4 flex items-center justify-center"><span className="w-0 h-0 border-l-[10px] border-l-white border-y-[6px] border-y-transparent"></span></span> 재생</>
+                )}
+              </motion.button>
+            )}
+            {isEditing && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsVideoSettingsOpen(true)}
+                className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+              >
+                <Settings className="w-4 h-4" /> 영상 설정
+              </motion.button>
+            )}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ═══════ Layer 2: Text content (higher z-index, floats OVER video) ═══════ */}
+      <div className="relative z-20 w-full px-6 lg:px-16 pt-20">
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse"></div>
+        
         <motion.div 
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-2xl"
         >
           <h1 className="flex flex-col gap-3 mb-10">
             <EditableText 
@@ -952,80 +1057,55 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
             </motion.button>
           </div>
         </motion.div>
-
-        {/* Right: Video */}
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          className="relative group"
-        >
-          <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-indigo-500/10 aspect-video bg-slate-900/50">
-            {content.heroVideoUrl ? (
-              isDirectVideo ? (
-                <video
-                  ref={videoRef}
-                  src={content.heroVideoUrl}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-              ) : (
-                <iframe
-                  src={content.heroVideoUrl}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  title="Hero Video"
-                  style={{ border: 'none' }}
-                />
-              )
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-slate-500">
-                <Video className="w-16 h-16 mb-4 opacity-30" />
-                <p className="text-sm opacity-50">영상을 설정해주세요</p>
-              </div>
-            )}
-            {/* Decorative glow */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-xl -z-10 group-hover:opacity-100 opacity-50 transition-opacity duration-500"></div>
-          </div>
-          {/* Video Controls */}
-          <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-            {content.heroVideoUrl && isDirectVideo && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={toggleVideoPlayback}
-                className="px-3 py-1.5 glass rounded-xl flex items-center gap-2 text-xs font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
-              >
-                {isVideoPlaying ? (
-                  <><span className="w-3 h-3 flex items-center justify-center"><span className="inline-flex gap-[2px]"><span className="w-[2px] h-2.5 bg-white rounded-sm"></span><span className="w-[2px] h-2.5 bg-white rounded-sm"></span></span></span> 일시정지</>
-                ) : (
-                  <><span className="w-3 h-3 flex items-center justify-center"><span className="w-0 h-0 border-l-[8px] border-l-white border-y-[5px] border-y-transparent"></span></span> 재생</>
-                )}
-              </motion.button>
-            )}
-            {isEditing && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsVideoSettingsOpen(true)}
-                className="px-3 py-1.5 glass rounded-xl flex items-center gap-2 text-xs font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
-              >
-                <Settings className="w-3 h-3" /> 영상 설정
-              </motion.button>
-            )}
-          </div>
-        </motion.div>
       </div>
 
+      {/* ═══════ Mobile: Video block below text (not overlapping) ═══════ */}
+      <div className="block lg:hidden w-full px-6 pb-8">
+        <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-indigo-500/10 aspect-video bg-slate-900/50 mt-8">
+          {content.heroVideoUrl ? (
+            isDirectVideo ? (
+              <video
+                src={content.heroVideoUrl}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <iframe
+                src={content.heroVideoUrl}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Hero Video"
+              />
+            )
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-slate-500">
+              <Video className="w-16 h-16 mb-4 opacity-30" />
+              <p className="text-sm opacity-50">영상을 설정해주세요</p>
+            </div>
+          )}
+          {isEditing && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsVideoSettingsOpen(true)}
+              className="absolute top-4 right-4 z-20 px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+            >
+              <Settings className="w-4 h-4" /> 영상 설정
+            </motion.button>
+          )}
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+        className="absolute bottom-10 left-1/4 -translate-x-1/2 flex flex-col items-center gap-3 z-10"
       >
         <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
           <motion.div 
