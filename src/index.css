@@ -4,52 +4,53 @@
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
-  --color-brand-primary: #6366f1; /* Indigo */
-  --color-brand-secondary: #ec4899; /* Pink */
-  --color-bg-main: #0f172a; /* Slate 900 */
+  --color-brand-primary: #112D4E; /* Dark Navy - Point */
+  --color-brand-secondary: #3F72AF; /* Medium Blue */
+  --color-bg-main: #F9F7F7; /* Lightest - Main BG */
+  --color-bg-card: #DBE2EF; /* Light Blue - Card BG */
 }
 
 @layer base {
   body {
-    @apply bg-bg-main text-slate-200 font-sans antialiased selection:bg-brand-primary/30;
+    @apply bg-bg-main text-[#3F72AF] font-sans antialiased selection:bg-[#112D4E]/20;
   }
 }
 
 @layer utilities {
   .glass {
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(219, 226, 239, 0.6);
     backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(63, 114, 175, 0.12);
   }
   
   .glass-hover {
     transition: all 0.3s ease;
   }
   .glass-hover:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(219, 226, 239, 0.8);
+    border-color: rgba(63, 114, 175, 0.25);
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#112D4E] via-[#3F72AF] to-[#112D4E];
   }
 
   .bento-card {
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(219, 226, 239, 0.6);
     backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(63, 114, 175, 0.12);
     border-radius: 1.5rem;
     padding: 2rem;
     transition: all 0.3s ease;
   }
   .bento-card:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(219, 226, 239, 0.8);
+    border-color: rgba(63, 114, 175, 0.25);
   }
 
   /* Notion-like Markdown Styles */
   .markdown-body {
-    color: #e2e8f0; /* slate-200 */
+    color: #3F72AF;
     line-height: 1.6;
     font-size: 1rem;
   }
@@ -59,8 +60,8 @@
     font-weight: 800;
     margin-top: 2rem;
     margin-bottom: 1rem;
-    color: #f8fafc; /* slate-50 */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #112D4E;
+    border-bottom: 1px solid rgba(63, 114, 175, 0.15);
     padding-bottom: 0.5rem;
   }
 
@@ -69,7 +70,7 @@
     font-weight: 700;
     margin-top: 1.75rem;
     margin-bottom: 0.75rem;
-    color: #f1f5f9; /* slate-100 */
+    color: #112D4E;
   }
 
   .markdown-body h3 {
@@ -77,7 +78,7 @@
     font-weight: 600;
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
-    color: #f1f5f9; /* slate-100 */
+    color: #112D4E;
   }
 
   .markdown-body p {
@@ -102,20 +103,21 @@
   }
 
   .markdown-body code {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(219, 226, 239, 0.6);
     padding: 0.2rem 0.4rem;
     border-radius: 0.25rem;
     font-family: var(--font-mono);
     font-size: 0.875em;
+    color: #112D4E;
   }
 
   .markdown-body pre {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(219, 226, 239, 0.5);
     padding: 1rem;
     border-radius: 0.75rem;
     overflow-x: auto;
     margin-bottom: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(63, 114, 175, 0.1);
   }
 
   .markdown-body pre code {
@@ -124,16 +126,16 @@
   }
 
   .markdown-body blockquote {
-    border-left: 4px solid #6366f1; /* indigo-500 */
+    border-left: 4px solid #112D4E;
     padding-left: 1rem;
     font-style: italic;
-    color: #94a3b8; /* slate-400 */
+    color: #3F72AF;
     margin-bottom: 1rem;
   }
 
   .markdown-body hr {
     border: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(63, 114, 175, 0.15);
     margin: 2rem 0;
   }
 }
@@ -171,7 +173,7 @@
 }
 
 @page {
-  margin: 0; /* Removes browser headers and footers */
+  margin: 0;
 }
 
 @media print {
@@ -185,15 +187,13 @@
     display: none !important;
   }
 
-  /* Maintain layout scaling for A4 */
   .pdf-resume-container {
     padding: 1.5cm !important;
     padding-top: 2cm !important;
     max-width: 100% !important;
-    font-size: 14px; /* Ensure fonts aren't squished */
+    font-size: 14px;
   }
 
-  /* Ensure grid works correctly on print */
   .grid {
     display: grid !important;
   }
@@ -210,7 +210,6 @@
     grid-column: span 2 / span 2 !important;
   }
 
-  /* PDF no break rules for print */
   .pdf-no-break {
     page-break-inside: avoid !important;
     break-inside: avoid !important;

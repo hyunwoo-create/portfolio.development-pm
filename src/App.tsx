@@ -256,7 +256,7 @@ const PROJECTS: Project[] = [
  description: "모듈형 어빌리티 트리와 동적 경제 밸런싱에 중점을 둔 사이버펑크 테마의 RPG 시스템입니다. 핵심 루프와 진행 방식을 다루는 50페이지 분량의 기획서를 작성했습니다.",
  tags: ["시스템 기획", "GDD 작성", "밸런싱"],
  image: "https://picsum.photos/seed/cyberpunk/800/600",
- color: "from-indigo-500/20 to-purple-500/20",
+ color: "from-[#112D4E]/20 to-[#0a1e36]/20",
  content: `
 # 네온 프로토콜 (Neon Protocol) 기획 상세
 
@@ -287,7 +287,7 @@ const PROJECTS: Project[] = [
  description: "언리얼 엔진 5로 제작된 3D 플랫포머 레벨입니다. 수직적 구조, 조명을 활용한 플레이어 가이드, 환경 스토리텔링에 집중했습니다.",
  tags: ["레벨 디자인", "UE5", "스토리텔링"],
  image: "https://picsum.photos/seed/castle/800/600",
- color: "from-emerald-500/20 to-teal-500/20",
+ color: "from-[#3F72AF]/20 to-[#112D4E]/20",
  content: `
 # 잊혀진 첨탑 (The Forgotten Spire) 레벨 디자인
 
@@ -318,7 +318,7 @@ const PROJECTS: Project[] = [
  description: "턴제 전략 프로토타입입니다. 유닛이 마지막 행동을 낮은 효율로 반복하는 독특한 '에코' 메커니즘을 설계했습니다.",
  tags: ["전투 기획", "프로토타이핑", "전략"],
  image: "https://picsum.photos/seed/strategy/800/600",
- color: "from-orange-500/20 to-rose-500/20",
+ color: "from-[#112D4E]/20 to-[#3F72AF]/20",
  content: `
 # 택티컬 에코 (Tactical Echoes) 전투 디자인
 
@@ -348,7 +348,7 @@ const PROJECTS: Project[] = [
  description: "시간 역행 메커니즘을 활용한 퍼즐 액션 게임의 시스템 기획서입니다.",
  tags: ["시간 역행", "퍼즐 기획", "시스템"],
  image: "https://picsum.photos/seed/time/800/600",
- color: "from-blue-500/20 to-cyan-500/20",
+ color: "from-[#DBE2EF]/20 to-[#3F72AF]/20",
  content: "# 크로노 바운드 상세 기획..."
  },
  {
@@ -358,7 +358,7 @@ const PROJECTS: Project[] = [
  description: "무중력 환경에서의 3:3 팀 전투 밸런싱 및 유닛 스킬 설계 프로젝트입니다.",
  tags: ["무중력", "팀 전투", "밸런싱"],
  image: "https://picsum.photos/seed/space/800/600",
- color: "from-indigo-500/20 to-blue-500/20",
+ color: "from-[#112D4E]/20 to-[#DBE2EF]/20",
  content: "# 스타더스트 아레나 상세 기획..."
  }
 ];
@@ -371,7 +371,7 @@ const PORTFOLIO_PROJECTS: Project[] = [
  description: "기존 모바일 RPG의 복잡한 상점 UI를 직관적으로 개선한 디자인 제안서입니다.",
  tags: ["UI 개선", "UX 분석", "피그마"],
  image: "https://picsum.photos/seed/ui/800/600",
- color: "from-blue-500/10 to-indigo-500/10",
+ color: "from-[#DBE2EF]/10 to-[#112D4E]/10",
  content: "# UI/UX 개선 제안 상세..."
  },
  {
@@ -381,7 +381,7 @@ const PORTFOLIO_PROJECTS: Project[] = [
  description: "스팀펑크 세계관의 기계공 캐릭터 비주얼 컨셉 및 스킬 이펙트 가이드입니다.",
  tags: ["스팀펑크", "캐릭터", "가이드"],
  image: "https://picsum.photos/seed/steampunk/800/600",
- color: "from-amber-500/10 to-orange-500/10",
+ color: "from-[#112D4E]/10 to-[#0a1e36]/10",
  content: "# 캐릭터 컨셉 상세..."
  },
  {
@@ -391,7 +391,7 @@ const PORTFOLIO_PROJECTS: Project[] = [
  description: "2024년 상반기 서브컬처 게임 시장 트렌드 및 향후 전망 분석 보고서입니다.",
  tags: ["시장 조사", "트렌드", "데이터"],
  image: "https://picsum.photos/seed/chart/800/600",
- color: "from-emerald-500/10 to-teal-500/10",
+ color: "from-[#3F72AF]/10 to-[#112D4E]/10",
  content: "# 시장 분석 보고서 상세..."
  },
  {
@@ -401,7 +401,7 @@ const PORTFOLIO_PROJECTS: Project[] = [
  description: "다중 선택지에 따른 분기형 퀘스트 스크립트 및 대사 연출 가이드입니다.",
  tags: ["스크립트", "내러티브", "분기"],
  image: "https://picsum.photos/seed/book/800/600",
- color: "from-rose-500/10 to-pink-500/10",
+ color: "from-[#3F72AF]/10 to-pink-500/10",
  content: "# 퀘스트 스크립트 상세..."
  }
 ];
@@ -540,14 +540,14 @@ const EditableText = ({
 
  return multiline ? (
  <textarea
- className={`w-full max-w-full bg-white/5 border border-white/20 rounded p-2 text-white focus:outline-none focus:border-indigo-500 ${className}`}
+ className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded p-2 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
  value={value}
  onChange={(e) => onSave(e.target.value)}
  rows={3}
  />
  ) : (
  <input
- className={`w-full max-w-full bg-white/5 border border-white/20 rounded px-2 py-1 text-white focus:outline-none focus:border-indigo-500 ${className}`}
+ className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
  value={value}
  onChange={(e) => onSave(e.target.value)}
  />
@@ -570,7 +570,7 @@ const PasswordModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClos
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
- className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
+ className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-[#112D4E]/80 backdrop-blur-sm"
  onClick={onClose}
  >
  <motion.div
@@ -580,14 +580,14 @@ const PasswordModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClos
  className="relative max-w-md w-full glass rounded-[2rem] p-8"
  onClick={e => e.stopPropagation()}
  >
- <h3 className="text-2xl font-bold text-white mb-6 text-center">관리자 인증</h3>
+ <h3 className="text-2xl font-bold text-[#1A59A7] mb-6 text-center">관리자 인증</h3>
  <form onSubmit={handleSubmit} className="space-y-6">
  <div>
- <label className="block text-sm font-medium text-slate-400 mb-2">비밀번호를 입력하세요</label>
+ <label className="block text-sm font-medium text-[#112D4E] mb-2">비밀번호를 입력하세요</label>
  <input
  type="password"
  autoFocus
- className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-center text-2xl tracking-widest"
+ className="w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded-xl px-4 py-3 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] transition-all text-center text-2xl tracking-widest"
  value={password}
  onChange={(e) => setPassword(e.target.value)}
  />
@@ -596,13 +596,13 @@ const PasswordModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClos
  <button
  type="button"
  onClick={onClose}
- className="flex-1 px-6 py-3 glass rounded-xl text-white font-bold hover:bg-white/10 transition-all"
+ className="flex-1 px-6 py-3 glass rounded-xl text-[#1A59A7] font-bold hover:bg-[#112D4E]/10 transition-all"
  >
  취소
  </button>
  <button
  type="submit"
- className="flex-1 px-6 py-3 bg-indigo-600 rounded-xl text-white font-bold hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25"
+ className="flex-1 px-6 py-3 bg-[#0a1e36] rounded-xl text-[#1A59A7] font-bold hover:bg-[#112D4E] transition-all shadow-lg shadow-[#112D4E]/25"
  >
  확인
  </button>
@@ -664,43 +664,43 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
  <>
  <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50 glass rounded-2xl px-6 h-16 flex items-center justify-between print:hidden">
  <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsMenuOpen(false); }}>
- <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
- <User className="text-white w-5 h-5" />
+ <div className="w-8 h-8 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-lg flex items-center justify-center shadow-lg shadow-[#112D4E]/20">
+ <User className="text-[#1A59A7] w-5 h-5" />
  </div>
  <span className="font-bold tracking-tight text-lg">지원자 양현우</span>
  {isEditing && (
- <div className="ml-2 px-2 py-0.5 bg-amber-500/20 border border-amber-500/50 rounded text-[10px] text-amber-500 font-bold uppercase animate-pulse">
+ <div className="ml-2 px-2 py-0.5 bg-[#3F72AF]/20 border border-[#3F72AF]/50 rounded text-[10px] text-[#112D4E] font-bold uppercase animate-pulse">
  Edit Mode
  </div>
  )}
  </div>
 
  {/* Desktop Menu */}
- <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-400">
- <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="hover:text-white transition-colors">소개</a>
- <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="hover:text-white transition-colors">포트폴리오</a>
- <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="hover:text-white transition-colors">핵심역량</a>
- <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="hover:text-white transition-colors">사용 Tool</a>
+ <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#112D4E]">
+ <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="hover:text-[#112D4E] transition-colors">소개</a>
+ <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="hover:text-[#112D4E] transition-colors">포트폴리오</a>
+ <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="hover:text-[#112D4E] transition-colors">핵심역량</a>
+ <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="hover:text-[#112D4E] transition-colors">사용 Tool</a>
  <button 
  onClick={handleSelfIntroClick} 
- className={`hover:text-white transition-colors cursor-pointer ${currentView === 'self-intro' ? 'text-white' : ''}`}
+ className={`hover:text-[#112D4E] transition-colors cursor-pointer ${currentView === 'self-intro' ? 'text-[#1A59A7]' : ''}`}
  >
  자기소개서
  </button>
  <button onClick={handleResumeClick} 
- className={`hover:text-white transition-colors cursor-pointer ${currentView === 'resume' ? 'text-white' : ''}`}
+ className={`hover:text-[#112D4E] transition-colors cursor-pointer ${currentView === 'resume' ? 'text-[#1A59A7]' : ''}`}
  >
  이력서
  </button>
  <div className="flex items-center gap-2">
  <button 
  onClick={handleAdminClick}
- className="p-2 hover:bg-white/5 rounded-lg transition-colors group"
+ className="p-2 hover:bg-[#112D4E]/5 rounded-lg transition-colors group"
  title="관리자 모드"
  >
- <Lock className={`w-4 h-4 transition-colors ${isEditing ? 'text-amber-500' : 'text-slate-400 group-hover:text-white'}`} />
+ <Lock className={`w-4 h-4 transition-colors ${isEditing ? 'text-[#3F72AF]' : 'text-[#112D4E] group-hover:text-[#112D4E]'}`} />
  </button>
- <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="glass px-4 py-2 rounded-xl text-white hover:bg-white/10 transition-all">문의하기</a>
+ <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="glass px-4 py-2 rounded-xl text-[#1A59A7] hover:bg-[#112D4E]/10 transition-all">문의하기</a>
  </div>
  </div>
 
@@ -708,12 +708,12 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
  <div className="flex items-center gap-2 lg:hidden">
  <button 
  onClick={handleAdminClick}
- className="p-2 hover:bg-white/5 rounded-lg transition-colors"
+ className="p-2 hover:bg-[#112D4E]/5 rounded-lg transition-colors"
  >
- <Lock className={`w-5 h-5 ${isEditing ? 'text-amber-500' : 'text-slate-400'}`} />
+ <Lock className={`w-5 h-5 ${isEditing ? 'text-[#3F72AF]' : 'text-[#112D4E]'}`} />
  </button>
  <button 
- className="text-white p-2"
+ className="text-[#1A59A7] p-2"
  onClick={() => setIsMenuOpen(!isMenuOpen)}
  >
  {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -729,23 +729,23 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
  exit={{ opacity: 0, y: -20 }}
  className="absolute top-20 left-0 w-full glass rounded-2xl p-6 flex flex-col gap-4 lg:hidden"
  >
- <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="text-lg font-medium text-slate-400 hover:text-white">소개</a>
- <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="text-lg font-medium text-slate-400 hover:text-white">포트폴리오</a>
- <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="text-lg font-medium text-slate-400 hover:text-white">핵심역량</a>
- <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="text-lg font-medium text-slate-400 hover:text-white">사용 Tool</a>
+ <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="text-lg font-medium text-[#112D4E] hover:text-[#112D4E]">소개</a>
+ <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="text-lg font-medium text-[#112D4E] hover:text-[#112D4E]">포트폴리오</a>
+ <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="text-lg font-medium text-[#112D4E] hover:text-[#112D4E]">핵심역량</a>
+ <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="text-lg font-medium text-[#112D4E] hover:text-[#112D4E]">사용 Tool</a>
  <button 
  onClick={handleSelfIntroClick} 
- className={`text-left text-lg font-medium text-slate-400 hover:text-white ${currentView === 'self-intro' ? 'text-white' : ''}`}
+ className={`text-left text-lg font-medium text-[#112D4E] hover:text-[#112D4E] ${currentView === 'self-intro' ? 'text-[#1A59A7]' : ''}`}
  >
  자기소개서
  </button>
  <button 
  onClick={handleResumeClick} 
- className={`text-left text-lg font-medium text-slate-400 hover:text-white ${currentView === 'resume' ? 'text-white' : ''}`}
+ className={`text-left text-lg font-medium text-[#112D4E] hover:text-[#112D4E] ${currentView === 'resume' ? 'text-[#1A59A7]' : ''}`}
  >
  이력서
  </button>
- <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="glass px-4 py-3 rounded-xl text-white text-center font-bold">문의하기</a>
+ <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="glass px-4 py-3 rounded-xl text-[#1A59A7] text-center font-bold">문의하기</a>
  </motion.div>
  )}
  </AnimatePresence>
@@ -813,34 +813,34 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
- className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md"
+ className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#112D4E]/70 backdrop-blur-md"
  onClick={onClose}
  >
  <motion.div
  initial={{ scale: 0.9, opacity: 0, y: 20 }}
  animate={{ scale: 1, opacity: 1, y: 0 }}
  exit={{ scale: 0.9, opacity: 0 }}
- className="glass rounded-3xl p-8 w-full max-w-lg border border-white/10"
+ className="glass rounded-3xl p-8 w-full max-w-lg border border-[#3F72AF]/12"
  onClick={e => e.stopPropagation()}
  >
  <div className="flex items-center gap-3 mb-6">
- <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
- <Video className="w-5 h-5 text-white" />
+ <div className="w-10 h-10 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-xl flex items-center justify-center">
+ <Video className="w-5 h-5 text-[#1A59A7]" />
  </div>
  <div>
- <h3 className="text-xl font-bold text-white">Hero 영상 설정</h3>
- <p className="text-xs text-slate-400">영상 파일을 업로드하거나 URL을 입력하세요</p>
+ <h3 className="text-xl font-bold text-[#1A59A7]">Hero 영상 설정</h3>
+ <p className="text-xs text-[#112D4E]">영상 파일을 업로드하거나 URL을 입력하세요</p>
  </div>
  </div>
  <div className="space-y-4">
  {/* File Upload */}
  <div>
- <label className="block text-sm font-medium text-slate-400 mb-2">영상 파일 업로드</label>
+ <label className="block text-sm font-medium text-[#112D4E] mb-2">영상 파일 업로드</label>
  <button
  onClick={() => videoFileInputRef.current?.click()}
- className="w-full flex items-center justify-center gap-3 bg-white/5 border-2 border-dashed border-white/20 rounded-xl px-4 py-4 text-white hover:bg-white/10 hover:border-indigo-500/50 transition-all"
+ className="w-full flex items-center justify-center gap-3 bg-[#DBE2EF]/40 border-2 border-dashed border-[#3F72AF]/20 rounded-xl px-4 py-4 text-[#1A59A7] hover:bg-[#112D4E]/10 hover:border-[#112D4E]/50 transition-all"
  >
- <Upload className="w-5 h-5 text-indigo-400" />
+ <Upload className="w-5 h-5 text-[#112D4E]" />
  <span className="text-sm font-bold">영상 파일 선택 (.mp4, .webm)</span>
  </button>
  <input
@@ -852,42 +852,42 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
  />
  </div>
 
- <div className="flex items-center gap-3 text-slate-500">
- <div className="flex-1 h-px bg-white/10"></div>
+ <div className="flex items-center gap-3 text-[#0a1e36]">
+ <div className="flex-1 h-px bg-[#DBE2EF]/60"></div>
  <span className="text-xs font-bold">또는</span>
- <div className="flex-1 h-px bg-white/10"></div>
+ <div className="flex-1 h-px bg-[#DBE2EF]/60"></div>
  </div>
 
  {/* URL Input */}
  <div>
- <label className="block text-sm font-medium text-slate-400 mb-2">영상 URL</label>
+ <label className="block text-sm font-medium text-[#112D4E] mb-2">영상 URL</label>
  <input
  type="text"
- className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all placeholder-slate-600"
+ className="w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded-xl px-4 py-3 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] transition-all placeholder-[#8fabc8]"
  value={url}
  onChange={(e) => setUrl(e.target.value)}
  placeholder="https://www.youtube.com/watch?v=... 또는 youtu.be/..."
  />
  </div>
- <p className="text-xs text-slate-500">YouTube URL을 그대로 붙여넣으세요. 자동으로 변환됩니다. 직접 영상 파일(.mp4, .webm)도 지원됩니다.</p>
+ <p className="text-xs text-[#0a1e36]">YouTube URL을 그대로 붙여넣으세요. 자동으로 변환됩니다. 직접 영상 파일(.mp4, .webm)도 지원됩니다.</p>
 
  {url && (
- <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
- <p className="text-xs text-emerald-400 font-bold">✓ 영상이 설정되었습니다</p>
- <p className="text-[10px] text-slate-500 mt-1 truncate">{url.startsWith('data:') || url.startsWith('blob:') ? '업로드된 파일' : url}</p>
+ <div className="p-3 bg-[#3F72AF]/10 border border-[#3F72AF]/20 rounded-xl">
+ <p className="text-xs text-[#3F72AF] font-bold">✓ 영상이 설정되었습니다</p>
+ <p className="text-[10px] text-[#0a1e36] mt-1 truncate">{url.startsWith('data:') || url.startsWith('blob:') ? '업로드된 파일' : url}</p>
  </div>
  )}
 
  <div className="flex gap-3 pt-2">
  <button
  onClick={onClose}
- className="flex-1 px-6 py-3 glass rounded-xl text-white font-bold hover:bg-white/10 transition-all"
+ className="flex-1 px-6 py-3 glass rounded-xl text-[#1A59A7] font-bold hover:bg-[#112D4E]/10 transition-all"
  >
  취소
  </button>
  <button
  onClick={handleSave}
- className="flex-1 px-6 py-3 bg-indigo-600 rounded-xl text-white font-bold hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25"
+ className="flex-1 px-6 py-3 bg-[#0a1e36] rounded-xl text-[#1A59A7] font-bold hover:bg-[#112D4E] transition-all shadow-lg shadow-[#112D4E]/25"
  >
  저장
  </button>
@@ -950,26 +950,26 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  />
  )
  ) : (
- <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-slate-900/50">
+ <div className="w-full h-full flex flex-col items-center justify-center text-[#0a1e36] bg-[#F9F7F7]/50">
  <Video className="w-20 h-20 mb-4 opacity-20" />
  <p className="text-sm opacity-40">영상을 설정해주세요</p>
  </div>
  )}
 
- {/* ─── 10-step horizontal gradient: #0f172a → transparent (left to right) ─── */}
+ {/* ─── 10-step horizontal gradient: #F9F7F7 → transparent (left to right) ─── */}
  <div className="absolute inset-0 pointer-events-none" style={{
  background: [
  'linear-gradient(to right,',
- '#0f172a 0%,', // Step 1: 100% opaque
- 'rgba(15,23,42, 0.97) 3%,', // Step 2
- 'rgba(15,23,42, 0.92) 7%,', // Step 3
- 'rgba(15,23,42, 0.85) 12%,', // Step 4
- 'rgba(15,23,42, 0.74) 19%,', // Step 5
- 'rgba(15,23,42, 0.60) 28%,', // Step 6
- 'rgba(15,23,42, 0.44) 38%,', // Step 7
- 'rgba(15,23,42, 0.26) 50%,', // Step 8
- 'rgba(15,23,42, 0.12) 65%,', // Step 9
- 'rgba(15,23,42, 0.03) 82%,', // Step 10
+ '#F9F7F7 0%,', // Step 1: 100% opaque
+ 'rgba(249,247,247, 0.97) 3%,', // Step 2
+ 'rgba(249,247,247, 0.92) 7%,', // Step 3
+ 'rgba(249,247,247, 0.85) 12%,', // Step 4
+ 'rgba(249,247,247, 0.74) 19%,', // Step 5
+ 'rgba(249,247,247, 0.60) 28%,', // Step 6
+ 'rgba(249,247,247, 0.44) 38%,', // Step 7
+ 'rgba(249,247,247, 0.26) 50%,', // Step 8
+ 'rgba(249,247,247, 0.12) 65%,', // Step 9
+ 'rgba(249,247,247, 0.03) 82%,', // Step 10
  'transparent 100%)'
  ].join(' ')
  }}></div>
@@ -978,21 +978,21 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  <div className="absolute inset-0 pointer-events-none" style={{
  background: [
  'linear-gradient(to bottom,',
- 'rgba(15,23,42, 0.50) 0%,', // Step 1: top edge
- 'rgba(15,23,42, 0.35) 4%,', // Step 2
- 'rgba(15,23,42, 0.20) 8%,', // Step 3
- 'rgba(15,23,42, 0.10) 14%,', // Step 4
- 'rgba(15,23,42, 0.03) 22%,', // Step 5
+ 'rgba(249,247,247, 0.50) 0%,', // Step 1: top edge
+ 'rgba(249,247,247, 0.35) 4%,', // Step 2
+ 'rgba(249,247,247, 0.20) 8%,', // Step 3
+ 'rgba(249,247,247, 0.10) 14%,', // Step 4
+ 'rgba(249,247,247, 0.03) 22%,', // Step 5
  'transparent 32%,', // Steps 6-7: clear
  'transparent 70%,',
- 'rgba(15,23,42, 0.10) 80%,', // Step 8
- 'rgba(15,23,42, 0.40) 90%,', // Step 9
- 'rgba(15,23,42, 0.95) 100%)' // Step 10: bottom edge
+ 'rgba(249,247,247, 0.10) 80%,', // Step 8
+ 'rgba(249,247,247, 0.40) 90%,', // Step 9
+ 'rgba(249,247,247, 0.95) 100%)' // Step 10: bottom edge
  ].join(' ')
  }}></div>
 
  {/* Subtle decorative color wash */}
- <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+ <div className="absolute inset-0 bg-gradient-to-br from-[#112D4E]/5 via-transparent to-[#0a1e36]/5 pointer-events-none"></div>
 
  {/* Video Controls (inside video layer) */}
  <div className="absolute top-24 right-6 z-30 flex items-center gap-2">
@@ -1001,7 +1001,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  whileHover={{ scale: 1.05 }}
  whileTap={{ scale: 0.95 }}
  onClick={toggleVideoPlayback}
- className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+ className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-[#1A59A7] border border-[#3F72AF]/20 hover:bg-[#112D4E]/10 transition-all"
  >
  {isVideoPlaying ? (
  <><span className="w-4 h-4 flex items-center justify-center"><span className="inline-flex gap-[3px]"><span className="w-[3px] h-3 bg-white rounded-sm"></span><span className="w-[3px] h-3 bg-white rounded-sm"></span></span></span> 일시정지</>
@@ -1015,7 +1015,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  whileHover={{ scale: 1.05 }}
  whileTap={{ scale: 0.95 }}
  onClick={() => setIsVideoSettingsOpen(true)}
- className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+ className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-[#1A59A7] border border-[#3F72AF]/20 hover:bg-[#112D4E]/10 transition-all"
  >
  <Settings className="w-4 h-4" /> 영상 설정
  </motion.button>
@@ -1028,7 +1028,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
 
  {/* ═══════ Layer 2: Text content (higher z-index, floats OVER video) ═══════ */}
  <div className="relative z-20 w-full max-w-7xl mx-auto px-6 pt-20">
- <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
+ <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#0a1e36]/20 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
  
  <motion.div 
  initial={{ opacity: 0, x: -40 }}
@@ -1041,16 +1041,16 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  value={content.titleLine1 || "기획의도를 알고"} 
  onSave={(v) => setContent({...content, titleLine1: v})} 
  isEditing={isEditing} 
- className="text-3xl md:text-5xl lg:text-6xl font-bold text-indigo-400 tracking-[0.3em] uppercase opacity-90"
+ className="text-3xl md:text-5xl lg:text-6xl font-bold text-[#112D4E] tracking-[0.3em] uppercase opacity-90"
  />
  <EditableText 
  value={content.titleLine2 || "목차를 쓸줄 아는 기획자"} 
  onSave={(v) => setContent({...content, titleLine2: v})} 
  isEditing={isEditing} 
- className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[1.05] drop-shadow-2xl"
+ className="text-4xl md:text-6xl lg:text-7xl font-black text-[#1A59A7] tracking-tighter leading-[1.05] drop-shadow-2xl"
  />
  </h1>
- <p className="max-w-xl text-slate-400 text-lg md:text-xl font-medium leading-relaxed mb-12">
+ <p className="max-w-xl text-[#112D4E] text-lg md:text-xl font-medium leading-relaxed mb-12">
  <EditableText 
  value={content.description} 
  onSave={(v) => setContent({...content, description: v})} 
@@ -1064,7 +1064,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  whileHover={{ y: -4, scale: 1.02 }}
  whileTap={{ scale: 0.98 }}
  onClick={onResumeClick}
- className="px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl flex items-center gap-2 shadow-xl shadow-indigo-500/25 hover:bg-indigo-500 transition-all"
+ className="px-8 py-4 bg-[#0a1e36] text-white font-bold rounded-2xl flex items-center gap-2 shadow-xl shadow-[#112D4E]/25 hover:bg-[#112D4E] transition-all"
  >
  이력서 보기 <ChevronRight className="w-5 h-5" />
  </motion.button>
@@ -1072,7 +1072,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  whileHover={{ y: -4, scale: 1.02 }}
  whileTap={{ scale: 0.98 }}
  onClick={onPortfolioClick}
- className="px-8 py-4 glass font-bold rounded-2xl hover:bg-white/5 transition-all flex items-center gap-2"
+ className="px-8 py-4 glass font-bold rounded-2xl hover:bg-[#112D4E]/5 transition-all flex items-center gap-2"
  >
  포트폴리오 보기 <ArrowUpRight className="w-5 h-5" />
  </motion.button>
@@ -1082,7 +1082,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
 
  {/* ═══════ Mobile: Video block below text (not overlapping) ═══════ */}
  <div className="block lg:hidden w-full px-6 pb-8">
- <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-indigo-500/10 aspect-video bg-slate-900/50 mt-8">
+ <div className="relative rounded-3xl overflow-hidden border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 aspect-video bg-[#F9F7F7]/50 mt-8">
  {content.heroVideoUrl ? (
  isDirectVideo ? (
  <video
@@ -1103,7 +1103,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  />
  )
  ) : (
- <div className="w-full h-full flex flex-col items-center justify-center text-slate-500">
+ <div className="w-full h-full flex flex-col items-center justify-center text-[#0a1e36]">
  <Video className="w-16 h-16 mb-4 opacity-30" />
  <p className="text-sm opacity-50">영상을 설정해주세요</p>
  </div>
@@ -1113,7 +1113,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  whileHover={{ scale: 1.05 }}
  whileTap={{ scale: 0.95 }}
  onClick={() => setIsVideoSettingsOpen(true)}
- className="absolute top-4 right-4 z-20 px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-white border border-white/20 hover:bg-white/10 transition-all"
+ className="absolute top-4 right-4 z-20 px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-[#1A59A7] border border-[#3F72AF]/20 hover:bg-[#112D4E]/10 transition-all"
  >
  <Settings className="w-4 h-4" /> 영상 설정
  </motion.button>
@@ -1128,7 +1128,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
  transition={{ delay: 1, duration: 1 }}
  className="absolute bottom-10 left-1/4 -translate-x-1/2 flex flex-col items-center gap-3 z-10"
  >
- <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1">
+ <div className="w-6 h-10 border-2 border-[#3F72AF]/20 rounded-full flex justify-center p-1">
  <motion.div 
  animate={{ y: [0, 12, 0] }}
  transition={{ repeat: Infinity, duration: 1.5 }}
@@ -1151,22 +1151,22 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
  <section id="about" className="py-32 px-6 max-w-7xl mx-auto">
  <div className="grid lg:grid-cols-12 gap-12 items-start">
  <div className="lg:col-span-7">
- <div className="inline-block px-4 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 text-xs font-bold mb-6">01_ABOUT ME</div>
+ <div className="inline-block px-4 py-1 rounded-lg bg-[#112D4E]/10 text-[#112D4E] text-xs font-bold mb-6">01_ABOUT ME</div>
  <h2 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight leading-tight">
  <EditableText 
  value={content.title} 
  onSave={(v) => setContent({...content, title: v})} 
  isEditing={isEditing} 
- className="block text-white"
+ className="block text-[#1A59A7]"
  />
  <EditableText 
  value={content.subtitle} 
  onSave={(v) => setContent({...content, subtitle: v})} 
  isEditing={isEditing} 
- className="block text-white"
+ className="block text-[#1A59A7]"
  />
  </h2>
- <div className="space-y-6 text-slate-400 text-lg leading-relaxed font-medium">
+ <div className="space-y-6 text-[#112D4E] text-lg leading-relaxed font-medium">
  <p>
  <EditableText 
  value={content.p1} 
@@ -1186,11 +1186,11 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
  </div>
  
  <div className="mt-12">
- <div className="inline-block px-4 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 text-xs font-bold mb-6 uppercase tracking-widest">Point</div>
+ <div className="inline-block px-4 py-1 rounded-lg bg-[#112D4E]/10 text-[#112D4E] text-xs font-bold mb-6 uppercase tracking-widest">Point</div>
  <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
  {content.stats.map((stat: any, idx: number) => (
  <div key={idx} className="bento-card !p-6">
- <div className="text-3xl font-bold text-indigo-400 mb-1">
+ <div className="text-3xl font-bold text-[#112D4E] mb-1">
  <EditableText 
  value={stat.value} 
  onSave={(v) => {
@@ -1201,7 +1201,7 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
  isEditing={isEditing} 
  />
  </div>
- <div className="text-xs font-bold text-slate-500 uppercase tracking-tighter">
+ <div className="text-xs font-bold text-[#0a1e36] uppercase tracking-tighter">
  <EditableText 
  value={stat.label} 
  onSave={(v) => {
@@ -1219,7 +1219,7 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
  </div>
  
  <div className="lg:col-span-5 relative">
- <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/10 group shadow-2xl shadow-indigo-500/10">
+ <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-[#3F72AF]/12 group shadow-2xl shadow-[#112D4E]/10">
  <img 
  src="https://picsum.photos/seed/designer/800/1000" 
  alt="Designer Profile" 
@@ -1229,10 +1229,10 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
  <div className="absolute inset-0 bg-gradient-to-t from-bg-main via-transparent to-transparent opacity-60"></div>
  <div className="absolute bottom-8 left-8">
  <div className="flex items-center gap-2 mb-2">
- <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
- <span className="text-xs font-bold text-emerald-400 tracking-widest">STATUS: READY_TO_BUILD</span>
+ <div className="w-2 h-2 bg-[#3F72AF] rounded-full animate-pulse"></div>
+ <span className="text-xs font-bold text-[#3F72AF] tracking-widest">STATUS: READY_TO_BUILD</span>
  </div>
- <div className="text-white text-2xl font-bold">PM 지원자</div>
+ <div className="text-[#1A59A7] text-2xl font-bold">PM 지원자</div>
  </div>
  </div>
  </div>
@@ -1258,14 +1258,14 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  };
 
  return (
- <section id="projects" className="py-32 px-6 bg-white/[0.01]">
+ <section id="projects" className="py-32 px-6 bg-[#DBE2EF]/30">
  <div className="max-w-7xl mx-auto">
  <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6">
  <div>
- <div className="inline-block px-4 py-1 rounded-lg bg-pink-500/10 text-pink-400 text-xs font-bold mb-6">02_PORTFOLIO</div>
+ <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-xs font-bold mb-6">02_PORTFOLIO</div>
  <h2 className="text-4xl md:text-5xl font-bold tracking-tight">포트폴리오.</h2>
  </div>
- <p className="text-slate-500 max-w-md text-lg font-medium">
+ <p className="text-[#0a1e36] max-w-md text-lg font-medium">
  기획 및 연구를 통해 개발한 프로젝트 결과물입니다.
  </p>
  </div>
@@ -1285,7 +1285,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  const newProjects = projects.filter(p => p.id !== project.id);
  setProjects(newProjects);
  }}
- className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+ className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-[#1A59A7] rounded-full hover:bg-red-600 transition-colors shadow-lg"
  title="삭제"
  >
  <X className="w-4 h-4" />
@@ -1299,7 +1299,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  referrerPolicy="no-referrer"
  />
  <div className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-40`}></div>
- <div className="absolute top-4 left-4 glass px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
+ <div className="absolute top-4 left-4 glass px-3 py-1 rounded-full text-[10px] font-bold text-[#1A59A7] uppercase tracking-wider">
  <EditableText 
  value={project.category} 
  onSave={(v) => {
@@ -1317,9 +1317,9 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  e.stopPropagation();
  projectFileInputRefs.current[idx]?.click();
  }}
- className="w-full flex items-center justify-center gap-2 glass rounded-xl px-3 py-2.5 hover:bg-white/10 transition-all text-white"
+ className="w-full flex items-center justify-center gap-2 glass rounded-xl px-3 py-2.5 hover:bg-[#112D4E]/10 transition-all text-[#1A59A7]"
  >
- <Upload className="w-4 h-4 text-indigo-400" />
+ <Upload className="w-4 h-4 text-[#112D4E]" />
  <span className="text-xs font-bold">이미지 업로드</span>
  </button>
  <input
@@ -1334,7 +1334,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  </div>
  
  <div className="p-8 flex-1 flex flex-col">
- <h3 className="text-2xl font-bold mb-4 group-hover:text-indigo-400 transition-colors">
+ <h3 className="text-2xl font-bold mb-4 group-hover:text-[#112D4E] transition-colors">
  <EditableText 
  value={project.title} 
  onSave={(v) => {
@@ -1345,7 +1345,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  isEditing={isEditing} 
  />
  </h3>
- <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-1">
+ <p className="text-[#112D4E] text-sm leading-relaxed mb-8 flex-1">
  <EditableText 
  value={project.description} 
  onSave={(v) => {
@@ -1360,7 +1360,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  
  <div className="flex flex-wrap gap-2 mb-8">
  {project.tags.map((tag, tagIdx) => (
- <span key={tagIdx} className="text-[10px] font-bold px-3 py-1 bg-white/5 border border-white/10 rounded-full text-slate-500 flex items-center gap-1">
+ <span key={tagIdx} className="text-[10px] font-bold px-3 py-1 bg-[#DBE2EF]/40 border border-[#3F72AF]/12 rounded-full text-[#0a1e36] flex items-center gap-1">
  #<EditableText 
  value={tag} 
  onSave={(v) => {
@@ -1391,7 +1391,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  newProjects[idx].tags.push("새태그");
  setProjects(newProjects);
  }}
- className="text-[10px] font-bold px-3 py-1 bg-indigo-500/20 border border-indigo-500/30 rounded-full text-indigo-400 hover:bg-indigo-500/30 transition-all"
+ className="text-[10px] font-bold px-3 py-1 bg-[#112D4E]/20 border border-[#112D4E]/30 rounded-full text-[#112D4E] hover:bg-[#112D4E]/30 transition-all"
  >
  + 태그 추가
  </button>
@@ -1400,7 +1400,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  
  <button 
  onClick={() => onProjectClick(project)}
- className="w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-white group-hover:text-black transition-all"
+ className="w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-[#112D4E] group-hover:text-[#F9F7F7] transition-all"
  >
  상세보기 <ArrowUpRight className="w-4 h-4" />
  </button>
@@ -1413,7 +1413,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  <div className="mt-16 text-center">
  <button 
  onClick={() => setView('all-projects')}
- className="px-8 py-4 glass rounded-2xl font-bold hover:bg-white hover:text-black transition-all flex items-center gap-2 mx-auto"
+ className="px-8 py-4 glass rounded-2xl font-bold hover:bg-[#112D4E] hover:text-[#F9F7F7] transition-all flex items-center gap-2 mx-auto"
  >
  더보기 <Plus className="w-5 h-5" />
  </button>
@@ -1438,7 +1438,7 @@ const Portfolio = ({ onProjectClick, isEditing, projects, setProjects, setView }
  <div>
  <button 
  onClick={() => setView('home')}
- className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-6 group"
+ className="flex items-center gap-2 text-[#112D4E] hover:text-[#112D4E] transition-colors mb-6 group"
  >
  <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
  </button>
@@ -1450,7 +1450,7 @@ const Portfolio = ({ onProjectClick, isEditing, projects, setProjects, setView }
  {categories.map(category => (
  <div key={category}>
  <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
- <Sparkles className="w-6 h-6 text-indigo-400" /> {category}
+ <Sparkles className="w-6 h-6 text-[#112D4E]" /> {category}
  </h3>
  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
  {projects.filter(p => p.category === category).map((project, idx) => (
@@ -1467,7 +1467,7 @@ const Portfolio = ({ onProjectClick, isEditing, projects, setProjects, setView }
  setProjects(newProjects);
  }
  }}
- className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+ className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-[#1A59A7] rounded-full hover:bg-red-600 transition-colors shadow-lg"
  title="삭제"
  >
  <X className="w-4 h-4" />
@@ -1484,7 +1484,7 @@ const Portfolio = ({ onProjectClick, isEditing, projects, setProjects, setView }
  </div>
  
  <div className="p-8 flex-1 flex flex-col">
- <h4 className="text-xl font-bold mb-4 group-hover:text-indigo-400 transition-colors">
+ <h4 className="text-xl font-bold mb-4 group-hover:text-[#112D4E] transition-colors">
  <EditableText 
  value={project.title} 
  onSave={(v) => {
@@ -1496,7 +1496,7 @@ const Portfolio = ({ onProjectClick, isEditing, projects, setProjects, setView }
  isEditing={isEditing} 
  />
  </h4>
- <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-1">
+ <p className="text-[#112D4E] text-sm leading-relaxed mb-8 flex-1">
  <EditableText 
  value={project.description} 
  onSave={(v) => {
@@ -1512,7 +1512,7 @@ const Portfolio = ({ onProjectClick, isEditing, projects, setProjects, setView }
  
  <button 
  onClick={() => onProjectClick(project)}
- className="w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-white group-hover:text-black transition-all"
+ className="w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-[#112D4E] group-hover:text-[#F9F7F7] transition-all"
  >
  상세보기 <ArrowUpRight className="w-4 h-4" />
  </button>
@@ -1586,7 +1586,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  <div className="max-w-4xl">
  <div className="flex items-center justify-between mb-10">
  <div>
- <div className="inline-block px-4 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-bold mb-6">03_SKILLS</div>
+ <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-xs font-bold mb-6">03_SKILLS</div>
  <h2 className="text-4xl md:text-5xl font-bold tracking-tight">핵심 역량.</h2>
  </div>
  </div>
@@ -1598,7 +1598,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  {isEditing && editingTabId === tab.id ? (
  <input
  type="text"
- className="px-4 py-2.5 bg-white/10 border border-indigo-500 rounded-xl text-sm font-bold text-white focus:outline-none min-w-[80px]"
+ className="px-4 py-2.5 bg-[#DBE2EF]/60 border border-[#112D4E] rounded-xl text-sm font-bold text-[#1A59A7] focus:outline-none min-w-[80px]"
  value={tab.name}
  autoFocus
  onChange={(e) => {
@@ -1614,8 +1614,8 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  onDoubleClick={() => isEditing && setEditingTabId(tab.id)}
  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
  activeTabId === tab.id
- ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
- : 'glass text-slate-400 hover:text-white hover:bg-white/5'
+ ? 'bg-[#0a1e36] text-[#1A59A7] shadow-lg shadow-[#112D4E]/25'
+ : 'glass text-[#112D4E] hover:text-[#112D4E] hover:bg-[#112D4E]/5'
  }`}
  >
  {tab.name}
@@ -1647,7 +1647,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  setSkillTabs([...skillTabs, newTab]);
  setActiveTabId(newTab.id);
  }}
- className="px-4 py-2.5 border-2 border-dashed border-white/20 rounded-xl text-sm font-bold text-slate-500 hover:text-indigo-400 hover:border-indigo-500/50 transition-all flex items-center gap-1.5"
+ className="px-4 py-2.5 border-2 border-dashed border-[#3F72AF]/20 rounded-xl text-sm font-bold text-[#0a1e36] hover:text-[#112D4E] hover:border-[#112D4E]/50 transition-all flex items-center gap-1.5"
  >
  <Plus className="w-4 h-4" /> 탭 추가
  </button>
@@ -1670,7 +1670,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  const newSkill: Skill = { name: "새 역량", level: 50, icon: 'Cpu', caption: "역량에 대한 설명을 입력하세요" };
  updateTabSkills([...activeSkills, newSkill]);
  }}
- className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-500 transition-all flex items-center gap-2"
+ className="px-4 py-2 bg-[#0a1e36] text-[#1A59A7] text-sm font-bold rounded-xl hover:bg-[#112D4E] transition-all flex items-center gap-2"
  >
  <Plus className="w-4 h-4" /> 역량 추가
  </button>
@@ -1678,7 +1678,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  )}
  <div className="space-y-10">
  {activeSkills.length === 0 && (
- <div className="text-center py-16 text-slate-600">
+ <div className="text-center py-16 text-[#8fabc8]">
  <Zap className="w-12 h-12 mx-auto mb-4 opacity-30" />
  <p className="text-sm">이 탭에 역량을 추가해주세요.</p>
  </div>
@@ -1701,7 +1701,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  <div className="flex items-center justify-between mb-3">
  <div className="flex items-center gap-3">
  <div 
- className={`w-10 h-10 glass rounded-xl flex items-center justify-center text-indigo-400 ${isEditing ? 'cursor-pointer hover:bg-white/10' : ''}`}
+ className={`w-10 h-10 glass rounded-xl flex items-center justify-center text-[#112D4E] ${isEditing ? 'cursor-pointer hover:bg-[#112D4E]/10' : ''}`}
  onClick={() => isEditing && setShowIconPicker(showIconPicker === idx ? null : idx)}
  >
  {resolveIcon(skill.icon)}
@@ -1717,7 +1717,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  updateTabSkills(newSkills);
  setShowIconPicker(null);
  }}
- className="p-2 hover:bg-white/10 rounded-lg transition-colors text-indigo-400"
+ className="p-2 hover:bg-[#112D4E]/10 rounded-lg transition-colors text-[#112D4E]"
  >
  {opt.icon}
  </button>
@@ -1737,7 +1737,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  </span>
  </div>
  <div className="flex items-center gap-6">
- <span className="text-xs text-slate-500 bg-white/5 px-3 py-1 rounded-lg border border-white/10 italic">
+ <span className="text-xs text-[#0a1e36] bg-[#DBE2EF]/40 px-3 py-1 rounded-lg border border-[#3F72AF]/12 italic">
  <EditableText 
  value={skill.caption || ""} 
  onSave={(v) => {
@@ -1749,7 +1749,7 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  />
  </span>
  <div className="flex items-center gap-2">
- <span className="font-mono text-sm text-slate-500">
+ <span className="font-mono text-sm text-[#0a1e36]">
  <EditableText 
  value={skill.level.toString()} 
  onSave={(v) => {
@@ -1763,13 +1763,13 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
  </div>
  </div>
  </div>
- <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+ <div className="h-2 bg-[#DBE2EF]/40 rounded-full overflow-hidden">
  <motion.div 
  initial={{ width: 0 }}
  whileInView={{ width: `${skill.level}%` }}
  viewport={{ once: true }}
  transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
- className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+ className="h-full bg-gradient-to-r from-[#112D4E] to-[#0a1e36] rounded-full"
  />
  </div>
  </div>
@@ -1798,10 +1798,10 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  };
 
  return (
- <section id="my-tools" className="py-32 px-6 max-w-7xl mx-auto border-t border-white/5">
+ <section id="my-tools" className="py-32 px-6 max-w-7xl mx-auto border-t border-[#3F72AF]/8">
  <div className="flex items-center justify-between mb-12">
  <div>
- <div className="inline-block px-4 py-1 rounded-lg bg-cyan-500/10 text-cyan-400 text-xs font-bold mb-6">04_TOOLS</div>
+ <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-xs font-bold mb-6">04_TOOLS</div>
  <h2 className="text-4xl md:text-5xl font-bold tracking-tight">나의 사용 Tool.</h2>
  </div>
  {isEditing && (
@@ -1815,7 +1815,7 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  };
  setTools([...tools, newTool]);
  }}
- className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-500 transition-all flex items-center gap-2"
+ className="px-4 py-2 bg-[#0a1e36] text-[#1A59A7] text-sm font-bold rounded-xl hover:bg-[#112D4E] transition-all flex items-center gap-2"
  >
  <Plus className="w-4 h-4" /> Tool 추가
  </button>
@@ -1836,7 +1836,7 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  e.preventDefault();
  setTools(tools.filter(t => t.id !== tool.id));
  }}
- className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+ className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-[#1A59A7] rounded-full hover:bg-red-600 transition-colors shadow-lg"
  title="삭제"
  >
  <X className="w-4 h-4" />
@@ -1847,7 +1847,7 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  <div className="flex items-center gap-4 mb-6">
  <div
  className={`w-16 h-16 glass rounded-2xl flex items-center justify-center overflow-hidden shrink-0 ${
- isEditing ? 'cursor-pointer hover:bg-white/10 border-2 border-dashed border-white/20' : ''
+ isEditing ? 'cursor-pointer hover:bg-[#112D4E]/10 border-2 border-dashed border-[#3F72AF]/20' : ''
  }`}
  onClick={() => {
  if (isEditing) {
@@ -1858,7 +1858,7 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  {tool.iconUrl ? (
  <img src={tool.iconUrl} alt={tool.name} className="w-10 h-10 object-contain" />
  ) : (
- <div className="flex flex-col items-center text-slate-500">
+ <div className="flex flex-col items-center text-[#0a1e36]">
  {isEditing ? (
  <Upload className="w-6 h-6" />
  ) : (
@@ -1877,7 +1877,7 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  )}
  </div>
  <div className="flex-1 min-w-0">
- <h3 className="text-xl font-bold group-hover:text-cyan-400 transition-colors">
+ <h3 className="text-xl font-bold group-hover:text-[#3F72AF] transition-colors">
  <EditableText
  value={tool.name}
  onSave={(v) => {
@@ -1888,7 +1888,7 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  />
  </h3>
  {isEditing && (
- <p className="text-[10px] text-slate-600 mt-1">아이콘을 클릭하여 이미지를 업로드하세요</p>
+ <p className="text-[10px] text-[#8fabc8] mt-1">아이콘을 클릭하여 이미지를 업로드하세요</p>
  )}
  </div>
  </div>
@@ -1897,10 +1897,10 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  {isEditing && (
  <div className="mb-4">
  <div className="flex items-center gap-2 glass rounded-xl px-3 py-2">
- <ExternalLink className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+ <ExternalLink className="w-3.5 h-3.5 text-[#0a1e36] shrink-0" />
  <input
  type="text"
- className="flex-1 bg-transparent border-none text-xs text-white placeholder-slate-600 focus:outline-none"
+ className="flex-1 bg-transparent border-none text-xs text-[#1A59A7] placeholder-[#8fabc8] focus:outline-none"
  value={tool.iconUrl}
  placeholder="또는 아이콘 URL을 직접 입력..."
  onChange={(e) => {
@@ -1913,7 +1913,7 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  )}
 
  {/* Description */}
- <p className="text-sm text-slate-400 leading-relaxed flex-1">
+ <p className="text-sm text-[#112D4E] leading-relaxed flex-1">
  <EditableText
  value={tool.description}
  onSave={(v) => {
@@ -1926,13 +1926,13 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
  </p>
 
  {/* Decorative bottom accent */}
- <div className="mt-6 h-1 w-full bg-gradient-to-r from-cyan-500/40 via-indigo-500/40 to-purple-500/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+ <div className="mt-6 h-1 w-full bg-gradient-to-r from-[#3F72AF]/40 via-[#112D4E]/40 to-[#0a1e36]/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
  </motion.div>
  ))}
  </div>
 
  {tools.length === 0 && (
- <div className="text-center py-20 text-slate-600">
+ <div className="text-center py-20 text-[#8fabc8]">
  <Wrench className="w-16 h-16 mx-auto mb-4 opacity-20" />
  <p className="text-sm">사용 중인 Tool을 추가해주세요.</p>
  </div>
@@ -1942,15 +1942,15 @@ const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: To
 };
 
 const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, history: GameHistory, setHistory: (h: GameHistory) => void }) => (
- <section id="play-history" className="py-32 px-6 max-w-7xl mx-auto border-t border-white/5">
- <div className="inline-block px-4 py-1 rounded-lg bg-purple-500/10 text-purple-400 text-xs font-bold mb-6">05_PLAY_HISTORY</div>
+ <section id="play-history" className="py-32 px-6 max-w-7xl mx-auto border-t border-[#3F72AF]/8">
+ <div className="inline-block px-4 py-1 rounded-lg bg-[#112D4E]/10 text-[#1e3d5e] text-xs font-bold mb-6">05_PLAY_HISTORY</div>
  <h2 className="text-4xl md:text-5xl font-bold mb-12 tracking-tight">게임 플레이 이력.</h2>
  
  <div className="grid md:grid-cols-3 gap-8">
  {/* Online */}
  <div className="bento-card !p-8">
  <div className="flex items-center justify-between mb-6">
- <div className="flex items-center gap-3 text-indigo-400">
+ <div className="flex items-center gap-3 text-[#112D4E]">
  <Monitor className="w-6 h-6" />
  <span className="font-bold uppercase tracking-wider">Online Games</span>
  </div>
@@ -1961,7 +1961,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  newHistory.online.push({ id: Date.now().toString(), name: "새 게임", hours: 0 });
  setHistory(newHistory);
  }}
- className="p-1.5 glass rounded-lg text-indigo-400 hover:bg-white/10"
+ className="p-1.5 glass rounded-lg text-[#112D4E] hover:bg-[#112D4E]/10"
  >
  <Plus className="w-4 h-4" />
  </button>
@@ -1978,12 +1978,12 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  newHistory.online.splice(idx, 1);
  setHistory(newHistory);
  }}
- className="text-slate-600 hover:text-red-400 transition-colors"
+ className="text-[#8fabc8] hover:text-red-400 transition-colors"
  >
  <X className="w-3.5 h-3.5" />
  </button>
  )}
- <span className="text-slate-300 font-medium">
+ <span className="text-[#3F72AF] font-medium">
  <EditableText 
  value={game.name} 
  onSave={(v) => {
@@ -1995,7 +1995,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  />
  </span>
  </div>
- <div className="flex items-center gap-1.5 text-slate-500 font-mono text-sm">
+ <div className="flex items-center gap-1.5 text-[#0a1e36] font-mono text-sm">
  <Clock className="w-3.5 h-3.5" /> 
  <EditableText 
  value={game.hours.toString()} 
@@ -2015,7 +2015,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  {/* Mobile */}
  <div className="bento-card !p-8">
  <div className="flex items-center justify-between mb-6">
- <div className="flex items-center gap-3 text-emerald-400">
+ <div className="flex items-center gap-3 text-[#3F72AF]">
  <Smartphone className="w-6 h-6" />
  <span className="font-bold uppercase tracking-wider">Mobile Games</span>
  </div>
@@ -2026,7 +2026,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  newHistory.mobile.push({ id: Date.now().toString(), name: "새 게임", hours: 0 });
  setHistory(newHistory);
  }}
- className="p-1.5 glass rounded-lg text-emerald-400 hover:bg-white/10"
+ className="p-1.5 glass rounded-lg text-[#3F72AF] hover:bg-[#112D4E]/10"
  >
  <Plus className="w-4 h-4" />
  </button>
@@ -2043,12 +2043,12 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  newHistory.mobile.splice(idx, 1);
  setHistory(newHistory);
  }}
- className="text-slate-600 hover:text-red-400 transition-colors"
+ className="text-[#8fabc8] hover:text-red-400 transition-colors"
  >
  <X className="w-3.5 h-3.5" />
  </button>
  )}
- <span className="text-slate-300 font-medium">
+ <span className="text-[#3F72AF] font-medium">
  <EditableText 
  value={game.name} 
  onSave={(v) => {
@@ -2060,7 +2060,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  />
  </span>
  </div>
- <div className="flex items-center gap-1.5 text-slate-500 font-mono text-sm">
+ <div className="flex items-center gap-1.5 text-[#0a1e36] font-mono text-sm">
  <Clock className="w-3.5 h-3.5" /> 
  <EditableText 
  value={game.hours.toString()} 
@@ -2080,7 +2080,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  {/* Package */}
  <div className="bento-card !p-8">
  <div className="flex items-center justify-between mb-6">
- <div className="flex items-center gap-3 text-orange-400">
+ <div className="flex items-center gap-3 text-[#112D4E]">
  <PackageIcon className="w-6 h-6" />
  <span className="font-bold uppercase tracking-wider">Package Games</span>
  </div>
@@ -2091,7 +2091,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  newHistory.package.push({ id: Date.now().toString(), name: "새 게임", hours: 0 });
  setHistory(newHistory);
  }}
- className="p-1.5 glass rounded-lg text-orange-400 hover:bg-white/10"
+ className="p-1.5 glass rounded-lg text-[#112D4E] hover:bg-[#112D4E]/10"
  >
  <Plus className="w-4 h-4" />
  </button>
@@ -2108,12 +2108,12 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  newHistory.package.splice(idx, 1);
  setHistory(newHistory);
  }}
- className="text-slate-600 hover:text-red-400 transition-colors"
+ className="text-[#8fabc8] hover:text-red-400 transition-colors"
  >
  <X className="w-3.5 h-3.5" />
  </button>
  )}
- <span className="text-slate-300 font-medium">
+ <span className="text-[#3F72AF] font-medium">
  <EditableText 
  value={game.name} 
  onSave={(v) => {
@@ -2125,7 +2125,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
  />
  </span>
  </div>
- <div className="flex items-center gap-1.5 text-slate-500 font-mono text-sm">
+ <div className="flex items-center gap-1.5 text-[#0a1e36] font-mono text-sm">
  <Clock className="w-3.5 h-3.5" /> 
  <EditableText 
  value={game.hours.toString()} 
@@ -2179,17 +2179,17 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
  <button 
  onClick={() => setView('home')}
- className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group"
+ className="flex items-center gap-2 text-[#112D4E] hover:text-[#112D4E] transition-colors group"
  >
  <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
  </button>
  </div>
- <div className="pdf-resume-container" style={{ background: '#0f172a' }}>
+ <div className="pdf-resume-container" style={{ background: '#F9F7F7' }}>
  {/* Self Introduction - Tabbed */}
- <section className="pt-8 border-t border-white/5 ">
+ <section className="pt-8 border-t border-[#3F72AF]/8 ">
  <div className="flex items-center justify-between mb-8 pdf-no-break">
  <h3 className="text-xl font-bold flex items-center gap-3 ">
- <ScrollText className="text-indigo-400 w-6 h-6" /> 자기소개서
+ <ScrollText className="text-[#112D4E] w-6 h-6" /> 자기소개서
  </h3>
  </div>
 
@@ -2200,7 +2200,7 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
  {isEditing && editingIntroTabId === tab.id ? (
  <input
  type="text"
- className="px-4 py-2 bg-white/10 border border-indigo-500 rounded-xl text-sm font-bold text-white focus:outline-none min-w-[80px]"
+ className="px-4 py-2 bg-[#DBE2EF]/60 border border-[#112D4E] rounded-xl text-sm font-bold text-[#1A59A7] focus:outline-none min-w-[80px]"
  value={tab.title}
  autoFocus
  onChange={(e) => {
@@ -2216,8 +2216,8 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
  onDoubleClick={() => isEditing && setEditingIntroTabId(tab.id)}
  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
  activeIntroTab === tab.id
- ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
- : 'glass text-slate-400 hover:text-white hover:bg-white/5'
+ ? 'bg-[#0a1e36] text-[#1A59A7] shadow-lg shadow-[#112D4E]/25'
+ : 'glass text-[#112D4E] hover:text-[#112D4E] hover:bg-[#112D4E]/5'
  }`}
  >
  {tab.title}
@@ -2253,7 +2253,7 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
  setData({...data, selfIntroTabs: newTabs});
  setActiveIntroTab(newTab.id);
  }}
- className="px-3 py-2 border-2 border-dashed border-white/20 rounded-xl text-sm font-bold text-slate-500 hover:text-indigo-400 hover:border-indigo-500/50 transition-all flex items-center gap-1.5"
+ className="px-3 py-2 border-2 border-dashed border-[#3F72AF]/20 rounded-xl text-sm font-bold text-[#0a1e36] hover:text-[#112D4E] hover:border-[#112D4E]/50 transition-all flex items-center gap-1.5"
  >
  <Plus className="w-3.5 h-3.5" /> 탭 추가
  </button>
@@ -2266,7 +2266,7 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
  {isEditing ? (
  <textarea
- className="w-full h-[300px] bg-white/5 border border-white/20 rounded-2xl p-6 text-white text-sm leading-relaxed focus:outline-none focus:border-indigo-500 resize-y"
+ className="w-full h-[300px] bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded-2xl p-6 text-[#1A59A7] text-sm leading-relaxed focus:outline-none focus:border-[#112D4E] resize-y"
  value={tab.content}
  onChange={(e) => {
  const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: e.target.value } : t);
@@ -2275,7 +2275,7 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
  placeholder="자기소개 내용을 입력하세요..."
  />
  ) : (
- <div className="text-slate-400 leading-relaxed whitespace-pre-wrap font-medium">
+ <div className="text-[#112D4E] leading-relaxed whitespace-pre-wrap font-medium">
  {tab.content}
  </div>
  )}
@@ -2322,7 +2322,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 print:hidden">
  <button 
  onClick={() => setView('home')}
- className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group"
+ className="flex items-center gap-2 text-[#112D4E] hover:text-[#112D4E] transition-colors group"
  >
  <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
  </button>
@@ -2330,19 +2330,19 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  whileHover={{ scale: 1.02 }}
  whileTap={{ scale: 0.98 }}
  onClick={handleDownloadPdf}
- className="px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-white/10 transition-all"
+ className="px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[#112D4E]/10 transition-all"
  >
- <Download className="w-4 h-4 text-indigo-400" /> PDF 이력서 다운로드
+ <Download className="w-4 h-4 text-[#112D4E]" /> PDF 이력서 다운로드
  </motion.button>
  </div>
 
  {/* PDF Target Area */}
- <div ref={resumeRef} className="pdf-resume-container" style={{ background: '#0f172a' }}>
+ <div ref={resumeRef} className="pdf-resume-container" style={{ background: '#F9F7F7' }}>
  <div className="grid md:grid-cols-3 gap-12 print:grid-cols-3">
  {/* Sidebar */}
  <div className="md:col-span-1 space-y-12">
  <div className="text-center md:text-left pdf-no-break">
- <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-white/10 shadow-2xl shadow-indigo-500/10 ">
+ <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 ">
  <img src="https://picsum.photos/seed/profile/300/300" alt="Profile" className="w-full h-full object-cover" />
  </div>
  <h1 className="text-3xl font-bold mb-2 ">
@@ -2352,16 +2352,16 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </h1>
- <p className="text-indigo-400 font-medium mb-6 ">
+ <p className="text-[#112D4E] font-medium mb-6 ">
  <EditableText 
  value={data.role} 
  onSave={(v) => setData({...data, role: v})} 
  isEditing={isEditing} 
  />
  </p>
- <div className="space-y-4 text-sm text-slate-400 ">
+ <div className="space-y-4 text-sm text-[#112D4E] ">
  <div className="flex items-center gap-3 justify-center md:justify-start">
- <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 ">
+ <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
  <Mail className="w-4 h-4" />
  </div>
  <span>
@@ -2373,7 +2373,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </span>
  </div>
  <div className="flex items-center gap-3 justify-center md:justify-start">
- <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 ">
+ <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
  <Linkedin className="w-4 h-4" />
  </div>
  <span>
@@ -2385,7 +2385,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </span>
  </div>
  <div className="flex items-center gap-3 justify-center md:justify-start">
- <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 ">
+ <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
  <Github className="w-4 h-4" />
  </div>
  <span>
@@ -2403,7 +2403,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <div className="space-y-8">
  <div className="pdf-no-break">
  <div className="flex items-center justify-between mb-6">
- <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 ">
+ <h3 className="text-xs font-bold text-[#0a1e36] uppercase tracking-widest flex items-center gap-2 ">
  <Wrench className="w-4 h-4" /> 기술 스택
  </h3>
  {isEditing && (
@@ -2412,7 +2412,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  const newStack = [...techStack, { id: `ts-${Date.now()}`, label: '새 카테고리', items: ['항목'] }];
  setData({...data, techStack: newStack});
  }}
- className="p-1.5 glass rounded-lg text-indigo-400 hover:bg-white/10 transition-all"
+ className="p-1.5 glass rounded-lg text-[#112D4E] hover:bg-[#112D4E]/10 transition-all"
  title="카테고리 추가"
  >
  <Plus className="w-3.5 h-3.5" />
@@ -2423,7 +2423,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  {techStack.map((category, catIdx) => (
  <div key={category.id} className="pdf-no-break">
  <div className="flex items-center justify-between mb-2">
- <p className="text-[10px] font-bold text-slate-600 uppercase">
+ <p className="text-[10px] font-bold text-[#8fabc8] uppercase">
  <EditableText
  value={category.label}
  onSave={(v) => {
@@ -2440,7 +2440,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  const newStack = techStack.filter(c => c.id !== category.id);
  setData({...data, techStack: newStack});
  }}
- className="p-1 text-slate-600 hover:text-red-400 transition-colors"
+ className="p-1 text-[#8fabc8] hover:text-red-400 transition-colors"
  >
  <X className="w-3 h-3" />
  </button>
@@ -2448,7 +2448,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </div>
  <div className="flex flex-wrap gap-2">
  {category.items.map((item, itemIdx) => (
- <span key={itemIdx} className="px-3 py-1.5 glass rounded-lg text-xs font-medium text-slate-300 flex items-center gap-1">
+ <span key={itemIdx} className="px-3 py-1.5 glass rounded-lg text-xs font-medium text-[#3F72AF] flex items-center gap-1">
  <EditableText
  value={item}
  onSave={(v) => {
@@ -2465,7 +2465,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newStack[catIdx].items.splice(itemIdx, 1);
  setData({...data, techStack: newStack});
  }}
- className="text-slate-600 hover:text-red-400 transition-colors"
+ className="text-[#8fabc8] hover:text-red-400 transition-colors"
  >
  <X className="w-3 h-3" />
  </button>
@@ -2479,7 +2479,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newStack[catIdx].items.push('새 항목');
  setData({...data, techStack: newStack});
  }}
- className="px-3 py-1.5 border border-dashed border-white/20 rounded-lg text-xs font-medium text-indigo-400 hover:border-indigo-500/50 transition-all"
+ className="px-3 py-1.5 border border-dashed border-[#3F72AF]/20 rounded-lg text-xs font-medium text-[#112D4E] hover:border-[#112D4E]/50 transition-all"
  >
  + 추가
  </button>
@@ -2493,7 +2493,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  {/* Core Competencies - Editable */}
  <div className="pdf-no-break">
  <div className="flex items-center justify-between mb-6">
- <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 ">
+ <h3 className="text-xs font-bold text-[#0a1e36] uppercase tracking-widest flex items-center gap-2 ">
  <Zap className="w-4 h-4" /> 핵심 역량
  </h3>
  {isEditing && (
@@ -2502,17 +2502,17 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  const newComp = [...coreCompetencies, '새 역량'];
  setData({...data, coreCompetencies: newComp});
  }}
- className="p-1.5 glass rounded-lg text-indigo-400 hover:bg-white/10 transition-all"
+ className="p-1.5 glass rounded-lg text-[#112D4E] hover:bg-[#112D4E]/10 transition-all"
  title="역량 추가"
  >
  <Plus className="w-3.5 h-3.5" />
  </button>
  )}
  </div>
- <ul className="space-y-3 text-sm text-slate-400 ">
+ <ul className="space-y-3 text-sm text-[#112D4E] ">
  {coreCompetencies.map((comp, idx) => (
  <li key={idx} className="flex items-start gap-2 group">
- <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0"></div>
+ <div className="w-1.5 h-1.5 rounded-full bg-[#112D4E] mt-1.5 shrink-0"></div>
  <span className="flex-1">
  <EditableText
  value={comp}
@@ -2530,7 +2530,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  const newComp = coreCompetencies.filter((_, i) => i !== idx);
  setData({...data, coreCompetencies: newComp});
  }}
- className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all shrink-0"
+ className="opacity-0 group-hover:opacity-100 text-[#8fabc8] hover:text-red-400 transition-all shrink-0"
  >
  <X className="w-3.5 h-3.5" />
  </button>
@@ -2547,9 +2547,9 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  {/* Summary */}
  <section className="pdf-no-break">
  <h3 className="text-xl font-bold mb-6 flex items-center gap-3 ">
- <User className="text-indigo-400 w-6 h-6" /> 자기소개
+ <User className="text-[#112D4E] w-6 h-6" /> 자기소개
  </h3>
- <p className="text-slate-400 leading-relaxed font-medium ">
+ <p className="text-[#112D4E] leading-relaxed font-medium ">
  <EditableText 
  value={data.summary} 
  onSave={(v) => setData({...data, summary: v})} 
@@ -2563,7 +2563,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <section>
  <div className="flex items-center justify-between mb-8 pdf-no-break">
  <h3 className="text-xl font-bold flex items-center gap-3 ">
- <GraduationCap className="text-emerald-400 w-6 h-6" /> 학력 및 교육
+ <GraduationCap className="text-[#3F72AF] w-6 h-6" /> 학력 및 교육
  </h3>
  {isEditing && (
  <button 
@@ -2572,7 +2572,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newEdu.push({ title: "새 교육", period: "기간", description: "설명", details: [] });
  setData({...data, education: newEdu});
  }}
- className="p-2 glass rounded-xl text-emerald-400 hover:bg-white/10 transition-all flex items-center gap-2 text-xs font-bold"
+ className="p-2 glass rounded-xl text-[#3F72AF] hover:bg-[#112D4E]/10 transition-all flex items-center gap-2 text-xs font-bold"
  >
  <Plus className="w-4 h-4" /> 교육 추가
  </button>
@@ -2580,8 +2580,8 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </div>
  <div className="space-y-10">
  {data.education.map((edu, idx) => (
- <div key={idx} className="relative pl-8 border-l border-white/10 pdf-no-break">
- <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] "></div>
+ <div key={idx} className="relative pl-8 border-l border-[#3F72AF]/12 pdf-no-break">
+ <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#3F72AF] shadow-[0_0_10px_rgba(16,185,129,0.5)] "></div>
  {isEditing && (
  <button 
  onClick={() => {
@@ -2589,7 +2589,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newEdu.splice(idx, 1);
  setData({...data, education: newEdu});
  }}
- className="absolute -left-10 top-0 p-1 text-slate-600 hover:text-red-400 transition-colors"
+ className="absolute -left-10 top-0 p-1 text-[#8fabc8] hover:text-red-400 transition-colors"
  >
  <X className="w-4 h-4" />
  </button>
@@ -2606,7 +2606,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </h4>
- <span className="text-xs font-mono text-slate-500">
+ <span className="text-xs font-mono text-[#0a1e36]">
  <EditableText 
  value={edu.period} 
  onSave={(v) => {
@@ -2618,7 +2618,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  />
  </span>
  </div>
- <p className="text-sm text-slate-400 leading-relaxed mb-4 ">
+ <p className="text-sm text-[#112D4E] leading-relaxed mb-4 ">
  <EditableText 
  value={edu.description} 
  onSave={(v) => {
@@ -2629,7 +2629,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </p>
- <ul className="text-xs text-slate-500 space-y-2 list-disc list-inside ">
+ <ul className="text-xs text-[#0a1e36] space-y-2 list-disc list-inside ">
  {edu.details.map((detail, dIdx) => (
  <li key={dIdx} className="group flex items-center gap-2">
  <EditableText 
@@ -2648,7 +2648,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newEdu[idx].details.splice(dIdx, 1);
  setData({...data, education: newEdu});
  }}
- className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all"
+ className="opacity-0 group-hover:opacity-100 text-[#8fabc8] hover:text-red-400 transition-all"
  >
  <X className="w-3 h-3" />
  </button>
@@ -2662,7 +2662,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newEdu[idx].details.push("새 상세 내용");
  setData({...data, education: newEdu});
  }}
- className="text-[10px] text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+ className="text-[10px] text-[#112D4E] hover:text-[#1e3d5e] transition-colors flex items-center gap-1"
  >
  <Plus className="w-3 h-3" /> 항목 추가
  </button>
@@ -2677,7 +2677,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <section>
  <div className="flex items-center justify-between mb-8 pdf-no-break">
  <h3 className="text-xl font-bold flex items-center gap-3 ">
- <Briefcase className="text-purple-400 w-6 h-6" /> 프로젝트 경험
+ <Briefcase className="text-[#1e3d5e] w-6 h-6" /> 프로젝트 경험
  </h3>
  {isEditing && (
  <button 
@@ -2686,7 +2686,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newExp.push({ title: "새 프로젝트", period: "기간", description: "설명", details: [] });
  setData({...data, experience: newExp});
  }}
- className="p-2 glass rounded-xl text-purple-400 hover:bg-white/10 transition-all flex items-center gap-2 text-xs font-bold"
+ className="p-2 glass rounded-xl text-[#1e3d5e] hover:bg-[#112D4E]/10 transition-all flex items-center gap-2 text-xs font-bold"
  >
  <Plus className="w-4 h-4" /> 프로젝트 추가
  </button>
@@ -2694,8 +2694,8 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </div>
  <div className="space-y-10">
  {data.experience.map((exp, idx) => (
- <div key={idx} className="relative pl-8 border-l border-white/10 pdf-no-break">
- <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] "></div>
+ <div key={idx} className="relative pl-8 border-l border-[#3F72AF]/12 pdf-no-break">
+ <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#112D4E] shadow-[0_0_10px_rgba(168,85,247,0.5)] "></div>
  {isEditing && (
  <button 
  onClick={() => {
@@ -2703,7 +2703,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newExp.splice(idx, 1);
  setData({...data, experience: newExp});
  }}
- className="absolute -left-10 top-0 p-1 text-slate-600 hover:text-red-400 transition-colors"
+ className="absolute -left-10 top-0 p-1 text-[#8fabc8] hover:text-red-400 transition-colors"
  >
  <X className="w-4 h-4" />
  </button>
@@ -2720,7 +2720,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </h4>
- <span className="text-xs font-mono text-slate-500">
+ <span className="text-xs font-mono text-[#0a1e36]">
  <EditableText 
  value={exp.period} 
  onSave={(v) => {
@@ -2732,7 +2732,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  />
  </span>
  </div>
- <p className="text-sm text-slate-400 mb-4 ">
+ <p className="text-sm text-[#112D4E] mb-4 ">
  <EditableText 
  value={exp.description} 
  onSave={(v) => {
@@ -2743,7 +2743,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </p>
- <ul className="text-xs text-slate-500 space-y-2 list-disc list-inside ">
+ <ul className="text-xs text-[#0a1e36] space-y-2 list-disc list-inside ">
  {exp.details.map((detail, dIdx) => (
  <li key={dIdx} className="group flex items-center gap-2">
  <EditableText 
@@ -2762,7 +2762,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newExp[idx].details.splice(dIdx, 1);
  setData({...data, experience: newExp});
  }}
- className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all"
+ className="opacity-0 group-hover:opacity-100 text-[#8fabc8] hover:text-red-400 transition-all"
  >
  <X className="w-3 h-3" />
  </button>
@@ -2776,7 +2776,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  newExp[idx].details.push("새 상세 내용");
  setData({...data, experience: newExp});
  }}
- className="text-[10px] text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+ className="text-[10px] text-[#112D4E] hover:text-[#1e3d5e] transition-colors flex items-center gap-1"
  >
  <Plus className="w-3 h-3" /> 항목 추가
  </button>
@@ -2791,7 +2791,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <section>
  <div className="flex items-center justify-between mb-8 pdf-no-break">
  <h3 className="text-xl font-bold flex items-center gap-3 ">
- <Award className="text-pink-400 w-6 h-6" /> 자격 및 수상
+ <Award className="text-[#3F72AF] w-6 h-6" /> 자격 및 수상
  </h3>
  {isEditing && (
  <button 
@@ -2799,7 +2799,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  const newAwards = [...data.awards, { title: "새 자격/수상", organization: "기관명", year: new Date().getFullYear().toString() }];
  setData({...data, awards: newAwards});
  }}
- className="p-2 glass rounded-xl text-pink-400 hover:bg-white/10 transition-all flex items-center gap-2 text-xs font-bold"
+ className="p-2 glass rounded-xl text-[#3F72AF] hover:bg-[#112D4E]/10 transition-all flex items-center gap-2 text-xs font-bold"
  >
  <Plus className="w-4 h-4" /> 항목 추가
  </button>
@@ -2807,14 +2807,14 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </div>
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  {data.awards.map((award, idx) => (
- <div key={idx} className="p-5 glass rounded-2xl border-l-4 border-pink-500/50 relative group pdf-no-break">
+ <div key={idx} className="p-5 glass rounded-2xl border-l-4 border-[#3F72AF]/50 relative group pdf-no-break">
  {isEditing && (
  <button
  onClick={() => {
  const newAwards = data.awards.filter((_, i) => i !== idx);
  setData({...data, awards: newAwards});
  }}
- className="absolute top-2 right-2 p-1.5 text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+ className="absolute top-2 right-2 p-1.5 text-[#8fabc8] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
  >
  <X className="w-4 h-4" />
  </button>
@@ -2830,7 +2830,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </h4>
- <p className="text-xs text-slate-500">
+ <p className="text-xs text-[#0a1e36]">
  <EditableText 
  value={award.organization} 
  onSave={(v) => {
@@ -2864,15 +2864,15 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
 
 const Contact = () => (
  <section id="contact" className="py-32 px-6 max-w-7xl mx-auto text-center">
- <div className="inline-block px-4 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 text-xs font-bold mb-6">04_CONTACT</div>
+ <div className="inline-block px-4 py-1 rounded-lg bg-[#112D4E]/10 text-[#112D4E] text-xs font-bold mb-6">04_CONTACT</div>
  <h2 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">함께 일하고 싶으신가요?</h2>
- <p className="text-slate-400 text-lg mb-12 max-w-2xl mx-auto font-medium">
+ <p className="text-[#112D4E] text-lg mb-12 max-w-2xl mx-auto font-medium">
  새로운 프로젝트나 협업 제안은 언제나 환영입니다. <br />
  아래 이메일로 연락 주시면 빠르게 답변 드리겠습니다.
  </p>
  <a 
  href="mailto:minho.dev@email.com" 
- className="inline-flex items-center gap-3 px-10 py-5 bg-white text-black font-bold rounded-2xl hover:scale-105 transition-all shadow-2xl shadow-white/10"
+ className="inline-flex items-center gap-3 px-10 py-5 bg-[#112D4E] text-[#F9F7F7] font-bold rounded-2xl hover:scale-105 transition-all shadow-2xl shadow-[#112D4E]/10"
  >
  <Mail className="w-5 h-5" /> 메일 보내기
  </a>
@@ -2881,17 +2881,17 @@ const Contact = () => (
 
 const Footer = () => (
  <footer className="py-16 px-6 text-center">
- <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 border-t border-white/5 pt-12">
+ <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 border-t border-[#3F72AF]/8 pt-12">
  <div className="flex items-center gap-2">
- <div className="w-6 h-6 bg-slate-800 rounded flex items-center justify-center">
- <User className="text-slate-400 w-4 h-4" />
+ <div className="w-6 h-6 bg-[#DBE2EF] rounded flex items-center justify-center">
+ <User className="text-[#112D4E] w-4 h-4" />
  </div>
- <span className="font-bold text-slate-500">지원자 양현우</span>
+ <span className="font-bold text-[#0a1e36]">지원자 양현우</span>
  </div>
- <p className="text-slate-600 text-sm font-medium">© 2026 PM 지원자 포트폴리오. All rights reserved.</p>
- <div className="flex gap-6 text-slate-600 text-sm font-medium">
- <a href="#" className="hover:text-white transition-colors">Privacy</a>
- <a href="#" className="hover:text-white transition-colors">Terms</a>
+ <p className="text-[#8fabc8] text-sm font-medium">© 2026 PM 지원자 포트폴리오. All rights reserved.</p>
+ <div className="flex gap-6 text-[#8fabc8] text-sm font-medium">
+ <a href="#" className="hover:text-[#112D4E] transition-colors">Privacy</a>
+ <a href="#" className="hover:text-[#112D4E] transition-colors">Terms</a>
  </div>
  </div>
  </footer>
@@ -2928,7 +2928,7 @@ const BackToTop = () => {
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 0.8 }}
  onClick={scrollToTop}
- className="fixed bottom-8 right-8 z-50 w-12 h-12 glass rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-all shadow-2xl"
+ className="fixed bottom-8 right-8 z-50 w-12 h-12 glass rounded-full flex items-center justify-center text-[#1A59A7] hover:bg-[#112D4E]/10 transition-all shadow-2xl"
  >
  <ArrowUp className="w-6 h-6" />
  </motion.button>
@@ -2944,7 +2944,7 @@ const ImageModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
- className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
+ className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#112D4E]/80 backdrop-blur-sm"
  onClick={onClose}
  >
  <motion.div
@@ -2956,7 +2956,7 @@ const ImageModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
  >
  <button 
  onClick={onClose}
- className="absolute top-6 right-6 z-10 w-10 h-10 glass rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-all"
+ className="absolute top-6 right-6 z-10 w-10 h-10 glass rounded-full flex items-center justify-center text-[#1A59A7] hover:bg-[#112D4E]/10 transition-all"
  >
  <X className="w-6 h-6" />
  </button>
@@ -2981,7 +2981,7 @@ const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: { project:
  >
  <button 
  onClick={onBack}
- className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-12 group"
+ className="flex items-center gap-2 text-[#112D4E] hover:text-[#112D4E] transition-colors mb-12 group"
  >
  <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 프로젝트 목록으로
  </button>
@@ -2997,16 +2997,16 @@ const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: { project:
  <div className={`absolute inset-0 bg-gradient-to-t from-bg-main via-transparent to-transparent`}></div>
  <div className="absolute bottom-8 left-8 right-8">
  <div className="flex items-center gap-3 mb-4">
- <span className="glass px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
+ <span className="glass px-3 py-1 rounded-full text-[10px] font-bold text-[#1A59A7] uppercase tracking-wider">
  {project.category}
  </span>
  <div className="flex gap-2">
  {project.tags.map(tag => (
- <span key={tag} className="text-[10px] font-bold text-slate-400">#{tag}</span>
+ <span key={tag} className="text-[10px] font-bold text-[#112D4E]">#{tag}</span>
  ))}
  </div>
  </div>
- <h1 className="text-4xl md:text-5xl font-bold text-white">{project.title}</h1>
+ <h1 className="text-4xl md:text-5xl font-bold text-[#1A59A7]">{project.title}</h1>
  </div>
  </div>
  </div>
@@ -3014,7 +3014,7 @@ const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: { project:
  <div className="glass rounded-[2rem] p-8 md:p-12 markdown-body">
  {isEditing ? (
  <textarea
- className="w-full h-[600px] bg-white/5 border border-white/20 rounded-2xl p-6 text-white font-mono text-sm focus:outline-none focus:border-indigo-500"
+ className="w-full h-[600px] bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded-2xl p-6 text-[#1A59A7] font-mono text-sm focus:outline-none focus:border-[#112D4E]"
  value={project.content}
  onChange={(e) => onSaveContent(e.target.value)}
  />
@@ -3123,7 +3123,7 @@ export default function App() {
  };
 
  return (
- <div className="min-h-screen selection:bg-indigo-500/30">
+ <div className="min-h-screen selection:bg-[#112D4E]/30">
  <Navbar 
  setView={changeView} 
  currentView={view} 
@@ -3211,7 +3211,7 @@ export default function App() {
  <div key="all-projects" className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
  <button 
  onClick={() => changeView('home')}
- className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-12 group"
+ className="flex items-center gap-2 text-[#112D4E] hover:text-[#112D4E] transition-colors mb-12 group"
  >
  <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
  </button>
@@ -3263,14 +3263,14 @@ export default function App() {
  <Edit3 className="w-5 h-5" />
  </div>
  <div>
- <p className="text-xs font-bold text-amber-500 uppercase tracking-widest">Admin Mode</p>
- <p className="text-[10px] text-slate-400">내용을 클릭하여 직접 수정하세요. 자동 저장됩니다.</p>
+ <p className="text-xs font-bold text-[#3F72AF] uppercase tracking-widest">Admin Mode</p>
+ <p className="text-[10px] text-[#112D4E]">내용을 클릭하여 직접 수정하세요. 자동 저장됩니다.</p>
  </div>
  <button 
  onClick={() => setIsEditing(false)}
- className="ml-4 p-2 hover:bg-white/5 rounded-lg transition-colors"
+ className="ml-4 p-2 hover:bg-[#112D4E]/5 rounded-lg transition-colors"
  >
- <Lock className="w-4 h-4 text-slate-500" />
+ <Lock className="w-4 h-4 text-[#0a1e36]" />
  </button>
  </div>
  </div>
