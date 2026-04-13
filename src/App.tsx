@@ -1028,7 +1028,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
 
       {/* ═══════ Layer 2: Text content (higher z-index, floats OVER video) ═══════ */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-6 pt-20">
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
         
         <motion.div 
           initial={{ opacity: 0, x: -40 }}
