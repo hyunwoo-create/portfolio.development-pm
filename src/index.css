@@ -138,6 +138,38 @@
   }
 }
 
+/* PDF Page Break Control */
+.pdf-no-break {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.pdf-page-break-before {
+  page-break-before: always !important;
+  break-before: page !important;
+}
+
+.pdf-page-break-after {
+  page-break-after: always !important;
+  break-after: page !important;
+}
+
+.pdf-resume-container section {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.pdf-resume-container h3,
+.pdf-resume-container h4 {
+  page-break-after: avoid !important;
+  break-after: avoid !important;
+}
+
+.pdf-resume-container .glass {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
 @media print {
   body {
     background: white !important;
@@ -175,5 +207,11 @@
 
   .text-indigo-400, .text-purple-400, .text-pink-400 {
     color: #4f46e5 !important; /* indigo-600 */
+  }
+
+  /* PDF no break rules for print */
+  .pdf-no-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }

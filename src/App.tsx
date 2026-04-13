@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -46,7 +46,9 @@ import {
   Trash2,
   Upload,
   Image as ImageIcon,
-  FolderOpen
+  FolderOpen,
+  Download,
+  FileText
 } from 'lucide-react';
 
 // --- Types ---
@@ -93,6 +95,18 @@ interface GameHistory {
   package: GamePlay[];
 }
 
+interface SelfIntroTab {
+  id: string;
+  title: string;
+  content: string;
+}
+
+interface TechStackCategory {
+  id: string;
+  label: string;
+  items: string[];
+}
+
 interface ResumeData {
   name: string;
   role: string;
@@ -101,6 +115,9 @@ interface ResumeData {
   github: string;
   summary: string;
   selfIntroduction: string;
+  selfIntroTabs?: SelfIntroTab[];
+  techStack?: TechStackCategory[];
+  coreCompetencies?: string[];
   education: {
     title: string;
     period: string;
@@ -161,6 +178,32 @@ const RESUME_DATA: ResumeData = {
 ## 3. 지원 동기 및 포부
 플레이어의 심리를 꿰뚫는 정교한 시스템 설계를 통해, 전 세계 게이머들에게 잊지 못할 경험을 선사하고 싶습니다. 귀사에서 저의 기획 역량을 발휘하여 시장을 선도하는 혁신적인 게임을 만드는 데 기여하겠습니다. 끊임없이 배우고 성장하는 기획자로서, 팀의 핵심 인재로 거듭나겠습니다.
   `,
+  selfIntroTabs: [
+    {
+      id: 'intro-1',
+      title: '성장 과정 및 가치관',
+      content: '어린 시절부터 게임은 저에게 단순한 오락 이상의 의미였습니다. 다양한 장르의 게임을 접하며 \'왜 이 게임은 재미있을까?\'라는 질문을 끊임없이 던졌고, 이는 자연스럽게 게임 기획이라는 꿈으로 이어졌습니다. 저는 "논리 없는 재미는 우연이지만, 설계된 재미는 필연이다"라는 가치관을 가지고 있습니다.'
+    },
+    {
+      id: 'intro-2',
+      title: '강점 및 핵심 역량',
+      content: '저의 가장 큰 강점은 데이터와 논리에 기반한 사고력입니다. 밸런싱 작업 시 단순한 감에 의존하지 않고, 엑셀 시뮬레이션과 확률 통계를 활용하여 의도한 수치 결과가 나오도록 정밀하게 설계합니다. 또한, 개발팀과의 원활한 소통을 위해 기술적 이해도를 높이려 노력하며, 기획 의도를 명확하게 전달하는 문서를 작성하는 데 탁월합니다.'
+    },
+    {
+      id: 'intro-3',
+      title: '지원 동기 및 포부',
+      content: '플레이어의 심리를 꿰뚫는 정교한 시스템 설계를 통해, 전 세계 게이머들에게 잊지 못할 경험을 선사하고 싶습니다. 귀사에서 저의 기획 역량을 발휘하여 시장을 선도하는 혁신적인 게임을 만드는 데 기여하겠습니다. 끊임없이 배우고 성장하는 기획자로서, 팀의 핵심 인재로 거듭나겠습니다.'
+    }
+  ],
+  techStack: [
+    { id: 'ts-1', label: 'Engines & Languages', items: ['Unity', 'UE5', 'C#', 'C++', 'Blueprints'] },
+    { id: 'ts-2', label: 'Design Tools', items: ['Excel', 'Python', 'Jira', 'Figma', 'Confluence'] }
+  ],
+  coreCompetencies: [
+    '수치 기반의 밸런싱 시뮬레이션',
+    '논리적인 시스템 구조 설계',
+    '플레이어 심리 분석 및 UX 설계'
+  ],
   education: [
     {
       title: "게임 기획 전문가 부트캠프 (6개월)",
@@ -1991,9 +2034,71 @@ interface ResumeProps {
 }
 
 const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
-  const handleDownload = () => {
-    window.print();
-  };
+  const resumeRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [activeIntroTab, setActiveIntroTab] = useState<string>(
+    data.selfIntroTabs?.[0]?.id || 'intro-1'
+  );
+  const [editingIntroTabId, setEditingIntroTabId] = useState<string | null>(null);
+
+  // Ensure active tab is valid
+  useEffect(() => {
+    const tabs = data.selfIntroTabs || [];
+    if (tabs.length > 0 && !tabs.find(t => t.id === activeIntroTab)) {
+      setActiveIntroTab(tabs[0].id);
+    }
+  }, [data.selfIntroTabs, activeIntroTab]);
+
+  const techStack = data.techStack || [
+    { id: 'ts-1', label: 'Engines & Languages', items: ['Unity', 'UE5', 'C#', 'C++', 'Blueprints'] },
+    { id: 'ts-2', label: 'Design Tools', items: ['Excel', 'Python', 'Jira', 'Figma', 'Confluence'] }
+  ];
+
+  const coreCompetencies = data.coreCompetencies || [
+    '수치 기반의 밸런싱 시뮬레이션',
+    '논리적인 시스템 구조 설계',
+    '플레이어 심리 분석 및 UX 설계'
+  ];
+
+  const selfIntroTabs: SelfIntroTab[] = data.selfIntroTabs || [
+    { id: 'intro-1', title: '성장 과정 및 가치관', content: data.selfIntroduction || '' }
+  ];
+
+  const handleDownloadPdf = useCallback(async () => {
+    if (!resumeRef.current || isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+      const element = resumeRef.current;
+      
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `${data.name || '이력서'}_이력서.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true,
+          letterRendering: true,
+          logging: false
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+        pagebreak: { 
+          mode: ['avoid-all', 'css', 'legacy'] as any,
+          before: '.pdf-page-break-before',
+          after: '.pdf-page-break-after',
+          avoid: ['.pdf-no-break', 'h3', 'h4']
+        }
+      };
+
+      await html2pdf().set(opt).from(element).save();
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('PDF 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  }, [data.name, isGeneratingPdf]);
 
   return (
     <motion.section 
@@ -2012,428 +2117,640 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
         <motion.button 
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={handleDownload}
-          className="px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-white/10 transition-all"
+          onClick={handleDownloadPdf}
+          disabled={isGeneratingPdf}
+          className={`px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-white/10 transition-all ${isGeneratingPdf ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <ScrollText className="w-4 h-4 text-indigo-400" /> PDF 이력서 다운로드
+          {isGeneratingPdf ? (
+            <>
+              <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+              PDF 생성 중...
+            </>
+          ) : (
+            <>
+              <Download className="w-4 h-4 text-indigo-400" /> PDF 이력서 다운로드
+            </>
+          )}
         </motion.button>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-12 print:grid-cols-3">
-        {/* Sidebar */}
-        <div className="md:col-span-1 space-y-12">
-          <div className="text-center md:text-left">
-            <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-white/10 shadow-2xl shadow-indigo-500/10 print:shadow-none">
-              <img src="https://picsum.photos/seed/profile/300/300" alt="Profile" className="w-full h-full object-cover" />
-            </div>
-            <h1 className="text-3xl font-bold mb-2 print:text-black">
-              <EditableText 
-                value={data.name} 
-                onSave={(v) => setData({...data, name: v})} 
-                isEditing={isEditing} 
-              />
-            </h1>
-            <p className="text-indigo-400 font-medium mb-6 print:text-indigo-600">
-              <EditableText 
-                value={data.role} 
-                onSave={(v) => setData({...data, role: v})} 
-                isEditing={isEditing} 
-              />
-            </p>
-            <div className="space-y-4 text-sm text-slate-400 print:text-slate-600">
-              <div className="flex items-center gap-3 justify-center md:justify-start">
-                <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 print:border print:border-slate-200">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <span>
-                  <EditableText 
-                    value={data.email} 
-                    onSave={(v) => setData({...data, email: v})} 
-                    isEditing={isEditing} 
-                  />
-                </span>
+      {/* PDF Target Area */}
+      <div ref={resumeRef} className="pdf-resume-container" style={{ background: '#0f172a' }}>
+        <div className="grid md:grid-cols-3 gap-12 print:grid-cols-3">
+          {/* Sidebar */}
+          <div className="md:col-span-1 space-y-12">
+            <div className="text-center md:text-left pdf-no-break">
+              <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-white/10 shadow-2xl shadow-indigo-500/10 print:shadow-none">
+                <img src="https://picsum.photos/seed/profile/300/300" alt="Profile" className="w-full h-full object-cover" />
               </div>
-              <div className="flex items-center gap-3 justify-center md:justify-start">
-                <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 print:border print:border-slate-200">
-                  <Linkedin className="w-4 h-4" />
-                </div>
-                <span>
-                  <EditableText 
-                    value={data.linkedin} 
-                    onSave={(v) => setData({...data, linkedin: v})} 
-                    isEditing={isEditing} 
-                  />
-                </span>
-              </div>
-              <div className="flex items-center gap-3 justify-center md:justify-start">
-                <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 print:border print:border-slate-200">
-                  <Github className="w-4 h-4" />
-                </div>
-                <span>
-                  <EditableText 
-                    value={data.github} 
-                    onSave={(v) => setData({...data, github: v})} 
-                    isEditing={isEditing} 
-                  />
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2 print:text-slate-800">
-                <Wrench className="w-4 h-4" /> 기술 스택
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-[10px] font-bold text-slate-600 uppercase mb-2">Engines & Languages</p>
-                  <div className="flex flex-wrap gap-2">
-                    {['Unity', 'UE5', 'C#', 'C++', 'Blueprints'].map(tool => (
-                      <span key={tool} className="px-3 py-1.5 glass rounded-lg text-xs font-medium text-slate-300 print:text-slate-700 print:border print:border-slate-200">{tool}</span>
-                    ))}
+              <h1 className="text-3xl font-bold mb-2 print:text-black">
+                <EditableText 
+                  value={data.name} 
+                  onSave={(v) => setData({...data, name: v})} 
+                  isEditing={isEditing} 
+                />
+              </h1>
+              <p className="text-indigo-400 font-medium mb-6 print:text-indigo-600">
+                <EditableText 
+                  value={data.role} 
+                  onSave={(v) => setData({...data, role: v})} 
+                  isEditing={isEditing} 
+                />
+              </p>
+              <div className="space-y-4 text-sm text-slate-400 print:text-slate-600">
+                <div className="flex items-center gap-3 justify-center md:justify-start">
+                  <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 print:border print:border-slate-200">
+                    <Mail className="w-4 h-4" />
                   </div>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-600 uppercase mb-2">Design Tools</p>
-                  <div className="flex flex-wrap gap-2">
-                    {['Excel', 'Python', 'Jira', 'Figma', 'Confluence'].map(tool => (
-                      <span key={tool} className="px-3 py-1.5 glass rounded-lg text-xs font-medium text-slate-300 print:text-slate-700 print:border print:border-slate-200">{tool}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2 print:text-slate-800">
-                <Zap className="w-4 h-4" /> 핵심 역량
-              </h3>
-              <ul className="space-y-3 text-sm text-slate-400 print:text-slate-600">
-                <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0"></div>
-                  <span>수치 기반의 밸런싱 시뮬레이션</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0"></div>
-                  <span>논리적인 시스템 구조 설계</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0"></div>
-                  <span>플레이어 심리 분석 및 UX 설계</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="md:col-span-2 space-y-16">
-          {/* Summary */}
-          <section>
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-3 print:text-black">
-              <User className="text-indigo-400 w-6 h-6" /> 자기소개
-            </h3>
-            <p className="text-slate-400 leading-relaxed font-medium print:text-slate-700">
-              <EditableText 
-                value={data.summary} 
-                onSave={(v) => setData({...data, summary: v})} 
-                isEditing={isEditing} 
-                multiline
-              />
-            </p>
-          </section>
-
-          {/* Education */}
-          <section>
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-bold flex items-center gap-3 print:text-black">
-                <GraduationCap className="text-emerald-400 w-6 h-6" /> 학력 및 교육
-              </h3>
-              {isEditing && (
-                <button 
-                  onClick={() => {
-                    const newEdu = [...data.education];
-                    newEdu.push({ title: "새 교육", period: "기간", description: "설명", details: [] });
-                    setData({...data, education: newEdu});
-                  }}
-                  className="p-2 glass rounded-xl text-emerald-400 hover:bg-white/10 transition-all flex items-center gap-2 text-xs font-bold"
-                >
-                  <Plus className="w-4 h-4" /> 교육 추가
-                </button>
-              )}
-            </div>
-            <div className="space-y-10">
-              {data.education.map((edu, idx) => (
-                <div key={idx} className="relative pl-8 border-l border-white/10 print:border-slate-200">
-                  <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] print:shadow-none"></div>
-                  {isEditing && (
-                    <button 
-                      onClick={() => {
-                        const newEdu = [...data.education];
-                        newEdu.splice(idx, 1);
-                        setData({...data, education: newEdu});
-                      }}
-                      className="absolute -left-10 top-0 p-1 text-slate-600 hover:text-red-400 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-bold text-lg print:text-black">
-                      <EditableText 
-                        value={edu.title} 
-                        onSave={(v) => {
-                          const newEdu = [...data.education];
-                          newEdu[idx].title = v;
-                          setData({...data, education: newEdu});
-                        }} 
-                        isEditing={isEditing} 
-                      />
-                    </h4>
-                    <span className="text-xs font-mono text-slate-500">
-                      <EditableText 
-                        value={edu.period} 
-                        onSave={(v) => {
-                          const newEdu = [...data.education];
-                          newEdu[idx].period = v;
-                          setData({...data, education: newEdu});
-                        }} 
-                        isEditing={isEditing} 
-                      />
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-400 leading-relaxed mb-4 print:text-slate-600">
+                  <span>
                     <EditableText 
-                      value={edu.description} 
-                      onSave={(v) => {
-                        const newEdu = [...data.education];
-                        newEdu[idx].description = v;
-                        setData({...data, education: newEdu});
-                      }} 
+                      value={data.email} 
+                      onSave={(v) => setData({...data, email: v})} 
                       isEditing={isEditing} 
                     />
-                  </p>
-                  <ul className="text-xs text-slate-500 space-y-2 list-disc list-inside print:text-slate-500">
-                    {edu.details.map((detail, dIdx) => (
-                      <li key={dIdx} className="group flex items-center gap-2">
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 justify-center md:justify-start">
+                  <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 print:border print:border-slate-200">
+                    <Linkedin className="w-4 h-4" />
+                  </div>
+                  <span>
+                    <EditableText 
+                      value={data.linkedin} 
+                      onSave={(v) => setData({...data, linkedin: v})} 
+                      isEditing={isEditing} 
+                    />
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 justify-center md:justify-start">
+                  <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-slate-500 print:border print:border-slate-200">
+                    <Github className="w-4 h-4" />
+                  </div>
+                  <span>
+                    <EditableText 
+                      value={data.github} 
+                      onSave={(v) => setData({...data, github: v})} 
+                      isEditing={isEditing} 
+                    />
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tech Stack - Editable */}
+            <div className="space-y-8">
+              <div className="pdf-no-break">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 print:text-slate-800">
+                    <Wrench className="w-4 h-4" /> 기술 스택
+                  </h3>
+                  {isEditing && (
+                    <button
+                      onClick={() => {
+                        const newStack = [...techStack, { id: `ts-${Date.now()}`, label: '새 카테고리', items: ['항목'] }];
+                        setData({...data, techStack: newStack});
+                      }}
+                      className="p-1.5 glass rounded-lg text-indigo-400 hover:bg-white/10 transition-all"
+                      title="카테고리 추가"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-4">
+                  {techStack.map((category, catIdx) => (
+                    <div key={category.id} className="pdf-no-break">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-[10px] font-bold text-slate-600 uppercase">
+                          <EditableText
+                            value={category.label}
+                            onSave={(v) => {
+                              const newStack = [...techStack];
+                              newStack[catIdx].label = v;
+                              setData({...data, techStack: newStack});
+                            }}
+                            isEditing={isEditing}
+                          />
+                        </p>
+                        {isEditing && (
+                          <button
+                            onClick={() => {
+                              const newStack = techStack.filter(c => c.id !== category.id);
+                              setData({...data, techStack: newStack});
+                            }}
+                            className="p-1 text-slate-600 hover:text-red-400 transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {category.items.map((item, itemIdx) => (
+                          <span key={itemIdx} className="px-3 py-1.5 glass rounded-lg text-xs font-medium text-slate-300 print:text-slate-700 print:border print:border-slate-200 flex items-center gap-1">
+                            <EditableText
+                              value={item}
+                              onSave={(v) => {
+                                const newStack = [...techStack];
+                                newStack[catIdx].items[itemIdx] = v;
+                                setData({...data, techStack: newStack});
+                              }}
+                              isEditing={isEditing}
+                            />
+                            {isEditing && (
+                              <button
+                                onClick={() => {
+                                  const newStack = [...techStack];
+                                  newStack[catIdx].items.splice(itemIdx, 1);
+                                  setData({...data, techStack: newStack});
+                                }}
+                                className="text-slate-600 hover:text-red-400 transition-colors"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            )}
+                          </span>
+                        ))}
+                        {isEditing && (
+                          <button
+                            onClick={() => {
+                              const newStack = [...techStack];
+                              newStack[catIdx].items.push('새 항목');
+                              setData({...data, techStack: newStack});
+                            }}
+                            className="px-3 py-1.5 border border-dashed border-white/20 rounded-lg text-xs font-medium text-indigo-400 hover:border-indigo-500/50 transition-all"
+                          >
+                            + 추가
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Core Competencies - Editable */}
+              <div className="pdf-no-break">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 print:text-slate-800">
+                    <Zap className="w-4 h-4" /> 핵심 역량
+                  </h3>
+                  {isEditing && (
+                    <button
+                      onClick={() => {
+                        const newComp = [...coreCompetencies, '새 역량'];
+                        setData({...data, coreCompetencies: newComp});
+                      }}
+                      className="p-1.5 glass rounded-lg text-indigo-400 hover:bg-white/10 transition-all"
+                      title="역량 추가"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                <ul className="space-y-3 text-sm text-slate-400 print:text-slate-600">
+                  {coreCompetencies.map((comp, idx) => (
+                    <li key={idx} className="flex items-start gap-2 group">
+                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0"></div>
+                      <span className="flex-1">
+                        <EditableText
+                          value={comp}
+                          onSave={(v) => {
+                            const newComp = [...coreCompetencies];
+                            newComp[idx] = v;
+                            setData({...data, coreCompetencies: newComp});
+                          }}
+                          isEditing={isEditing}
+                        />
+                      </span>
+                      {isEditing && (
+                        <button
+                          onClick={() => {
+                            const newComp = coreCompetencies.filter((_, i) => i !== idx);
+                            setData({...data, coreCompetencies: newComp});
+                          }}
+                          className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all shrink-0"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="md:col-span-2 space-y-16">
+            {/* Summary */}
+            <section className="pdf-no-break">
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-3 print:text-black">
+                <User className="text-indigo-400 w-6 h-6" /> 자기소개
+              </h3>
+              <p className="text-slate-400 leading-relaxed font-medium print:text-slate-700">
+                <EditableText 
+                  value={data.summary} 
+                  onSave={(v) => setData({...data, summary: v})} 
+                  isEditing={isEditing} 
+                  multiline
+                />
+              </p>
+            </section>
+
+            {/* Education */}
+            <section>
+              <div className="flex items-center justify-between mb-8 pdf-no-break">
+                <h3 className="text-xl font-bold flex items-center gap-3 print:text-black">
+                  <GraduationCap className="text-emerald-400 w-6 h-6" /> 학력 및 교육
+                </h3>
+                {isEditing && (
+                  <button 
+                    onClick={() => {
+                      const newEdu = [...data.education];
+                      newEdu.push({ title: "새 교육", period: "기간", description: "설명", details: [] });
+                      setData({...data, education: newEdu});
+                    }}
+                    className="p-2 glass rounded-xl text-emerald-400 hover:bg-white/10 transition-all flex items-center gap-2 text-xs font-bold"
+                  >
+                    <Plus className="w-4 h-4" /> 교육 추가
+                  </button>
+                )}
+              </div>
+              <div className="space-y-10">
+                {data.education.map((edu, idx) => (
+                  <div key={idx} className="relative pl-8 border-l border-white/10 print:border-slate-200 pdf-no-break">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] print:shadow-none"></div>
+                    {isEditing && (
+                      <button 
+                        onClick={() => {
+                          const newEdu = [...data.education];
+                          newEdu.splice(idx, 1);
+                          setData({...data, education: newEdu});
+                        }}
+                        className="absolute -left-10 top-0 p-1 text-slate-600 hover:text-red-400 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-bold text-lg print:text-black">
                         <EditableText 
-                          value={detail} 
+                          value={edu.title} 
                           onSave={(v) => {
                             const newEdu = [...data.education];
-                            newEdu[idx].details[dIdx] = v;
+                            newEdu[idx].title = v;
                             setData({...data, education: newEdu});
                           }} 
                           isEditing={isEditing} 
                         />
-                        {isEditing && (
-                          <button 
-                            onClick={() => {
+                      </h4>
+                      <span className="text-xs font-mono text-slate-500">
+                        <EditableText 
+                          value={edu.period} 
+                          onSave={(v) => {
+                            const newEdu = [...data.education];
+                            newEdu[idx].period = v;
+                            setData({...data, education: newEdu});
+                          }} 
+                          isEditing={isEditing} 
+                        />
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-400 leading-relaxed mb-4 print:text-slate-600">
+                      <EditableText 
+                        value={edu.description} 
+                        onSave={(v) => {
+                          const newEdu = [...data.education];
+                          newEdu[idx].description = v;
+                          setData({...data, education: newEdu});
+                        }} 
+                        isEditing={isEditing} 
+                      />
+                    </p>
+                    <ul className="text-xs text-slate-500 space-y-2 list-disc list-inside print:text-slate-500">
+                      {edu.details.map((detail, dIdx) => (
+                        <li key={dIdx} className="group flex items-center gap-2">
+                          <EditableText 
+                            value={detail} 
+                            onSave={(v) => {
                               const newEdu = [...data.education];
-                              newEdu[idx].details.splice(dIdx, 1);
+                              newEdu[idx].details[dIdx] = v;
                               setData({...data, education: newEdu});
-                            }}
-                            className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </li>
-                    ))}
+                            }} 
+                            isEditing={isEditing} 
+                          />
+                          {isEditing && (
+                            <button 
+                              onClick={() => {
+                                const newEdu = [...data.education];
+                                newEdu[idx].details.splice(dIdx, 1);
+                                setData({...data, education: newEdu});
+                              }}
+                              className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </li>
+                      ))}
+                      {isEditing && (
+                        <button 
+                          onClick={() => {
+                            const newEdu = [...data.education];
+                            newEdu[idx].details.push("새 상세 내용");
+                            setData({...data, education: newEdu});
+                          }}
+                          className="text-[10px] text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+                        >
+                          <Plus className="w-3 h-3" /> 항목 추가
+                        </button>
+                      )}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Experience */}
+            <section>
+              <div className="flex items-center justify-between mb-8 pdf-no-break">
+                <h3 className="text-xl font-bold flex items-center gap-3 print:text-black">
+                  <Briefcase className="text-purple-400 w-6 h-6" /> 프로젝트 경험
+                </h3>
+                {isEditing && (
+                  <button 
+                    onClick={() => {
+                      const newExp = [...data.experience];
+                      newExp.push({ title: "새 프로젝트", period: "기간", description: "설명", details: [] });
+                      setData({...data, experience: newExp});
+                    }}
+                    className="p-2 glass rounded-xl text-purple-400 hover:bg-white/10 transition-all flex items-center gap-2 text-xs font-bold"
+                  >
+                    <Plus className="w-4 h-4" /> 프로젝트 추가
+                  </button>
+                )}
+              </div>
+              <div className="space-y-10">
+                {data.experience.map((exp, idx) => (
+                  <div key={idx} className="relative pl-8 border-l border-white/10 print:border-slate-200 pdf-no-break">
+                    <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] print:shadow-none"></div>
                     {isEditing && (
                       <button 
                         onClick={() => {
-                          const newEdu = [...data.education];
-                          newEdu[idx].details.push("새 상세 내용");
-                          setData({...data, education: newEdu});
+                          const newExp = [...data.experience];
+                          newExp.splice(idx, 1);
+                          setData({...data, experience: newExp});
                         }}
-                        className="text-[10px] text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+                        className="absolute -left-10 top-0 p-1 text-slate-600 hover:text-red-400 transition-colors"
                       >
-                        <Plus className="w-3 h-3" /> 항목 추가
+                        <X className="w-4 h-4" />
                       </button>
                     )}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Experience */}
-          <section>
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-bold flex items-center gap-3 print:text-black">
-                <Briefcase className="text-purple-400 w-6 h-6" /> 프로젝트 경험
-              </h3>
-              {isEditing && (
-                <button 
-                  onClick={() => {
-                    const newExp = [...data.experience];
-                    newExp.push({ title: "새 프로젝트", period: "기간", description: "설명", details: [] });
-                    setData({...data, experience: newExp});
-                  }}
-                  className="p-2 glass rounded-xl text-purple-400 hover:bg-white/10 transition-all flex items-center gap-2 text-xs font-bold"
-                >
-                  <Plus className="w-4 h-4" /> 프로젝트 추가
-                </button>
-              )}
-            </div>
-            <div className="space-y-10">
-              {data.experience.map((exp, idx) => (
-                <div key={idx} className="relative pl-8 border-l border-white/10 print:border-slate-200">
-                  <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] print:shadow-none"></div>
-                  {isEditing && (
-                    <button 
-                      onClick={() => {
-                        const newExp = [...data.experience];
-                        newExp.splice(idx, 1);
-                        setData({...data, experience: newExp});
-                      }}
-                      className="absolute -left-10 top-0 p-1 text-slate-600 hover:text-red-400 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-bold text-lg print:text-black">
-                      <EditableText 
-                        value={exp.title} 
-                        onSave={(v) => {
-                          const newExp = [...data.experience];
-                          newExp[idx].title = v;
-                          setData({...data, experience: newExp});
-                        }} 
-                        isEditing={isEditing} 
-                      />
-                    </h4>
-                    <span className="text-xs font-mono text-slate-500">
-                      <EditableText 
-                        value={exp.period} 
-                        onSave={(v) => {
-                          const newExp = [...data.experience];
-                          newExp[idx].period = v;
-                          setData({...data, experience: newExp});
-                        }} 
-                        isEditing={isEditing} 
-                      />
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-400 mb-4 print:text-slate-600">
-                    <EditableText 
-                      value={exp.description} 
-                      onSave={(v) => {
-                        const newExp = [...data.experience];
-                        newExp[idx].description = v;
-                        setData({...data, experience: newExp});
-                      }} 
-                      isEditing={isEditing} 
-                    />
-                  </p>
-                  <ul className="text-xs text-slate-500 space-y-2 list-disc list-inside print:text-slate-500">
-                    {exp.details.map((detail, dIdx) => (
-                      <li key={dIdx} className="group flex items-center gap-2">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-bold text-lg print:text-black">
                         <EditableText 
-                          value={detail} 
+                          value={exp.title} 
                           onSave={(v) => {
                             const newExp = [...data.experience];
-                            newExp[idx].details[dIdx] = v;
+                            newExp[idx].title = v;
                             setData({...data, experience: newExp});
                           }} 
                           isEditing={isEditing} 
                         />
-                        {isEditing && (
-                          <button 
-                            onClick={() => {
-                              const newExp = [...data.experience];
-                              newExp[idx].details.splice(dIdx, 1);
-                              setData({...data, experience: newExp});
-                            }}
-                            className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </li>
-                    ))}
-                    {isEditing && (
-                      <button 
-                        onClick={() => {
+                      </h4>
+                      <span className="text-xs font-mono text-slate-500">
+                        <EditableText 
+                          value={exp.period} 
+                          onSave={(v) => {
+                            const newExp = [...data.experience];
+                            newExp[idx].period = v;
+                            setData({...data, experience: newExp});
+                          }} 
+                          isEditing={isEditing} 
+                        />
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-400 mb-4 print:text-slate-600">
+                      <EditableText 
+                        value={exp.description} 
+                        onSave={(v) => {
                           const newExp = [...data.experience];
-                          newExp[idx].details.push("새 상세 내용");
+                          newExp[idx].description = v;
                           setData({...data, experience: newExp});
+                        }} 
+                        isEditing={isEditing} 
+                      />
+                    </p>
+                    <ul className="text-xs text-slate-500 space-y-2 list-disc list-inside print:text-slate-500">
+                      {exp.details.map((detail, dIdx) => (
+                        <li key={dIdx} className="group flex items-center gap-2">
+                          <EditableText 
+                            value={detail} 
+                            onSave={(v) => {
+                              const newExp = [...data.experience];
+                              newExp[idx].details[dIdx] = v;
+                              setData({...data, experience: newExp});
+                            }} 
+                            isEditing={isEditing} 
+                          />
+                          {isEditing && (
+                            <button 
+                              onClick={() => {
+                                const newExp = [...data.experience];
+                                newExp[idx].details.splice(dIdx, 1);
+                                setData({...data, experience: newExp});
+                              }}
+                              className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400 transition-all"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </li>
+                      ))}
+                      {isEditing && (
+                        <button 
+                          onClick={() => {
+                            const newExp = [...data.experience];
+                            newExp[idx].details.push("새 상세 내용");
+                            setData({...data, experience: newExp});
+                          }}
+                          className="text-[10px] text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+                        >
+                          <Plus className="w-3 h-3" /> 항목 추가
+                        </button>
+                      )}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Awards - with Add functionality */}
+            <section>
+              <div className="flex items-center justify-between mb-8 pdf-no-break">
+                <h3 className="text-xl font-bold flex items-center gap-3 print:text-black">
+                  <Award className="text-pink-400 w-6 h-6" /> 자격 및 수상
+                </h3>
+                {isEditing && (
+                  <button 
+                    onClick={() => {
+                      const newAwards = [...data.awards, { title: "새 자격/수상", organization: "기관명", year: new Date().getFullYear().toString() }];
+                      setData({...data, awards: newAwards});
+                    }}
+                    className="p-2 glass rounded-xl text-pink-400 hover:bg-white/10 transition-all flex items-center gap-2 text-xs font-bold"
+                  >
+                    <Plus className="w-4 h-4" /> 항목 추가
+                  </button>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {data.awards.map((award, idx) => (
+                  <div key={idx} className="p-5 glass rounded-2xl border-l-4 border-pink-500/50 print:border-slate-200 print:text-black relative group pdf-no-break">
+                    {isEditing && (
+                      <button
+                        onClick={() => {
+                          const newAwards = data.awards.filter((_, i) => i !== idx);
+                          setData({...data, awards: newAwards});
                         }}
-                        className="text-[10px] text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+                        className="absolute top-2 right-2 p-1.5 text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
                       >
-                        <Plus className="w-3 h-3" /> 항목 추가
+                        <X className="w-4 h-4" />
                       </button>
                     )}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
+                    <h4 className="font-bold text-sm mb-1">
+                      <EditableText 
+                        value={award.title} 
+                        onSave={(v) => {
+                          const newAwards = [...data.awards];
+                          newAwards[idx].title = v;
+                          setData({...data, awards: newAwards});
+                        }} 
+                        isEditing={isEditing} 
+                      />
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      <EditableText 
+                        value={award.organization} 
+                        onSave={(v) => {
+                          const newAwards = [...data.awards];
+                          newAwards[idx].organization = v;
+                          setData({...data, awards: newAwards});
+                        }} 
+                        isEditing={isEditing} 
+                      /> // <EditableText 
+                        value={award.year} 
+                        onSave={(v) => {
+                          const newAwards = [...data.awards];
+                          newAwards[idx].year = v;
+                          setData({...data, awards: newAwards});
+                        }} 
+                        isEditing={isEditing} 
+                      />
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
 
-          {/* Awards */}
-          <section>
-            <h3 className="text-xl font-bold mb-8 flex items-center gap-3 print:text-black">
-              <Award className="text-pink-400 w-6 h-6" /> 자격 및 수상
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {data.awards.map((award, idx) => (
-                <div key={idx} className="p-5 glass rounded-2xl border-l-4 border-pink-500/50 print:border-slate-200 print:text-black">
-                  <h4 className="font-bold text-sm mb-1">
-                    <EditableText 
-                      value={award.title} 
-                      onSave={(v) => {
-                        const newAwards = [...data.awards];
-                        newAwards[idx].title = v;
-                        setData({...data, awards: newAwards});
-                      }} 
-                      isEditing={isEditing} 
-                    />
-                  </h4>
-                  <p className="text-xs text-slate-500">
-                    <EditableText 
-                      value={award.organization} 
-                      onSave={(v) => {
-                        const newAwards = [...data.awards];
-                        newAwards[idx].organization = v;
-                        setData({...data, awards: newAwards});
-                      }} 
-                      isEditing={isEditing} 
-                    /> // <EditableText 
-                      value={award.year} 
-                      onSave={(v) => {
-                        const newAwards = [...data.awards];
-                        newAwards[idx].year = v;
-                        setData({...data, awards: newAwards});
-                      }} 
-                      isEditing={isEditing} 
-                    />
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
+            {/* Self Introduction - Tabbed */}
+            <section className="pt-8 border-t border-white/5 print:border-slate-200">
+              <div className="flex items-center justify-between mb-8 pdf-no-break">
+                <h3 className="text-xl font-bold flex items-center gap-3 print:text-black">
+                  <ScrollText className="text-indigo-400 w-6 h-6" /> 자기소개서
+                </h3>
+              </div>
 
-          {/* Self Introduction */}
-          <section className="pt-8 border-t border-white/5 print:border-slate-200">
-            <h3 className="text-xl font-bold mb-8 flex items-center gap-3 print:text-black">
-              <ScrollText className="text-indigo-400 w-6 h-6" /> 자기소개서
-            </h3>
-            <div className="glass rounded-[2rem] p-8 md:p-12 markdown-body print:p-0 print:glass-none print:bg-transparent">
-              {isEditing ? (
-                <textarea
-                  className="w-full h-[400px] bg-white/5 border border-white/20 rounded-2xl p-6 text-white font-mono text-sm focus:outline-none focus:border-indigo-500"
-                  value={data.selfIntroduction}
-                  onChange={(e) => setData({...data, selfIntroduction: e.target.value})}
-                />
-              ) : (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {data.selfIntroduction}
-                </ReactMarkdown>
-              )}
-            </div>
-          </section>
+              {/* Tab Bar */}
+              <div className="flex items-center gap-2 mb-6 flex-wrap pdf-no-break">
+                {selfIntroTabs.map((tab) => (
+                  <div key={tab.id} className="relative flex items-center">
+                    {isEditing && editingIntroTabId === tab.id ? (
+                      <input
+                        type="text"
+                        className="px-4 py-2 bg-white/10 border border-indigo-500 rounded-xl text-sm font-bold text-white focus:outline-none min-w-[80px]"
+                        value={tab.title}
+                        autoFocus
+                        onChange={(e) => {
+                          const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, title: e.target.value } : t);
+                          setData({...data, selfIntroTabs: newTabs});
+                        }}
+                        onBlur={() => setEditingIntroTabId(null)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') setEditingIntroTabId(null); }}
+                      />
+                    ) : (
+                      <button
+                        onClick={() => setActiveIntroTab(tab.id)}
+                        onDoubleClick={() => isEditing && setEditingIntroTabId(tab.id)}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                          activeIntroTab === tab.id
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                            : 'glass text-slate-400 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        {tab.title}
+                      </button>
+                    )}
+                    {isEditing && selfIntroTabs.length > 1 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const newTabs = selfIntroTabs.filter(t => t.id !== tab.id);
+                          setData({...data, selfIntroTabs: newTabs});
+                          if (activeIntroTab === tab.id && newTabs.length > 0) {
+                            setActiveIntroTab(newTabs[0].id);
+                          }
+                        }}
+                        className="ml-1 p-1 text-red-400/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                        title="탭 삭제"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {isEditing && (
+                  <button
+                    onClick={() => {
+                      const newTab: SelfIntroTab = {
+                        id: `intro-${Date.now()}`,
+                        title: '새 항목',
+                        content: '내용을 입력하세요.'
+                      };
+                      const newTabs = [...selfIntroTabs, newTab];
+                      setData({...data, selfIntroTabs: newTabs});
+                      setActiveIntroTab(newTab.id);
+                    }}
+                    className="px-3 py-2 border-2 border-dashed border-white/20 rounded-xl text-sm font-bold text-slate-500 hover:text-indigo-400 hover:border-indigo-500/50 transition-all flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> 탭 추가
+                  </button>
+                )}
+              </div>
+
+              {/* Tab Content */}
+              <div className="glass rounded-[2rem] p-8 md:p-12 pdf-no-break">
+                {selfIntroTabs.map((tab) => (
+                  <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
+                    {isEditing ? (
+                      <textarea
+                        className="w-full h-[300px] bg-white/5 border border-white/20 rounded-2xl p-6 text-white text-sm leading-relaxed focus:outline-none focus:border-indigo-500 resize-y"
+                        value={tab.content}
+                        onChange={(e) => {
+                          const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: e.target.value } : t);
+                          setData({...data, selfIntroTabs: newTabs});
+                        }}
+                        placeholder="자기소개 내용을 입력하세요..."
+                      />
+                    ) : (
+                      <div className="text-slate-400 leading-relaxed whitespace-pre-wrap font-medium">
+                        {tab.content}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </motion.section>
@@ -2620,7 +2937,6 @@ export default function App() {
 
   // --- Edit Mode Logic ---
   const [isEditing, setIsEditing] = useState(false);
-  const [inputSequence, setInputSequence] = useState('');
 
   // --- Persistent Content ---
   const [heroContent, setHeroContent] = useEditableContent({
@@ -2648,24 +2964,6 @@ export default function App() {
   const [toolsData, setToolsData] = useEditableContent(INITIAL_TOOLS, 'tools_data');
   const [historyData, setHistoryData] = useEditableContent(GAME_HISTORY, 'history_data');
   const [resumeData, setResumeData] = useEditableContent(RESUME_DATA, 'resume_data');
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const newSeq = (inputSequence + e.key).slice(-7);
-      setInputSequence(newSeq);
-      if (newSeq === 'qwer154') {
-        setIsEditing(!isEditing);
-        setInputSequence('');
-        if (!isEditing) {
-          alert("관리자 모드가 활성화되었습니다. 내용을 클릭하여 수정하세요.");
-        } else {
-          alert("관리자 모드가 비활성화되었습니다.");
-        }
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [inputSequence, isEditing]);
 
   useEffect(() => {
     if (view === 'home' && scrollTarget) {
