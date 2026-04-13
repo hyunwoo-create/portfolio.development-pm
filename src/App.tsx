@@ -615,7 +615,7 @@ const PasswordModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClos
   );
 };
 
-const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: { setView: (v: 'home' | 'resume' | 'project-detail' | 'portfolio' | 'all-projects') => void, currentView: string, onNavClick: (id: string) => void, isEditing: boolean, setIsEditing: (v: boolean) => void }) => {
+const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: { setView: (v: 'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects') => void, currentView: string, onNavClick: (id: string) => void, isEditing: boolean, setIsEditing: (v: boolean) => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
@@ -633,6 +633,12 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
   const handlePortfolioClick = () => {
     setView('portfolio');
     setIsMenuOpen(false);
+  };
+
+  const handleSelfIntroClick = () => {
+    setView('self-intro');
+    setIsMenuOpen(false);
+    window.scrollTo(0, 0);
   };
 
   const handleAdminClick = () => {
@@ -676,7 +682,12 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
           <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="hover:text-white transition-colors">핵심역량</a>
           <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="hover:text-white transition-colors">사용 Tool</a>
           <button 
-            onClick={handleResumeClick} 
+            onClick={handleSelfIntroClick} 
+            className={`hover:text-white transition-colors cursor-pointer ${currentView === 'self-intro' ? 'text-white' : ''}`}
+          >
+            자기소개서
+          </button>
+          <button onClick={handleResumeClick} 
             className={`hover:text-white transition-colors cursor-pointer ${currentView === 'resume' ? 'text-white' : ''}`}
           >
             이력서
@@ -722,6 +733,12 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
               <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="text-lg font-medium text-slate-400 hover:text-white">포트폴리오</a>
               <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="text-lg font-medium text-slate-400 hover:text-white">핵심역량</a>
               <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="text-lg font-medium text-slate-400 hover:text-white">사용 Tool</a>
+              <button 
+                onClick={handleSelfIntroClick} 
+                className={`text-left text-lg font-medium text-slate-400 hover:text-white ${currentView === 'self-intro' ? 'text-white' : ''}`}
+              >
+                자기소개서
+              </button>
               <button 
                 onClick={handleResumeClick} 
                 className={`text-left text-lg font-medium text-slate-400 hover:text-white ${currentView === 'resume' ? 'text-white' : ''}`}
@@ -902,9 +919,9 @@ const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent 
     <section className="relative min-h-screen flex items-center overflow-hidden">
 
       {/* ═══════ Layer 1: Video Background (70% of max-w-7xl container, from the right) ═══════ */}
-      <div className="hidden lg:block absolute inset-0">
+      <div className="hidden lg:block absolute inset-0 pointer-events-none">
         <div className="relative w-full h-full max-w-7xl mx-auto">
-          <div className="absolute top-0 right-0 h-full" style={{ width: '70%' }}>
+          <div className="absolute top-0 right-0 h-full" style={{ width: '70%', pointerEvents: 'auto' }}>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -2135,15 +2152,12 @@ interface ResumeProps {
   setData: (d: ResumeData) => void;
 }
 
-const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
-  const resumeRef = useRef<HTMLDivElement>(null);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
   const [activeIntroTab, setActiveIntroTab] = useState<string>(
     data.selfIntroTabs?.[0]?.id || 'intro-1'
   );
   const [editingIntroTabId, setEditingIntroTabId] = useState<string | null>(null);
 
-  // Ensure active tab is valid
   useEffect(() => {
     const tabs = data.selfIntroTabs || [];
     if (tabs.length > 0 && !tabs.find(t => t.id === activeIntroTab)) {
@@ -2151,6 +2165,132 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
     }
   }, [data.selfIntroTabs, activeIntroTab]);
 
+  const selfIntroTabs: SelfIntroTab[] = data.selfIntroTabs || [
+    { id: 'intro-1', title: '성장 과정 및 가치관', content: data.selfIntroduction || '' }
+  ];
+
+  return (
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="pt-32 pb-24 px-6 max-w-5xl mx-auto"
+    >
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <button 
+          onClick={() => setView('home')}
+          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group"
+        >
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
+        </button>
+      </div>
+      <div className="pdf-resume-container" style={{ background: '#0f172a' }}>
+        {/* Self Introduction - Tabbed */}
+            <section className="pt-8 border-t border-white/5 print:border-slate-200">
+              <div className="flex items-center justify-between mb-8 pdf-no-break">
+                <h3 className="text-xl font-bold flex items-center gap-3 print:text-black">
+                  <ScrollText className="text-indigo-400 w-6 h-6" /> 자기소개서
+                </h3>
+              </div>
+
+              {/* Tab Bar */}
+              <div className="flex items-center gap-2 mb-6 flex-wrap pdf-no-break">
+                {selfIntroTabs.map((tab) => (
+                  <div key={tab.id} className="relative flex items-center">
+                    {isEditing && editingIntroTabId === tab.id ? (
+                      <input
+                        type="text"
+                        className="px-4 py-2 bg-white/10 border border-indigo-500 rounded-xl text-sm font-bold text-white focus:outline-none min-w-[80px]"
+                        value={tab.title}
+                        autoFocus
+                        onChange={(e) => {
+                          const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, title: e.target.value } : t);
+                          setData({...data, selfIntroTabs: newTabs});
+                        }}
+                        onBlur={() => setEditingIntroTabId(null)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') setEditingIntroTabId(null); }}
+                      />
+                    ) : (
+                      <button
+                        onClick={() => setActiveIntroTab(tab.id)}
+                        onDoubleClick={() => isEditing && setEditingIntroTabId(tab.id)}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                          activeIntroTab === tab.id
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                            : 'glass text-slate-400 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        {tab.title}
+                      </button>
+                    )}
+                    {isEditing && selfIntroTabs.length > 1 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const newTabs = selfIntroTabs.filter(t => t.id !== tab.id);
+                          setData({...data, selfIntroTabs: newTabs});
+                          if (activeIntroTab === tab.id && newTabs.length > 0) {
+                            setActiveIntroTab(newTabs[0].id);
+                          }
+                        }}
+                        className="ml-1 p-1 text-red-400/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                        title="탭 삭제"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {isEditing && (
+                  <button
+                    onClick={() => {
+                      const newTab: SelfIntroTab = {
+                        id: `intro-${Date.now()}`,
+                        title: '새 항목',
+                        content: '내용을 입력하세요.'
+                      };
+                      const newTabs = [...selfIntroTabs, newTab];
+                      setData({...data, selfIntroTabs: newTabs});
+                      setActiveIntroTab(newTab.id);
+                    }}
+                    className="px-3 py-2 border-2 border-dashed border-white/20 rounded-xl text-sm font-bold text-slate-500 hover:text-indigo-400 hover:border-indigo-500/50 transition-all flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> 탭 추가
+                  </button>
+                )}
+              </div>
+
+              {/* Tab Content */}
+              <div className="glass rounded-[2rem] p-8 md:p-12 pdf-no-break">
+                {selfIntroTabs.map((tab) => (
+                  <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
+                    {isEditing ? (
+                      <textarea
+                        className="w-full h-[300px] bg-white/5 border border-white/20 rounded-2xl p-6 text-white text-sm leading-relaxed focus:outline-none focus:border-indigo-500 resize-y"
+                        value={tab.content}
+                        onChange={(e) => {
+                          const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: e.target.value } : t);
+                          setData({...data, selfIntroTabs: newTabs});
+                        }}
+                        placeholder="자기소개 내용을 입력하세요..."
+                      />
+                    ) : (
+                      <div className="text-slate-400 leading-relaxed whitespace-pre-wrap font-medium">
+                        {tab.content}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+      </div>
+    </motion.section>
+  );
+};
+
+const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
+  const resumeRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const techStack = data.techStack || [
     { id: 'ts-1', label: 'Engines & Languages', items: ['Unity', 'UE5', 'C#', 'C++', 'Blueprints'] },
     { id: 'ts-2', label: 'Design Tools', items: ['Excel', 'Python', 'Jira', 'Figma', 'Confluence'] }
@@ -2161,18 +2301,22 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
     '논리적인 시스템 구조 설계',
     '플레이어 심리 분석 및 UX 설계'
   ];
-
-  const selfIntroTabs: SelfIntroTab[] = data.selfIntroTabs || [
-    { id: 'intro-1', title: '성장 과정 및 가치관', content: data.selfIntroduction || '' }
-  ];
-
   const handleDownloadPdf = useCallback(async () => {
     if (!resumeRef.current || isGeneratingPdf) return;
     setIsGeneratingPdf(true);
 
     try {
       const html2pdf = (await import('html2pdf.js')).default;
-      const element = resumeRef.current;
+      const originalElement = resumeRef.current;
+      
+      // Clone the element to prevent html2pdf from mutating React's virtual DOM
+      const clonedElement = originalElement.cloneNode(true) as HTMLElement;
+      const cloneContainer = document.createElement('div');
+      cloneContainer.style.position = 'absolute';
+      cloneContainer.style.left = '-9999px';
+      cloneContainer.style.top = '-9999px';
+      cloneContainer.appendChild(clonedElement);
+      document.body.appendChild(cloneContainer);
       
       const opt = {
         margin: [10, 10, 10, 10],
@@ -2193,7 +2337,11 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
         }
       };
 
-      await html2pdf().set(opt).from(element).save();
+      try {
+        await html2pdf().set(opt).from(clonedElement).save();
+      } finally {
+        document.body.removeChild(cloneContainer);
+      }
     } catch (error) {
       console.error('PDF generation failed:', error);
       alert('PDF 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -2754,104 +2902,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
               </div>
             </section>
 
-            {/* Self Introduction - Tabbed */}
-            <section className="pt-8 border-t border-white/5 print:border-slate-200">
-              <div className="flex items-center justify-between mb-8 pdf-no-break">
-                <h3 className="text-xl font-bold flex items-center gap-3 print:text-black">
-                  <ScrollText className="text-indigo-400 w-6 h-6" /> 자기소개서
-                </h3>
-              </div>
-
-              {/* Tab Bar */}
-              <div className="flex items-center gap-2 mb-6 flex-wrap pdf-no-break">
-                {selfIntroTabs.map((tab) => (
-                  <div key={tab.id} className="relative flex items-center">
-                    {isEditing && editingIntroTabId === tab.id ? (
-                      <input
-                        type="text"
-                        className="px-4 py-2 bg-white/10 border border-indigo-500 rounded-xl text-sm font-bold text-white focus:outline-none min-w-[80px]"
-                        value={tab.title}
-                        autoFocus
-                        onChange={(e) => {
-                          const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, title: e.target.value } : t);
-                          setData({...data, selfIntroTabs: newTabs});
-                        }}
-                        onBlur={() => setEditingIntroTabId(null)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') setEditingIntroTabId(null); }}
-                      />
-                    ) : (
-                      <button
-                        onClick={() => setActiveIntroTab(tab.id)}
-                        onDoubleClick={() => isEditing && setEditingIntroTabId(tab.id)}
-                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                          activeIntroTab === tab.id
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                            : 'glass text-slate-400 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        {tab.title}
-                      </button>
-                    )}
-                    {isEditing && selfIntroTabs.length > 1 && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const newTabs = selfIntroTabs.filter(t => t.id !== tab.id);
-                          setData({...data, selfIntroTabs: newTabs});
-                          if (activeIntroTab === tab.id && newTabs.length > 0) {
-                            setActiveIntroTab(newTabs[0].id);
-                          }
-                        }}
-                        className="ml-1 p-1 text-red-400/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
-                        title="탭 삭제"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-                {isEditing && (
-                  <button
-                    onClick={() => {
-                      const newTab: SelfIntroTab = {
-                        id: `intro-${Date.now()}`,
-                        title: '새 항목',
-                        content: '내용을 입력하세요.'
-                      };
-                      const newTabs = [...selfIntroTabs, newTab];
-                      setData({...data, selfIntroTabs: newTabs});
-                      setActiveIntroTab(newTab.id);
-                    }}
-                    className="px-3 py-2 border-2 border-dashed border-white/20 rounded-xl text-sm font-bold text-slate-500 hover:text-indigo-400 hover:border-indigo-500/50 transition-all flex items-center gap-1.5"
-                  >
-                    <Plus className="w-3.5 h-3.5" /> 탭 추가
-                  </button>
-                )}
-              </div>
-
-              {/* Tab Content */}
-              <div className="glass rounded-[2rem] p-8 md:p-12 pdf-no-break">
-                {selfIntroTabs.map((tab) => (
-                  <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
-                    {isEditing ? (
-                      <textarea
-                        className="w-full h-[300px] bg-white/5 border border-white/20 rounded-2xl p-6 text-white text-sm leading-relaxed focus:outline-none focus:border-indigo-500 resize-y"
-                        value={tab.content}
-                        onChange={(e) => {
-                          const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: e.target.value } : t);
-                          setData({...data, selfIntroTabs: newTabs});
-                        }}
-                        placeholder="자기소개 내용을 입력하세요..."
-                      />
-                    ) : (
-                      <div className="text-slate-400 leading-relaxed whitespace-pre-wrap font-medium">
-                        {tab.content}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
+            
           </div>
         </div>
       </div>
@@ -3025,10 +3076,10 @@ const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: { project:
 );
 
 export default function App() {
-  const [view, setView] = useState<'home' | 'resume' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
-  const [prevView, setPrevView] = useState<'home' | 'resume' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
+  const [view, setView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
+  const [prevView, setPrevView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
   
-  const changeView = (newView: 'home' | 'resume' | 'project-detail' | 'portfolio' | 'all-projects') => {
+  const changeView = (newView: 'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects') => {
     setPrevView(view);
     setView(newView);
   };
@@ -3171,6 +3222,16 @@ export default function App() {
               />
               <Contact />
             </motion.div>
+          )}
+
+          {view === 'self-intro' && (
+            <SelfIntro 
+              key="self-intro"
+              setView={changeView} 
+              isEditing={isEditing} 
+              data={resumeData} 
+              setData={setResumeData} 
+            />
           )}
 
           {view === 'resume' && (
