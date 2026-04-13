@@ -662,7 +662,7 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
 
   return (
     <>
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50 glass rounded-2xl px-6 h-16 flex items-center justify-between">
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50 glass rounded-2xl px-6 h-16 flex items-center justify-between print:hidden">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsMenuOpen(false); }}>
           <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
             <User className="text-white w-5 h-5" />
