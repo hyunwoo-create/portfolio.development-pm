@@ -929,7 +929,6 @@ const Hero = ({ onPortfolioClick, onResumeClick, onSkillsClick, onAboutClick, on
 
   const navTabs = [
     { label: '이력서', onClick: onResumeClick, icon: FileText },
-    { label: '자기소개서', onClick: onSelfIntroClick, icon: ScrollText },
     { label: '핵심역량', onClick: onSkillsClick, icon: Zap },
     { label: '포트폴리오', onClick: onPortfolioClick, icon: FolderOpen },
   ];
@@ -2893,7 +2892,8 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </div>
  </section>
 
- 
+  {/* Self Introduction - merged into resume */}
+  <SelfIntroInResume isEditing={isEditing} data={data} setData={setData} />
  </div>
  </div>
  </div>
