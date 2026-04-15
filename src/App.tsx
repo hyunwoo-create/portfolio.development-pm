@@ -538,7 +538,8 @@ const EditableText = ({
  onSave, 
  isEditing, 
  className = "", 
- multiline = false,
+ multiline = false,
+	disableMarkdown = false,
 	style = {} 
 }: { 
  value: string, 
@@ -546,9 +547,35 @@ const EditableText = ({
  isEditing: boolean, 
  className?: string,
  multiline?: boolean,
+	disableMarkdown?: boolean,
 	style?: React.CSSProperties
 }) => {
- if (!isEditing) return <span className={className} style={style}>{value}</span>;
+  if (!isEditing) {
+    if (disableMarkdown) {
+      return <span className={className} style={style}>{String(value || '')}</span>;
+    }
+    return (
+      <span className={className} style={style}>
+        <ReactMarkdown 
+          remarkPlugins={[remarkGfm]}
+          components={{ 
+            p: ({node, ...props}) => <span className={multiline ? "whitespace-pre-wrap block mb-2 last:mb-0" : ""} {...props} />,
+            a: ({node, ...props}) => <a {...props} className="text-[#3F72AF] hover:underline" target="_blank" rel="noopener noreferrer" />,
+            strong: ({node, ...props}) => <strong {...props} className="font-extrabold" />,
+            em: ({node, ...props}) => <em {...props} className="italic" />,
+            ul: ({node, ...props}) => <ul {...props} className="list-disc list-inside mt-1 space-y-1" />,
+            ol: ({node, ...props}) => <ol {...props} className="list-decimal list-inside mt-1 space-y-1" />,
+            li: ({node, ...props}) => <li {...props} className="leading-snug" />,
+            h1: ({node, ...props}) => <strong {...props} className="text-2xl font-bold mt-2 block" />,
+            h2: ({node, ...props}) => <strong {...props} className="text-xl font-bold mt-2 block" />,
+            h3: ({node, ...props}) => <strong {...props} className="text-lg font-bold mt-1 block" />
+          }}
+        >
+          {String(value || '')}
+        </ReactMarkdown>
+      </span>
+    );
+  }
 
  return multiline ? (
  <textarea
@@ -714,7 +741,7 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
   // Here are the links in the EXACT requested order
   const navLinks = [
     { label: '소개', action: () => { onNavClick('about'); setIsMenuOpen(false); } },
-    { label: '이력서', action: () => { setView('resume'); setIsMenuOpen(false); } },
+    { label: '이력서', action: () => { onNavClick('resume-section'); setIsMenuOpen(false); } },
     { label: '포트폴리오', action: () => { onNavClick('portfolio-section'); setIsMenuOpen(false); } },
     { label: '핵심 역량', action: () => { onNavClick('skills'); setIsMenuOpen(false); } },
     { label: '사용 Tool', action: () => { onNavClick('my-tools'); setIsMenuOpen(false); } },
@@ -752,8 +779,7 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
           <div className="w-8 h-8 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-lg flex items-center justify-center shadow-lg shadow-[#112D4E]/20 group-hover:scale-105 transition-transform">
             <User className="text-[#1A59A7] w-5 h-5 cursor-pointer pointer-events-none" />
           </div>
-          <span className="font-bold tracking-tight text-lg text-[#112D4E] pointer-events-none">지원자 양현우</span>
-          {isEditing && (
+          <span className="font-bold tracking-tight text-lg text-[#112D4E] pointer-events-none">지원자 양현우</span>          {isEditing && (
             <div className="ml-2 px-2 py-0.5 bg-[#3F72AF]/20 border border-[#3F72AF]/50 rounded text-[10px] text-[#112D4E] font-bold uppercase animate-pulse pointer-events-none">
               Edit Mode
             </div>
@@ -964,7 +990,7 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
  );
 };
 
-const Hero = ({ onPortfolioClick, onResumeClick, onSkillsClick, onAboutClick, onToolsClick, isEditing, onToggleAdmin, content, setContent }: { onPortfolioClick: () => void, onResumeClick: () => void, onSkillsClick: () => void, onAboutClick: () => void, onToolsClick: () => void, isEditing: boolean, onToggleAdmin: () => void, content: any, setContent: (c: any) => void }) => {
+const Hero = ({ onMoreMeClick, isEditing, onToggleAdmin, content, setContent }: { onMoreMeClick: () => void, isEditing: boolean, onToggleAdmin: () => void, content: any, setContent: (c: any) => void }) => {
   const imageFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -996,8 +1022,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, onSkillsClick, onAboutClick, on
             <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] border-x border-t border-[#DBE2EF] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
               <img src={content.heroImage} alt="Profile" className="w-full h-full object-cover object-top" />
             </div>
-          ) : (
-            <div className="w-[80%] h-[80%] bg-[#DBE2EF] rounded-t-[5rem] flex flex-col items-center justify-center text-[#3F72AF]/40 border-4 border-white shadow-xl">
+          ) : (            <div className="w-[80%] h-[80%] bg-[#DBE2EF] rounded-t-[5rem] flex flex-col items-center justify-center text-[#3F72AF]/40 border-4 border-white shadow-xl">
               <User className="w-24 h-24 mb-3" />
               <p className="text-sm font-medium">사진 업로드</p>
               <p className="text-[10px]">(배경있는 사진도 둥글게 처리됨)</p>
@@ -1091,10 +1116,15 @@ const Hero = ({ onPortfolioClick, onResumeClick, onSkillsClick, onAboutClick, on
               />
             </div>
           </div>
+        </div>        {/* Bottom Right: Empty */}
+        <div className="flex flex-col items-end justify-end pointer-events-auto pb-8 md:pb-12 z-20">
+          <button 
+             onClick={onMoreMeClick}
+             className="bg-[#112D4E] text-white px-8 py-5 rounded-full font-bold shadow-2xl flex items-center gap-3 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:scale-105 pointer-events-auto"
+          >
+            MORE ME <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
-        
-        {/* Bottom Right: Empty */}
-        <div className="hidden md:flex"></div>
       </div>
     </section>
   );
@@ -2151,13 +2181,7 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
  exit={{ opacity: 0, y: -20 }}
  className="pt-32 pb-24 px-6 max-w-5xl mx-auto"
  >
- <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
- <button 
- onClick={() => setView('home')}
- className="flex items-center gap-2 text-[#112D4E] hover:text-[#112D4E] transition-colors group"
- >
- <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
- </button>
+ <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">          <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-xs font-bold">01_RESUME</div>
  </div>
  <div className="pdf-resume-container" style={{ background: '#F9F7F7' }}>
  {/* Self Introduction - Tabbed */}
@@ -2307,12 +2331,15 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  className="pt-32 pb-24 px-6 max-w-5xl mx-auto print:pt-0 print:pb-0 print:max-w-none"
  >
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 print:hidden">
- <button 
- onClick={() => setView('home')}
- className="flex items-center gap-2 text-[#112D4E] hover:text-[#112D4E] transition-colors group"
- >
- <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
- </button>
+           <div className="flex flex-col items-start gap-4">
+            <button 
+              onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="bg-[#112D4E] text-white px-6 py-3.5 md:px-8 md:py-4 rounded-full text-xs font-bold shadow-2xl flex items-center gap-2 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:-translate-x-2 group relative z-50 pointer-events-auto"
+            >
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
+            </button>
+            <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-[11px] font-bold tracking-widest mt-2 relative z-50">01_RESUME</div>
+          </div>
  <motion.button 
  whileHover={{ scale: 1.02 }}
  whileTap={{ scale: 0.98 }}
@@ -2362,8 +2389,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  onSave={(v) => setData({...data, role: v})} 
  isEditing={isEditing} 
  />
- </p>
- <div className="space-y-4 text-sm text-[#112D4E] ">
+ </p> <div className="space-y-4 text-sm text-[#112D4E] ">
  <div className="flex items-center gap-3 justify-center md:justify-start">
  <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
  <Calendar className="w-4 h-4" />
@@ -2373,6 +2399,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  value={data.birthDate || "2000.01.01"} 
  onSave={(v) => setData({...data, birthDate: v})} 
  isEditing={isEditing} 
+ disableMarkdown={true}
  />
  </span>
  </div>
@@ -2385,6 +2412,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  value={data.address || "서울특별시 OO구"} 
  onSave={(v) => setData({...data, address: v})} 
  isEditing={isEditing} 
+ disableMarkdown={true}
  />
  </span>
  </div>
@@ -2397,6 +2425,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  value={data.phone || "010-0000-0000"} 
  onSave={(v) => setData({...data, phone: v})} 
  isEditing={isEditing} 
+ disableMarkdown={true}
  />
  </span>
  </div>
@@ -2409,6 +2438,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  value={data.email} 
  onSave={(v) => setData({...data, email: v})} 
  isEditing={isEditing} 
+ disableMarkdown={true}
  />
  </span>
  </div>
@@ -2421,6 +2451,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  value={data.linkedin} 
  onSave={(v) => setData({...data, linkedin: v})} 
  isEditing={isEditing} 
+ disableMarkdown={true}
  />
  </span>
  </div>
@@ -2433,6 +2464,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  value={data.github} 
  onSave={(v) => setData({...data, github: v})} 
  isEditing={isEditing} 
+ disableMarkdown={true}
  />
  </span>
  </div>
@@ -3023,11 +3055,6 @@ const SelfIntroInResume = ({ isEditing, data, setData }: { isEditing: boolean, d
   );
 };
 
-const Contact = () => (
- <section id="contact" className="py-16 px-6 max-w-7xl mx-auto">
- </section>
-);
-
 const Footer = () => (
  <footer className="py-16 px-6 text-center">
  <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 border-t border-[#3F72AF]/8 pt-12">
@@ -3177,11 +3204,11 @@ const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: { project:
 );
 
 export default function App() {
- const [view, setView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
- const [prevViewForDetail, setPrevViewForDetail] = useState<string>('home');
-  const [prevView, setPrevView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
+ const [view, setView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects' | 'more-me'>('home');
+  const [prevViewForDetail, setPrevViewForDetail] = useState<string>('home');
+  const [prevView, setPrevView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects' | 'more-me'>('home');
  
- const changeView = (newView: 'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects') => {
+  const changeView = (newView: 'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects' | 'more-me') => {
  setPrevView(view);
  setView(newView);
  };
@@ -3219,54 +3246,55 @@ export default function App() {
  const [skillTabsData, setSkillTabsData] = useEditableContent(INITIAL_SKILL_TABS, 'skill_tabs_data');
  const [toolsData, setToolsData] = useEditableContent(INITIAL_TOOLS, 'tools_data');
  const [historyData, setHistoryData] = useEditableContent(GAME_HISTORY, 'history_data');
- const [resumeData, setResumeData] = useEditableContent(RESUME_DATA, 'resume_data');
+ const [resumeData, setResumeData] = useEditableContent(RESUME_DATA, 'resume_data');  useEffect(() => {
+    if (scrollTarget && (view === 'home' || view === 'more-me')) {
+      let attempts = 0;
+      let scrollTimer = null;
+      const checkAndScroll = () => {
+        const el = document.getElementById(scrollTarget);
+        if (el) {
+          const bodyRect = document.body.getBoundingClientRect().top;
+          window.scrollTo({ top: el.getBoundingClientRect().top - bodyRect - 100, behavior: 'smooth' });
+          setScrollTarget(null);
+        } else if (attempts < 15) {
+          attempts++;
+          scrollTimer = setTimeout(checkAndScroll, 200);
+        } else {
+          setScrollTarget(null);
+        }
+      };      scrollTimer = setTimeout(checkAndScroll, 400); 
+      return () => clearTimeout(scrollTimer);
+    }
+  }, [view, scrollTarget]);  const handleNavClick = (id: string) => {
+    const homeIds = ['about'];
+    const moreMeIds = ['resume-section', 'portfolio-section', 'skills', 'my-tools'];
 
- useEffect(() => {
- if (view === 'home' && scrollTarget) {
- const timer = setTimeout(() => {
- const el = document.getElementById(scrollTarget);
- if (el) {
- const offset = 100;
- const bodyRect = document.body.getBoundingClientRect().top;
- const elementRect = el.getBoundingClientRect().top;
- const elementPosition = elementRect - bodyRect;
- const offsetPosition = elementPosition - offset;
-
- window.scrollTo({
- top: offsetPosition,
- behavior: 'smooth'
- });
- setScrollTarget(null);
- }
- }, 300);
- return () => clearTimeout(timer);
- } else if (view === 'home' && !scrollTarget) {
- window.scrollTo(0, 0);
- } else if (view !== 'home') {
- window.scrollTo(0, 0);
- }
- }, [view, scrollTarget]);
-
- const handleNavClick = (id: string) => {
- if (view !== 'home') {
- setScrollTarget(id);
- changeView('home');
- } else {
- const el = document.getElementById(id);
- if (el) {
- const offset = 100;
- const bodyRect = document.body.getBoundingClientRect().top;
- const elementRect = el.getBoundingClientRect().top;
- const elementPosition = elementRect - bodyRect;
- const offsetPosition = elementPosition - offset;
-
- window.scrollTo({
- top: offsetPosition,
- behavior: 'smooth'
- });
- }
- }
- };
+    if (homeIds.includes(id)) {
+      if (view !== 'home') {
+        setScrollTarget(null);
+        changeView('home');
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else if (moreMeIds.includes(id)) {
+      if (view !== 'more-me') {
+        setScrollTarget(id);
+        changeView('more-me');
+      } else {
+        const el = document.getElementById(id);
+        if (el) {
+          const bodyRect = document.body.getBoundingClientRect().top;
+          window.scrollTo({ top: el.getBoundingClientRect().top - bodyRect - 100, behavior: 'smooth' });
+        }
+      }
+    } else {
+      if (view !== 'home') {
+        setScrollTarget(id);
+        changeView('home');
+      }
+    }
+  };
 
  const handleProjectClick = (project: Project) => {
   setSelectedProject(project);
@@ -3284,68 +3312,70 @@ export default function App() {
  setIsEditing={setIsEditing}
  />
  <main>
- <AnimatePresence mode="wait">
- {view === 'home' && (
- <motion.div 
- key="home"
- initial={{ opacity: 0 }}
- animate={{ opacity: 1 }}
- exit={{ opacity: 0 }}
- >
- <Hero 
- onPortfolioClick={() => handleNavClick('portfolio-section')} 
- onResumeClick={() => changeView('resume')}
- onAboutClick={() => handleNavClick('about')}
-  onToolsClick={() => handleNavClick('my-tools')}
- onSkillsClick={() => handleNavClick('skills')}
-	onToggleAdmin={() => {
-	if (isEditing) { setIsEditing(false); } else {
-	setIsHomePasswordOpen(true);
-	}
-	}}
- isEditing={isEditing}
- content={heroContent}
- setContent={setHeroContent}
- />
- <About 
- isEditing={isEditing} 
- content={aboutContent} 
- setContent={setAboutContent} 
- />
- <section id="portfolio-section">
- <Projects 
- onProjectClick={handleProjectClick} 
- isEditing={isEditing} 
- projects={portfolioData} 
- setProjects={setPortfolioData}
- limit={6}
- setView={changeView}
- />
- </section>
- <Skills 
- isEditing={isEditing} 
- skillTabs={skillTabsData} 
- setSkillTabs={setSkillTabsData} 
- />
- <MyTools
- isEditing={isEditing}
- tools={toolsData}
- setTools={setToolsData}
- />
- <Contact />
- </motion.div>
- )}
+ <AnimatePresence mode="wait">  {view === 'home' && (
+          <motion.div 
+            key="home"
+            initial={{ opacity: 0, x: '-50%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '-50%' }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+          >
+            <Hero 
+              onMoreMeClick={() => { changeView('more-me'); window.scrollTo(0,0); }}
+              onToggleAdmin={() => {
+                if (isEditing) { setIsEditing(false); } else {
+                  setIsHomePasswordOpen(true);
+                }
+              }}
+              isEditing={isEditing}
+              content={heroContent}
+              setContent={setHeroContent}
+            />
+            <About 
+              isEditing={isEditing} 
+              content={aboutContent} 
+              setContent={setAboutContent} 
+            />
+          </motion.div>
+        )}
 
- 
- {view === 'resume' && (
- <Resume 
- key="resume"
- setView={changeView} 
- isEditing={isEditing} 
- data={resumeData} 
- setData={setResumeData} 
- />
- )}
+        {view === 'more-me' && (          <motion.div 
+            key="more-me"
+            initial={{ opacity: 0, x: '50%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '50%' }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="w-full"
+          >            <section id="resume-section" className="pt-8 md:pt-16">
+              <Resume 
+                setView={changeView} 
+                isEditing={isEditing} 
+                data={resumeData} 
+                setData={setResumeData} 
+              />
+            </section>
+            <section id="portfolio-section">
+              <Projects 
+                onProjectClick={handleProjectClick} 
+                isEditing={isEditing} 
+                projects={portfolioData} 
+                setProjects={setPortfolioData}
+                limit={6}
+                setView={changeView}
+              />
+            </section>
+            <Skills 
+              isEditing={isEditing} 
+              skillTabs={skillTabsData} 
+              setSkillTabs={setSkillTabsData} 
+            />
+            <MyTools
+              isEditing={isEditing}
+              tools={toolsData}
+              setTools={setToolsData}
+            />
+          </motion.div>
+        )}
 
  {view === 'portfolio' && (
  <Portfolio 
