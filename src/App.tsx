@@ -711,13 +711,13 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
  const [isMenuOpen, setIsMenuOpen] = useState(false);
  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
- 
-
- 
-
- 
-
- 
+  const navLinks = [
+    { label: '소개', action: () => { onNavClick('about'); setIsMenuOpen(false); } },
+    { label: '이력서', action: () => { setView('resume'); setIsMenuOpen(false); } },
+    { label: '포트폴리오', action: () => { onNavClick('portfolio-section'); setIsMenuOpen(false); } },
+    { label: '핵심역량', action: () => { onNavClick('skills'); setIsMenuOpen(false); } },
+    { label: '사용 TOOL', action: () => { onNavClick('my-tools'); setIsMenuOpen(false); } },
+  ];
 
  const handleAdminClick = () => {
  if (isEditing) {
@@ -934,7 +934,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, onSkillsClick, onAboutClick, on
   ];
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20">
 
     {/* ═══════ Decorative Backgrounds ═══════ */}
     <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#0a1e36]/10 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
@@ -1098,7 +1098,7 @@ const Hero = ({ onPortfolioClick, onResumeClick, onSkillsClick, onAboutClick, on
 
 
 const About = ({ isEditing, content, setContent }: { isEditing: boolean, content: any, setContent: (c: any) => void }) => (
- <section id="about" className="py-32 px-6 max-w-7xl mx-auto">
+ <section id="about" className="py-24 px-6 max-w-7xl mx-auto">
  <div className="grid lg:grid-cols-12 gap-12 items-start">
  <div className="lg:col-span-7">
  <div className="inline-block px-4 py-1 rounded-lg bg-[#112D4E]/10 text-[#112D4E] text-xs font-bold mb-6">01_ABOUT ME</div>
