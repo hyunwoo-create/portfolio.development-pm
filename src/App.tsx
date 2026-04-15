@@ -48,7 +48,10 @@ import {
  Image as ImageIcon,
  FolderOpen,
  Download,
- FileText
+ FileText,
+ Phone,
+ MapPin,
+ Calendar
 } from 'lucide-react';
 
 // --- Types ---
@@ -110,6 +113,9 @@ interface TechStackCategory {
 interface ResumeData {
  name: string;
  role: string;
+ birthDate: string;
+ address: string;
+ phone: string;
  email: string;
  linkedin: string;
  github: string;
@@ -118,6 +124,7 @@ interface ResumeData {
  selfIntroTabs?: SelfIntroTab[];
  techStack?: TechStackCategory[];
  coreCompetencies?: string[];
+ resumeImage?: string;
  education: {
  title: string;
  period: string;
@@ -162,6 +169,9 @@ const GAME_HISTORY: GameHistory = {
 const RESUME_DATA: ResumeData = {
  name: "이민호",
  role: "Game System Designer",
+ birthDate: "2000.01.01",
+ address: "서울특별시 OO구",
+ phone: "010-0000-0000",
  email: "minho.dev@email.com",
  linkedin: "linkedin.com/in/minho-game",
  github: "github.com/minho-dev",
@@ -528,15 +538,17 @@ const EditableText = ({
  onSave, 
  isEditing, 
  className = "", 
- multiline = false 
+ multiline = false,
+	style = {} 
 }: { 
  value: string, 
  onSave: (v: string) => void, 
  isEditing: boolean, 
  className?: string,
- multiline?: boolean
+ multiline?: boolean,
+	style?: React.CSSProperties
 }) => {
- if (!isEditing) return <span className={className}>{value}</span>;
+ if (!isEditing) return <span className={className} style={style}>{value}</span>;
 
  return multiline ? (
  <textarea
@@ -544,14 +556,94 @@ const EditableText = ({
  value={value}
  onChange={(e) => onSave(e.target.value)}
  rows={3}
+	style={style}
  />
  ) : (
  <input
  className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
  value={value}
  onChange={(e) => onSave(e.target.value)}
+	style={style}
  />
  );
+};
+
+
+const TextStyleEditor = ({ style, onStyleChange }: { style: any, onStyleChange: (s: any) => void }) => {
+	const fonts = [
+	{ label: 'Pretendard (기본)', value: 'Pretendard Variable, Pretendard, sans-serif' },
+	{ label: 'Noto Sans KR', value: '"Noto Sans KR", sans-serif' },
+	{ label: 'Nanum Gothic', value: '"Nanum Gothic", sans-serif' },
+	{ label: 'Nanum Myeongjo', value: '"Nanum Myeongjo", serif' },
+	{ label: 'Black Han Sans', value: '"Black Han Sans", sans-serif' },
+	{ label: 'Do Hyeon', value: '"Do Hyeon", sans-serif' },
+	{ label: 'Gothic A1', value: '"Gothic A1", sans-serif' },
+	{ label: 'IBM Plex Sans KR', value: '"IBM Plex Sans KR", sans-serif' },
+	];
+	const colorPresets = [
+	{ label: '기본 (다크)', value: '' },
+	{ label: '딥네이비', value: '#112D4E' },
+	{ label: '블루', value: '#1A59A7' },
+	{ label: '미디엄블루', value: '#3F72AF' },
+	{ label: '화이트', value: '#F9F7F7' },
+	{ label: '블랙', value: '#0a1e36' },
+	];
+	const highlightPresets = [
+	{ label: '없음', value: '' },
+	{ label: '블루 하이라이트', value: 'rgba(63,114,175,0.18)' },
+	{ label: '네이비 하이라이트', value: 'rgba(17,45,78,0.12)' },
+	{ label: '옐로우 하이라이트', value: 'rgba(250,204,21,0.3)' },
+	{ label: '그린 하이라이트', value: 'rgba(34,197,94,0.2)' },
+	{ label: '핑크 하이라이트', value: 'rgba(244,114,182,0.2)' },
+	];
+	return (
+	<div className="flex flex-wrap items-center gap-2 mt-1 mb-2 p-2 bg-[#DBE2EF]/80 rounded-lg border border-[#3F72AF]/30 backdrop-blur-sm">
+	<div className="flex items-center gap-1">
+	<label className="text-[10px] text-[#112D4E] font-bold whitespace-nowrap">폰트</label>
+	<select value={style.fontFamily || ''} onChange={e => onStyleChange({...style, fontFamily: e.target.value})} className="text-xs bg-white/80 rounded px-2 py-1 border border-[#3F72AF]/20 text-[#112D4E] max-w-[140px]">
+	<option value="">기본</option>
+	{fonts.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+	</select>
+	</div>
+	<div className="flex items-center gap-1">
+	<label className="text-[10px] text-[#112D4E] font-bold whitespace-nowrap">크기</label>
+	<input type="text" value={style.fontSize || ''} onChange={e => onStyleChange({...style, fontSize: e.target.value})} className="w-[60px] text-xs bg-white/80 rounded px-2 py-1 border border-[#3F72AF]/20 text-[#112D4E]" placeholder="3rem"/>
+	</div>
+	<div className="flex items-center gap-1">
+	<label className="text-[10px] text-[#112D4E] font-bold whitespace-nowrap">자간</label>
+	<input type="text" value={style.letterSpacing || ''} onChange={e => onStyleChange({...style, letterSpacing: e.target.value})} className="w-[60px] text-xs bg-white/80 rounded px-2 py-1 border border-[#3F72AF]/20 text-[#112D4E]" placeholder="0.3em"/>
+	</div>
+	<div className="flex items-center gap-1">
+	<label className="text-[10px] text-[#112D4E] font-bold whitespace-nowrap">줄높이</label>
+	<input type="text" value={style.lineHeight || ''} onChange={e => onStyleChange({...style, lineHeight: e.target.value})} className="w-[60px] text-xs bg-white/80 rounded px-2 py-1 border border-[#3F72AF]/20 text-[#112D4E]" placeholder="1.2"/>
+	</div>
+	<div className="flex items-center gap-1">
+	<label className="text-[10px] text-[#112D4E] font-bold whitespace-nowrap">굵기</label>
+	<select value={style.fontWeight || ''} onChange={e => onStyleChange({...style, fontWeight: e.target.value})} className="text-xs bg-white/80 rounded px-2 py-1 border border-[#3F72AF]/20 text-[#112D4E]">
+	<option value="">기본</option>
+	<option value="400">Regular (400)</option>
+	<option value="500">Medium (500)</option>
+	<option value="600">SemiBold (600)</option>
+	<option value="700">Bold (700)</option>
+	<option value="800">ExtraBold (800)</option>
+	<option value="900">Black (900)</option>
+	</select>
+	</div>
+	<div className="flex items-center gap-1">
+	<label className="text-[10px] text-[#112D4E] font-bold whitespace-nowrap">글자색</label>
+	<select value={style.color || ''} onChange={e => onStyleChange({...style, color: e.target.value})} className="text-xs bg-white/80 rounded px-2 py-1 border border-[#3F72AF]/20 text-[#112D4E]">
+	{colorPresets.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+	</select>
+	<input type="color" value={style.color || '#112D4E'} onChange={e => onStyleChange({...style, color: e.target.value})} className="w-6 h-6 rounded border border-[#3F72AF]/20 cursor-pointer" title="직접 선택"/>
+	</div>
+	<div className="flex items-center gap-1">
+	<label className="text-[10px] text-[#112D4E] font-bold whitespace-nowrap">하이라이트</label>
+	<select value={style.backgroundColor || ''} onChange={e => onStyleChange({...style, backgroundColor: e.target.value})} className="text-xs bg-white/80 rounded px-2 py-1 border border-[#3F72AF]/20 text-[#112D4E]">
+	{highlightPresets.map(h => <option key={h.value} value={h.value}>{h.label}</option>)}
+	</select>
+	</div>
+	</div>
+	);
 };
 
 const PasswordModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClose: () => void, onConfirm: (pw: string) => void }) => {
@@ -615,31 +707,17 @@ const PasswordModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClos
  );
 };
 
-const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: { setView: (v: 'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects') => void, currentView: string, onNavClick: (id: string) => void, isEditing: boolean, setIsEditing: (v: boolean) => void }) => {
+const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: { setView: (v: any) => void, currentView: string, onNavClick: (id: string) => void, isEditing: boolean, setIsEditing: (v: boolean) => void }) => {
  const [isMenuOpen, setIsMenuOpen] = useState(false);
  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
- const handleLinkClick = (e: React.MouseEvent, id: string) => {
- e.preventDefault();
- onNavClick(id);
- setIsMenuOpen(false);
- };
+ 
 
- const handleResumeClick = () => {
- setView('resume');
- setIsMenuOpen(false);
- };
+ 
 
- const handlePortfolioClick = () => {
- setView('portfolio');
- setIsMenuOpen(false);
- };
+ 
 
- const handleSelfIntroClick = () => {
- setView('self-intro');
- setIsMenuOpen(false);
- window.scrollTo(0, 0);
- };
+ 
 
  const handleAdminClick = () => {
  if (isEditing) {
@@ -675,80 +753,17 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
  )}
  </div>
 
- {/* Desktop Menu */}
- <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#112D4E]">
- <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="hover:text-[#112D4E] transition-colors">소개</a>
- <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="hover:text-[#112D4E] transition-colors">포트폴리오</a>
- <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="hover:text-[#112D4E] transition-colors">핵심역량</a>
- <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="hover:text-[#112D4E] transition-colors">사용 Tool</a>
- <button 
- onClick={handleSelfIntroClick} 
- className={`hover:text-[#112D4E] transition-colors cursor-pointer ${currentView === 'self-intro' ? 'text-[#1A59A7]' : ''}`}
- >
- 자기소개서
- </button>
- <button onClick={handleResumeClick} 
- className={`hover:text-[#112D4E] transition-colors cursor-pointer ${currentView === 'resume' ? 'text-[#1A59A7]' : ''}`}
- >
- 이력서
- </button>
- <div className="flex items-center gap-2">
- <button 
- onClick={handleAdminClick}
- className="p-2 hover:bg-[#112D4E]/5 rounded-lg transition-colors group"
- title="관리자 모드"
- >
- <Lock className={`w-4 h-4 transition-colors ${isEditing ? 'text-[#3F72AF]' : 'text-[#112D4E] group-hover:text-[#112D4E]'}`} />
- </button>
- <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="glass px-4 py-2 rounded-xl text-[#1A59A7] hover:bg-[#112D4E]/10 transition-all">문의하기</a>
- </div>
- </div>
 
- {/* Mobile Menu Toggle */}
- <div className="flex items-center gap-2 lg:hidden">
- <button 
- onClick={handleAdminClick}
- className="p-2 hover:bg-[#112D4E]/5 rounded-lg transition-colors"
- >
- <Lock className={`w-5 h-5 ${isEditing ? 'text-[#3F72AF]' : 'text-[#112D4E]'}`} />
- </button>
- <button 
- className="text-[#1A59A7] p-2"
- onClick={() => setIsMenuOpen(!isMenuOpen)}
- >
- {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
- </button>
- </div>
-
- {/* Mobile Menu Overlay */}
- <AnimatePresence>
- {isMenuOpen && (
- <motion.div 
- initial={{ opacity: 0, y: -20 }}
- animate={{ opacity: 1, y: 0 }}
- exit={{ opacity: 0, y: -20 }}
- className="absolute top-20 left-0 w-full glass rounded-2xl p-6 flex flex-col gap-4 lg:hidden"
- >
- <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className="text-lg font-medium text-[#112D4E] hover:text-[#112D4E]">소개</a>
- <a href="#portfolio-section" onClick={(e) => handleLinkClick(e, 'portfolio-section')} className="text-lg font-medium text-[#112D4E] hover:text-[#112D4E]">포트폴리오</a>
- <a href="#skills" onClick={(e) => handleLinkClick(e, 'skills')} className="text-lg font-medium text-[#112D4E] hover:text-[#112D4E]">핵심역량</a>
- <a href="#my-tools" onClick={(e) => handleLinkClick(e, 'my-tools')} className="text-lg font-medium text-[#112D4E] hover:text-[#112D4E]">사용 Tool</a>
- <button 
- onClick={handleSelfIntroClick} 
- className={`text-left text-lg font-medium text-[#112D4E] hover:text-[#112D4E] ${currentView === 'self-intro' ? 'text-[#1A59A7]' : ''}`}
- >
- 자기소개서
- </button>
- <button 
- onClick={handleResumeClick} 
- className={`text-left text-lg font-medium text-[#112D4E] hover:text-[#112D4E] ${currentView === 'resume' ? 'text-[#1A59A7]' : ''}`}
- >
- 이력서
- </button>
- <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className="glass px-4 py-3 rounded-xl text-[#1A59A7] text-center font-bold">문의하기</a>
- </motion.div>
- )}
- </AnimatePresence>
+	{/* Admin Button */}
+	<div className="flex items-center gap-2">
+	<button 
+	onClick={handleAdminClick}
+	className="p-2 hover:bg-[#112D4E]/5 rounded-lg transition-colors group"
+	title="관리자 모드"
+	>
+	<Lock className={`w-4 h-4 transition-colors ${isEditing ? 'text-[#3F72AF]' : 'text-[#112D4E] group-hover:text-[#112D4E]'}`} />
+	</button>
+	</div>
  </nav>
  <PasswordModal 
  isOpen={isPasswordModalOpen} 
@@ -899,253 +914,189 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
  );
 };
 
-const Hero = ({ onPortfolioClick, onResumeClick, isEditing, content, setContent }: { onPortfolioClick: () => void, onResumeClick: () => void, isEditing: boolean, content: any, setContent: (c: any) => void }) => {
- const [isVideoSettingsOpen, setIsVideoSettingsOpen] = useState(false);
- const [isVideoPlaying, setIsVideoPlaying] = useState(true);
- const videoRef = useRef<HTMLVideoElement>(null);
+const Hero = ({ onPortfolioClick, onResumeClick, onSkillsClick, onAboutClick, onToolsClick, isEditing, onToggleAdmin, content, setContent }: { onPortfolioClick: () => void, onResumeClick: () => void, onSkillsClick: () => void, onAboutClick: () => void, onToolsClick: () => void, isEditing: boolean, onToggleAdmin: () => void, content: any, setContent: (c: any) => void }) => {
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
 
- const toggleVideoPlayback = () => {
- const newState = !isVideoPlaying;
- setIsVideoPlaying(newState);
- if (videoRef.current) {
- newState ? videoRef.current.play() : videoRef.current.pause();
- }
- };
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setContent({...content, heroImage: ev.target?.result as string});
+    };
+    reader.readAsDataURL(file);
+  };
 
- // Determine if URL is a direct video file
- const isDirectVideo = isDirectVideoUrl(content.heroVideoUrl || '');
+  const navTabs = [
+    { label: '이력서', onClick: onResumeClick, icon: FileText },
+    { label: '자기소개서', onClick: onSelfIntroClick, icon: ScrollText },
+    { label: '핵심역량', onClick: onSkillsClick, icon: Zap },
+    { label: '포트폴리오', onClick: onPortfolioClick, icon: FolderOpen },
+  ];
 
- return (
- <section className="relative min-h-screen flex items-center overflow-hidden">
+  return (
+    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
 
- {/* ═══════ Layer 1: Video Background (70% of max-w-7xl container, from the right) ═══════ */}
- <div className="hidden lg:block absolute inset-0 pointer-events-none">
- <div className="relative w-full h-full max-w-7xl mx-auto">
- <div className="absolute top-0 right-0 h-full" style={{ width: '70%', pointerEvents: 'auto' }}>
- <motion.div
- initial={{ opacity: 0 }}
- animate={{ opacity: 1 }}
- transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
- className="relative w-full h-full"
- >
- {content.heroVideoUrl ? (
- isDirectVideo ? (
- <video
- ref={videoRef}
- src={content.heroVideoUrl}
- className="w-full h-full object-cover"
- autoPlay
- muted
- loop
- playsInline
- />
- ) : (
- <iframe
- src={content.heroVideoUrl}
- className="w-full h-full"
- allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
- allowFullScreen
- title="Hero Video"
- style={{ border: 'none' }}
- />
- )
- ) : (
- <div className="w-full h-full flex flex-col items-center justify-center text-[#0a1e36] bg-[#F9F7F7]/50">
- <Video className="w-20 h-20 mb-4 opacity-20" />
- <p className="text-sm opacity-40">영상을 설정해주세요</p>
- </div>
- )}
+    {/* ═══════ Decorative Backgrounds ═══════ */}
+    <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#0a1e36]/10 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
+    <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-[#3F72AF]/10 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
+    <div className="absolute top-20 right-1/4 w-64 h-64 bg-[#DBE2EF]/40 rounded-full blur-[100px] pointer-events-none"></div>
 
- {/* ─── 10-step horizontal gradient: #F9F7F7 → transparent (left to right) ─── */}
- <div className="absolute inset-0 pointer-events-none" style={{
- background: [
- 'linear-gradient(to right,',
- '#F9F7F7 0%,', // Step 1: 100% opaque
- 'rgba(249,247,247, 0.97) 3%,', // Step 2
- 'rgba(249,247,247, 0.92) 7%,', // Step 3
- 'rgba(249,247,247, 0.85) 12%,', // Step 4
- 'rgba(249,247,247, 0.74) 19%,', // Step 5
- 'rgba(249,247,247, 0.60) 28%,', // Step 6
- 'rgba(249,247,247, 0.44) 38%,', // Step 7
- 'rgba(249,247,247, 0.26) 50%,', // Step 8
- 'rgba(249,247,247, 0.12) 65%,', // Step 9
- 'rgba(249,247,247, 0.03) 82%,', // Step 10
- 'transparent 100%)'
- ].join(' ')
- }}></div>
+    {/* ═══════ Profile Image - Portrait ═══════ */}
+    <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-10 pb-0">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+        className="relative w-[320px] h-[420px] md:w-[400px] md:h-[520px] lg:w-[480px] lg:h-[620px] pointer-events-auto"
+      >
+        <div className="w-full h-full rounded-2xl overflow-hidden bg-transparent">
+          {content.heroImage ? (
+            <img src={content.heroImage} alt="Profile" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-[#3F72AF]/40">
+              <User className="w-20 h-20 md:w-24 md:h-24 mb-3" />
+              <p className="text-xs md:text-sm font-medium">사진을 업로드하세요</p>
+            </div>
+          )}
+        </div>
+        {isEditing && (
+          <button
+            onClick={() => imageFileInputRef.current?.click()}
+            className="absolute bottom-4 right-4 z-30 w-12 h-12 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#0a1e36] transition-all"
+          >
+            <Upload className="w-5 h-5" />
+          </button>
+        )}
+        <input
+          ref={imageFileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageUpload}
+        />
+      </motion.div>
+    </div>
 
- {/* ─── 10-step vertical gradient: top/bottom edges fade ─── */}
- <div className="absolute inset-0 pointer-events-none" style={{
- background: [
- 'linear-gradient(to bottom,',
- 'rgba(249,247,247, 0.50) 0%,', // Step 1: top edge
- 'rgba(249,247,247, 0.35) 4%,', // Step 2
- 'rgba(249,247,247, 0.20) 8%,', // Step 3
- 'rgba(249,247,247, 0.10) 14%,', // Step 4
- 'rgba(249,247,247, 0.03) 22%,', // Step 5
- 'transparent 32%,', // Steps 6-7: clear
- 'transparent 70%,',
- 'rgba(249,247,247, 0.10) 80%,', // Step 8
- 'rgba(249,247,247, 0.40) 90%,', // Step 9
- 'rgba(249,247,247, 0.95) 100%)' // Step 10: bottom edge
- ].join(' ')
- }}></div>
+    {/* ═══════ Text Content - Upper Left ═══════ */}
+    <div className="relative z-20 w-full max-w-7xl mx-auto px-8 lg:px-12 pt-24 lg:pt-28 pointer-events-none">
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="max-w-xl pointer-events-auto"
+      >
+        <h1 className="flex flex-col gap-3 mb-8">
+          <EditableText
+            value={content.titleLine1 || "10년의 조율 감각으로 협업을 완성하고"}
+            onSave={(v) => setContent({...content, titleLine1: v})}
+             isEditing={isEditing}
+             multiline
+             className="text-[#112D4E] uppercase opacity-90"
+            style={{
+              fontSize: content.titleLine1Style?.fontSize || '2.2rem',
+               letterSpacing: content.titleLine1Style?.letterSpacing || '0.3em',
+               fontWeight: content.titleLine1Style?.fontWeight || '700',
+               fontFamily: content.titleLine1Style?.fontFamily || undefined,
+               lineHeight: content.titleLine1Style?.lineHeight || '1.2',
+               color: content.titleLine1Style?.color || undefined,
+               backgroundColor: content.titleLine1Style?.backgroundColor || undefined,
+               whiteSpace: 'pre-wrap',
+            }}
+          />
+          {isEditing && <TextStyleEditor style={content.titleLine1Style || {fontSize:'2.2rem',letterSpacing:'0.3em',fontWeight:'700'}} onStyleChange={(s) => setContent({...content, titleLine1Style: s})} />}
+          <EditableText
+            value={content.titleLine2 || "결과로 증명하는 PM"}
+            onSave={(v) => setContent({...content, titleLine2: v})}
+             isEditing={isEditing}
+             multiline
+             className="text-[#1A59A7] drop-shadow-2xl"
+            style={{
+              fontSize: content.titleLine2Style?.fontSize || '3.5rem',
+               letterSpacing: content.titleLine2Style?.letterSpacing || '-0.05em',
+               fontWeight: content.titleLine2Style?.fontWeight || '900',
+               fontFamily: content.titleLine2Style?.fontFamily || undefined,
+               lineHeight: content.titleLine2Style?.lineHeight || '1.05',
+               color: content.titleLine2Style?.color || undefined,
+               backgroundColor: content.titleLine2Style?.backgroundColor || undefined,
+               whiteSpace: 'pre-wrap',
+            }}
+          />
+          {isEditing && <TextStyleEditor style={content.titleLine2Style || {fontSize:'3.5rem',letterSpacing:'-0.05em',fontWeight:'900'}} onStyleChange={(s) => setContent({...content, titleLine2Style: s})} />}
+        </h1>
+        <div className="max-w-xl mb-10">
+          <EditableText
+            value={content.description}
+            onSave={(v) => setContent({...content, description: v})}
+            isEditing={isEditing}
+            multiline
+            className="text-[#112D4E]"
+            style={{
+              fontSize: content.descStyle?.fontSize || '1.1rem',
+               letterSpacing: content.descStyle?.letterSpacing || 'normal',
+               fontWeight: content.descStyle?.fontWeight || '500',
+               fontFamily: content.descStyle?.fontFamily || undefined,
+               lineHeight: content.descStyle?.lineHeight || '1.7',
+               color: content.descStyle?.color || undefined,
+               backgroundColor: content.descStyle?.backgroundColor || undefined,
+               whiteSpace: 'pre-wrap',
+            }}
+          />
+          {isEditing && <TextStyleEditor style={content.descStyle || {fontSize:'1.1rem',letterSpacing:'normal',fontWeight:'500'}} onStyleChange={(s) => setContent({...content, descStyle: s})} />}
+        </div>
 
- {/* Subtle decorative color wash */}
- <div className="absolute inset-0 bg-gradient-to-br from-[#112D4E]/5 via-transparent to-[#0a1e36]/5 pointer-events-none"></div>
+        {/* Navigation Tabs */}
+        <div className="flex flex-wrap gap-3">
+          {navTabs.map((tab) => (
+            <motion.button
+              key={tab.label}
+              whileHover={{ y: -3, scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={tab.onClick}
+              className="px-6 py-3 glass rounded-2xl font-bold text-[#112D4E] hover:bg-[#112D4E]/10 transition-all flex items-center gap-2 text-sm shadow-lg shadow-[#112D4E]/5 border border-[#3F72AF]/15"
+            >
+              <tab.icon className="w-4 h-4 text-[#3F72AF]" />
+              {tab.label}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+    </div>
 
- {/* Video Controls (inside video layer) */}
- <div className="absolute top-24 right-6 z-30 flex items-center gap-2">
- {content.heroVideoUrl && isDirectVideo && (
- <motion.button
- whileHover={{ scale: 1.05 }}
- whileTap={{ scale: 0.95 }}
- onClick={toggleVideoPlayback}
- className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-[#1A59A7] border border-[#3F72AF]/20 hover:bg-[#112D4E]/10 transition-all"
- >
- {isVideoPlaying ? (
- <><span className="w-4 h-4 flex items-center justify-center"><span className="inline-flex gap-[3px]"><span className="w-[3px] h-3 bg-white rounded-sm"></span><span className="w-[3px] h-3 bg-white rounded-sm"></span></span></span> 일시정지</>
- ) : (
- <><span className="w-4 h-4 flex items-center justify-center"><span className="w-0 h-0 border-l-[10px] border-l-white border-y-[6px] border-y-transparent"></span></span> 재생</>
- )}
- </motion.button>
- )}
- {isEditing && (
- <motion.button
- whileHover={{ scale: 1.05 }}
- whileTap={{ scale: 0.95 }}
- onClick={() => setIsVideoSettingsOpen(true)}
- className="px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-[#1A59A7] border border-[#3F72AF]/20 hover:bg-[#112D4E]/10 transition-all"
- >
- <Settings className="w-4 h-4" /> 영상 설정
- </motion.button>
- )}
- </div>
- </motion.div>
- </div>
- </div>
- </div>
+    {/* Admin Lock Button */}
+    <div className="absolute top-8 right-8 z-30">
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+        onClick={onToggleAdmin}
+        className="p-2 glass rounded-xl hover:bg-[#112D4E]/10 transition-all"
+        title="관리자 모드"
+      >
+        <Lock className={`w-4 h-4 transition-colors ${isEditing ? 'text-[#3F72AF]' : 'text-[#112D4E]/40 hover:text-[#112D4E]'}`} />
+      </motion.button>
+    </div>
 
- {/* ═══════ Layer 2: Text content (higher z-index, floats OVER video) ═══════ */}
- <div className="relative z-20 w-full max-w-7xl mx-auto px-6 pt-20">
- <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#0a1e36]/20 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
- 
- <motion.div 
- initial={{ opacity: 0, x: -40 }}
- animate={{ opacity: 1, x: 0 }}
- transition={{ duration: 0.8, ease: "easeOut" }}
- className="max-w-2xl"
- >
- <h1 className="flex flex-col gap-3 mb-10">
- <EditableText 
- value={content.titleLine1 || "기획의도를 알고"} 
- onSave={(v) => setContent({...content, titleLine1: v})} 
- isEditing={isEditing} 
- className="text-3xl md:text-5xl lg:text-6xl font-bold text-[#112D4E] tracking-[0.3em] uppercase opacity-90"
- />
- <EditableText 
- value={content.titleLine2 || "목차를 쓸줄 아는 기획자"} 
- onSave={(v) => setContent({...content, titleLine2: v})} 
- isEditing={isEditing} 
- className="text-4xl md:text-6xl lg:text-7xl font-black text-[#1A59A7] tracking-tighter leading-[1.05] drop-shadow-2xl"
- />
- </h1>
- <p className="max-w-xl text-[#112D4E] text-lg md:text-xl font-medium leading-relaxed mb-12">
- <EditableText 
- value={content.description} 
- onSave={(v) => setContent({...content, description: v})} 
- isEditing={isEditing} 
- multiline
- />
- </p>
- 
- <div className="flex flex-wrap gap-4">
- <motion.button 
- whileHover={{ y: -4, scale: 1.02 }}
- whileTap={{ scale: 0.98 }}
- onClick={onResumeClick}
- className="px-8 py-4 bg-[#0a1e36] text-white font-bold rounded-2xl flex items-center gap-2 shadow-xl shadow-[#112D4E]/25 hover:bg-[#112D4E] transition-all"
- >
- 이력서 보기 <ChevronRight className="w-5 h-5" />
- </motion.button>
- <motion.button 
- whileHover={{ y: -4, scale: 1.02 }}
- whileTap={{ scale: 0.98 }}
- onClick={onPortfolioClick}
- className="px-8 py-4 glass font-bold rounded-2xl hover:bg-[#112D4E]/5 transition-all flex items-center gap-2"
- >
- 포트폴리오 보기 <ArrowUpRight className="w-5 h-5" />
- </motion.button>
- </div>
- </motion.div>
- </div>
+    {/* Scroll indicator */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1, duration: 1 }}
+      className="absolute bottom-10 left-1/4 -translate-x-1/2 flex flex-col items-center gap-3 z-10"
+    >
+      <div className="w-6 h-10 border-2 border-[#3F72AF]/20 rounded-full flex justify-center p-1">
+        <motion.div
+          animate={{ y: [0, 12, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          className="w-1.5 h-1.5 bg-indigo-400 rounded-full"
+        />
+      </div>
+    </motion.div>
 
- {/* ═══════ Mobile: Video block below text (not overlapping) ═══════ */}
- <div className="block lg:hidden w-full px-6 pb-8">
- <div className="relative rounded-3xl overflow-hidden border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 aspect-video bg-[#F9F7F7]/50 mt-8">
- {content.heroVideoUrl ? (
- isDirectVideo ? (
- <video
- src={content.heroVideoUrl}
- className="w-full h-full object-cover"
- autoPlay
- muted
- loop
- playsInline
- />
- ) : (
- <iframe
- src={content.heroVideoUrl}
- className="w-full h-full"
- allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
- allowFullScreen
- title="Hero Video"
- />
- )
- ) : (
- <div className="w-full h-full flex flex-col items-center justify-center text-[#0a1e36]">
- <Video className="w-16 h-16 mb-4 opacity-30" />
- <p className="text-sm opacity-50">영상을 설정해주세요</p>
- </div>
- )}
- {isEditing && (
- <motion.button
- whileHover={{ scale: 1.05 }}
- whileTap={{ scale: 0.95 }}
- onClick={() => setIsVideoSettingsOpen(true)}
- className="absolute top-4 right-4 z-20 px-4 py-2 glass rounded-xl flex items-center gap-2 text-sm font-bold text-[#1A59A7] border border-[#3F72AF]/20 hover:bg-[#112D4E]/10 transition-all"
- >
- <Settings className="w-4 h-4" /> 영상 설정
- </motion.button>
- )}
- </div>
- </div>
-
- {/* Scroll indicator */}
- <motion.div 
- initial={{ opacity: 0 }}
- animate={{ opacity: 1 }}
- transition={{ delay: 1, duration: 1 }}
- className="absolute bottom-10 left-1/4 -translate-x-1/2 flex flex-col items-center gap-3 z-10"
- >
- <div className="w-6 h-10 border-2 border-[#3F72AF]/20 rounded-full flex justify-center p-1">
- <motion.div 
- animate={{ y: [0, 12, 0] }}
- transition={{ repeat: Infinity, duration: 1.5 }}
- className="w-1.5 h-1.5 bg-indigo-400 rounded-full"
- />
- </div>
- </motion.div>
-
- <HeroVideoSettingsModal
- isOpen={isVideoSettingsOpen}
- onClose={() => setIsVideoSettingsOpen(false)}
- videoUrl={content.heroVideoUrl || ''}
- onSave={(url) => setContent({...content, heroVideoUrl: url})}
- />
- </section>
- );
+    </section>
+  );
 };
+
 
 const About = ({ isEditing, content, setContent }: { isEditing: boolean, content: any, setContent: (c: any) => void }) => (
  <section id="about" className="py-32 px-6 max-w-7xl mx-auto">
@@ -1219,9 +1170,9 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
  </div>
  
  <div className="lg:col-span-5 relative">
- <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-[#3F72AF]/12 group shadow-2xl shadow-[#112D4E]/10">
+ <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-[#3F72AF]/12 group shadow-2xl shadow-[#112D4E]/10 relative">
  <img 
- src="https://picsum.photos/seed/designer/800/1000" 
+ src={content.aboutImage || "https://picsum.photos/seed/designer/800/1000"} 
  alt="Designer Profile" 
  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
  referrerPolicy="no-referrer"
@@ -1230,9 +1181,34 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
  <div className="absolute bottom-8 left-8">
  <div className="flex items-center gap-2 mb-2">
  <div className="w-2 h-2 bg-[#3F72AF] rounded-full animate-pulse"></div>
- <span className="text-xs font-bold text-[#3F72AF] tracking-widest">STATUS: READY_TO_BUILD</span>
+ <span className="text-xs font-bold text-[#3F72AF] tracking-widest"><EditableText value={content.statusText || "STATUS: READY_TO_BUILD"} onSave={(v) => setContent({...content, statusText: v})} isEditing={isEditing} /></span>
  </div>
- <div className="text-[#1A59A7] text-2xl font-bold">PM 지원자</div>
+ <div className="text-[#1A59A7] text-2xl font-bold"><EditableText value={content.roleLabel || "PM 지원자"} onSave={(v) => setContent({...content, roleLabel: v})} isEditing={isEditing} /></div>
+ {isEditing && (
+ <div className="absolute top-4 right-4 z-20">
+ <button
+ onClick={() => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = (e) => {
+   const file = (e.target as HTMLInputElement).files?.[0];
+   if (!file) return;
+   const reader = new FileReader();
+   reader.onload = (ev) => {
+    setContent({...content, aboutImage: ev.target?.result as string});
+   };
+   reader.readAsDataURL(file);
+  };
+  input.click();
+ }}
+ className="flex items-center gap-2 glass rounded-xl px-4 py-2.5 hover:bg-[#112D4E]/10 transition-all text-[#1A59A7] border border-[#3F72AF]/20"
+ >
+ <Upload className="w-4 h-4 text-[#112D4E]" />
+ <span className="text-xs font-bold">사진 변경</span>
+ </button>
+ </div>
+ )}
  </div>
  </div>
  </div>
@@ -1265,9 +1241,7 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-xs font-bold mb-6">02_PORTFOLIO</div>
  <h2 className="text-4xl md:text-5xl font-bold tracking-tight">포트폴리오.</h2>
  </div>
- <p className="text-[#0a1e36] max-w-md text-lg font-medium">
- 기획 및 연구를 통해 개발한 프로젝트 결과물입니다.
- </p>
+
  </div>
 
  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -2146,7 +2120,7 @@ const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, h
 );
 
 interface ResumeProps {
- setView: (v: 'home' | 'resume' | 'project-detail') => void;
+ setView: (v: any) => void;
  isEditing: boolean;
  data: ResumeData;
  setData: (d: ResumeData) => void;
@@ -2290,7 +2264,19 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
 
 const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  const resumeRef = useRef<HTMLDivElement>(null);
+ const resumeImageInputRef = useRef<HTMLInputElement>(null);
  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+ const handleResumeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+   const dataUrl = ev.target?.result as string;
+   setData({...data, resumeImage: dataUrl});
+  };
+  reader.readAsDataURL(file);
+ };
  const techStack = data.techStack || [
  { id: 'ts-1', label: 'Engines & Languages', items: ['Unity', 'UE5', 'C#', 'C++', 'Blueprints'] },
  { id: 'ts-2', label: 'Design Tools', items: ['Excel', 'Python', 'Jira', 'Figma', 'Confluence'] }
@@ -2342,8 +2328,25 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  {/* Sidebar */}
  <div className="md:col-span-1 space-y-12">
  <div className="text-center md:text-left pdf-no-break">
- <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 ">
- <img src="https://picsum.photos/seed/profile/300/300" alt="Profile" className="w-full h-full object-cover" />
+ <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 relative group">
+ <img src={data.resumeImage || "https://picsum.photos/seed/profile/300/300"} alt="Profile" className="w-full h-full object-cover" />
+ {isEditing && (
+ <div className="absolute inset-0 bg-[#112D4E]/50 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center cursor-pointer"
+ onClick={() => resumeImageInputRef.current?.click()}
+ >
+ <div className="flex flex-col items-center gap-1 text-white">
+ <Upload className="w-6 h-6" />
+ <span className="text-[10px] font-bold">사진 변경</span>
+ </div>
+ <input
+ ref={resumeImageInputRef}
+ type="file"
+ accept="image/*"
+ className="hidden"
+ onChange={handleResumeImageUpload}
+ />
+ </div>
+ )}
  </div>
  <h1 className="text-3xl font-bold mb-2 ">
  <EditableText 
@@ -2360,6 +2363,42 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  />
  </p>
  <div className="space-y-4 text-sm text-[#112D4E] ">
+ <div className="flex items-center gap-3 justify-center md:justify-start">
+ <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
+ <Calendar className="w-4 h-4" />
+ </div>
+ <span>
+ <EditableText 
+ value={data.birthDate || "2000.01.01"} 
+ onSave={(v) => setData({...data, birthDate: v})} 
+ isEditing={isEditing} 
+ />
+ </span>
+ </div>
+ <div className="flex items-center gap-3 justify-center md:justify-start">
+ <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
+ <MapPin className="w-4 h-4" />
+ </div>
+ <span>
+ <EditableText 
+ value={data.address || "서울특별시 OO구"} 
+ onSave={(v) => setData({...data, address: v})} 
+ isEditing={isEditing} 
+ />
+ </span>
+ </div>
+ <div className="flex items-center gap-3 justify-center md:justify-start">
+ <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
+ <Phone className="w-4 h-4" />
+ </div>
+ <span>
+ <EditableText 
+ value={data.phone || "010-0000-0000"} 
+ onSave={(v) => setData({...data, phone: v})} 
+ isEditing={isEditing} 
+ />
+ </span>
+ </div>
  <div className="flex items-center gap-3 justify-center md:justify-start">
  <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
  <Mail className="w-4 h-4" />
@@ -2862,20 +2901,128 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  );
 };
 
+
+// Self Introduction embedded inside Resume
+const SelfIntroInResume = ({ isEditing, data, setData }: { isEditing: boolean, data: ResumeData, setData: (d: ResumeData) => void }) => {
+  const [activeIntroTab, setActiveIntroTab] = useState<string>(
+  data.selfIntroTabs?.[0]?.id || 'intro-1'
+  );
+  const [editingIntroTabId, setEditingIntroTabId] = useState<string | null>(null);
+
+  useEffect(() => {
+  const tabs = data.selfIntroTabs || [];
+  if (tabs.length > 0 && !tabs.find(t => t.id === activeIntroTab)) {
+  setActiveIntroTab(tabs[0].id);
+  }
+  }, [data.selfIntroTabs, activeIntroTab]);
+
+  const selfIntroTabs: SelfIntroTab[] = data.selfIntroTabs || [
+  { id: 'intro-1', title: '성장 과정 및 가치관', content: data.selfIntroduction || '' }
+  ];
+
+  return (
+  <section className="pt-12 mt-12 border-t border-[#3F72AF]/8">
+  <div className="flex items-center justify-between mb-8 pdf-no-break">
+  <h3 className="text-xl font-bold flex items-center gap-3">
+  <ScrollText className="text-[#112D4E] w-6 h-6" /> 자기소개서
+  </h3>
+  </div>
+
+  {/* Tab Bar */}
+  <div className="flex items-center gap-2 mb-6 flex-wrap pdf-no-break">
+  {selfIntroTabs.map((tab) => (
+  <div key={tab.id} className="relative flex items-center">
+  {isEditing && editingIntroTabId === tab.id ? (
+  <input
+  type="text"
+  className="px-4 py-2 bg-[#DBE2EF]/60 border border-[#112D4E] rounded-xl text-sm font-bold text-[#1A59A7] focus:outline-none min-w-[80px]"
+  value={tab.title}
+  autoFocus
+  onChange={(e) => {
+  const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, title: e.target.value } : t);
+  setData({...data, selfIntroTabs: newTabs});
+  }}
+  onBlur={() => setEditingIntroTabId(null)}
+  onKeyDown={(e) => { if (e.key === 'Enter') setEditingIntroTabId(null); }}
+  />
+  ) : (
+  <button
+  onClick={() => setActiveIntroTab(tab.id)}
+  onDoubleClick={() => isEditing && setEditingIntroTabId(tab.id)}
+  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+  activeIntroTab === tab.id
+  ? 'bg-[#0a1e36] text-[#F9F7F7] shadow-lg shadow-[#112D4E]/25'
+  : 'glass text-[#112D4E] hover:text-[#112D4E] hover:bg-[#112D4E]/5'
+  }`}
+  >
+  {tab.title}
+  </button>
+  )}
+  {isEditing && selfIntroTabs.length > 1 && (
+  <button
+  onClick={(e) => {
+  e.stopPropagation();
+  const newTabs = selfIntroTabs.filter(t => t.id !== tab.id);
+  setData({...data, selfIntroTabs: newTabs});
+  if (activeIntroTab === tab.id && newTabs.length > 0) {
+  setActiveIntroTab(newTabs[0].id);
+  }
+  }}
+  className="ml-1 p-1 text-red-400/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+  title="탭 삭제"
+  >
+  <X className="w-3 h-3" />
+  </button>
+  )}
+  </div>
+  ))}
+  {isEditing && (
+  <button
+  onClick={() => {
+  const newTab: SelfIntroTab = {
+  id: `intro-${Date.now()}`,
+  title: '새 항목',
+  content: '내용을 입력하세요.'
+  };
+  const newTabs = [...selfIntroTabs, newTab];
+  setData({...data, selfIntroTabs: newTabs});
+  setActiveIntroTab(newTab.id);
+  }}
+  className="px-3 py-2 border-2 border-dashed border-[#3F72AF]/20 rounded-xl text-sm font-bold text-[#0a1e36] hover:text-[#112D4E] hover:border-[#112D4E]/50 transition-all flex items-center gap-1.5"
+  >
+  <Plus className="w-3.5 h-3.5" /> 탭 추가
+  </button>
+  )}
+  </div>
+
+  {/* Tab Content */}
+  <div className="glass rounded-[2rem] p-8 md:p-12 pdf-no-break">
+  {selfIntroTabs.map((tab) => (
+  <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
+  {isEditing ? (
+  <textarea
+  className="w-full h-[300px] bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded-2xl p-6 text-[#1A59A7] text-sm leading-relaxed focus:outline-none focus:border-[#112D4E] resize-y"
+  value={tab.content}
+  onChange={(e) => {
+  const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: e.target.value } : t);
+  setData({...data, selfIntroTabs: newTabs});
+  }}
+  placeholder="자기소개 내용을 입력하세요... (마크다운 문법 지원)"
+  />
+  ) : (
+  <div className="text-[#112D4E] leading-relaxed font-medium markdown-body">
+  <ReactMarkdown remarkPlugins={[remarkGfm]}>{tab.content}</ReactMarkdown>
+  </div>
+  )}
+  </div>
+  ))}
+  </div>
+  </section>
+  );
+};
+
 const Contact = () => (
- <section id="contact" className="py-32 px-6 max-w-7xl mx-auto text-center">
- <div className="inline-block px-4 py-1 rounded-lg bg-[#112D4E]/10 text-[#112D4E] text-xs font-bold mb-6">04_CONTACT</div>
- <h2 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">함께 일하고 싶으신가요?</h2>
- <p className="text-[#112D4E] text-lg mb-12 max-w-2xl mx-auto font-medium">
- 새로운 프로젝트나 협업 제안은 언제나 환영입니다. <br />
- 아래 이메일로 연락 주시면 빠르게 답변 드리겠습니다.
- </p>
- <a 
- href="mailto:minho.dev@email.com" 
- className="inline-flex items-center gap-3 px-10 py-5 bg-[#112D4E] text-[#F9F7F7] font-bold rounded-2xl hover:scale-105 transition-all shadow-2xl shadow-[#112D4E]/10"
- >
- <Mail className="w-5 h-5" /> 메일 보내기
- </a>
+ <section id="contact" className="py-16 px-6 max-w-7xl mx-auto">
  </section>
 );
 
@@ -3029,7 +3176,8 @@ const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: { project:
 
 export default function App() {
  const [view, setView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
- const [prevView, setPrevView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
+ const [prevViewForDetail, setPrevViewForDetail] = useState<string>('home');
+  const [prevView, setPrevView] = useState<'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects'>('home');
  
  const changeView = (newView: 'home' | 'resume' | 'self-intro' | 'project-detail' | 'portfolio' | 'all-projects') => {
  setPrevView(view);
@@ -3042,6 +3190,7 @@ export default function App() {
 
  // --- Edit Mode Logic ---
  const [isEditing, setIsEditing] = useState(false);
+	const [isHomePasswordOpen, setIsHomePasswordOpen] = useState(false);
 
  // --- Persistent Content ---
  const [heroContent, setHeroContent] = useEditableContent({
@@ -3118,9 +3267,10 @@ export default function App() {
  };
 
  const handleProjectClick = (project: Project) => {
- setSelectedProject(project);
- changeView('project-detail');
- };
+  setSelectedProject(project);
+  setPrevViewForDetail(view);
+  changeView('project-detail');
+  };
 
  return (
  <div className="min-h-screen selection:bg-[#112D4E]/30">
@@ -3141,8 +3291,16 @@ export default function App() {
  exit={{ opacity: 0 }}
  >
  <Hero 
- onPortfolioClick={() => changeView('portfolio')} 
+ onPortfolioClick={() => handleNavClick('portfolio-section')} 
  onResumeClick={() => changeView('resume')}
+ onAboutClick={() => handleNavClick('about')}
+  onToolsClick={() => handleNavClick('my-tools')}
+ onSkillsClick={() => handleNavClick('skills')}
+	onToggleAdmin={() => {
+	if (isEditing) { setIsEditing(false); } else {
+	setIsHomePasswordOpen(true);
+	}
+	}}
  isEditing={isEditing}
  content={heroContent}
  setContent={setHeroContent}
@@ -3176,16 +3334,7 @@ export default function App() {
  </motion.div>
  )}
 
- {view === 'self-intro' && (
- <SelfIntro 
- key="self-intro"
- setView={changeView} 
- isEditing={isEditing} 
- data={resumeData} 
- setData={setResumeData} 
- />
- )}
-
+ 
  {view === 'resume' && (
  <Resume 
  key="resume"
@@ -3228,7 +3377,7 @@ export default function App() {
  <ProjectDetail 
  key="project-detail"
  project={selectedProject} 
- onBack={() => changeView(prevView === 'project-detail' ? 'home' : prevView)} 
+ onBack={() => changeView(prevViewForDetail === 'project-detail' ? 'home' : prevViewForDetail)} 
  isEditing={isEditing}
  onSaveContent={(content) => {
  const newProjects = [...projectsData];
@@ -3251,7 +3400,17 @@ export default function App() {
  />
  )}
  </AnimatePresence>
- </main>
+ <PasswordModal
+	isOpen={isHomePasswordOpen}
+	onClose={() => setIsHomePasswordOpen(false)}
+	onConfirm={(pw) => {
+	if (pw === 'qwer154') {
+	setIsEditing(true);
+	setIsHomePasswordOpen(false);
+	}
+	}}
+	/>
+	</main>
  <Footer />
  <BackToTop />
  <ImageModal isOpen={isImageModalOpen} onClose={() => setIsImageModalOpen(false)} />
