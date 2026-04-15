@@ -708,73 +708,123 @@ const PasswordModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClos
 };
 
 const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: { setView: (v: any) => void, currentView: string, onNavClick: (id: string) => void, isEditing: boolean, setIsEditing: (v: boolean) => void }) => {
- const [isMenuOpen, setIsMenuOpen] = useState(false);
- const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
+  // Here are the links in the EXACT requested order
   const navLinks = [
     { label: '소개', action: () => { onNavClick('about'); setIsMenuOpen(false); } },
     { label: '이력서', action: () => { setView('resume'); setIsMenuOpen(false); } },
     { label: '포트폴리오', action: () => { onNavClick('portfolio-section'); setIsMenuOpen(false); } },
-    { label: '핵심역량', action: () => { onNavClick('skills'); setIsMenuOpen(false); } },
-    { label: '사용 TOOL', action: () => { onNavClick('my-tools'); setIsMenuOpen(false); } },
+    { label: '핵심 역량', action: () => { onNavClick('skills'); setIsMenuOpen(false); } },
+    { label: '사용 Tool', action: () => { onNavClick('my-tools'); setIsMenuOpen(false); } },
   ];
 
- const handleAdminClick = () => {
- if (isEditing) {
- setIsEditing(false);
- alert("관리자 모드가 비활성화되었습니다.");
- } else {
- setIsPasswordModalOpen(true);
- }
- };
+  const handleAdminClick = () => {
+    if (isEditing) {
+      setIsEditing(false);
+      alert("관리자 모드가 비활성화되었습니다.");
+    } else {
+      setIsPasswordModalOpen(true);
+    }
+  };
 
- const handlePasswordConfirm = (pw: string) => {
- if (pw === 'qwer154') {
- setIsEditing(true);
- setIsPasswordModalOpen(false);
- alert("관리자 모드가 활성화되었습니다. 내용을 클릭하여 수정하세요.");
- } else {
- alert("비밀번호가 틀렸습니다.");
- }
- };
+  const handlePasswordConfirm = (pw: string) => {
+    if (pw === 'qwer154') {
+      setIsEditing(true);
+      setIsPasswordModalOpen(false);
+      alert("관리자 모드가 활성화되었습니다. 내용을 클릭하여 수정하세요.");
+    } else {
+      alert("비밀번호가 틀렸습니다.");
+    }
+  };
 
- return (
- <>
- <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50 glass rounded-2xl px-6 h-16 flex items-center justify-between print:hidden">
- <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsMenuOpen(false); }}>
- <div className="w-8 h-8 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-lg flex items-center justify-center shadow-lg shadow-[#112D4E]/20">
- <User className="text-[#1A59A7] w-5 h-5" />
- </div>
- <span className="font-bold tracking-tight text-lg">지원자 양현우</span>
- {isEditing && (
- <div className="ml-2 px-2 py-0.5 bg-[#3F72AF]/20 border border-[#3F72AF]/50 rounded text-[10px] text-[#112D4E] font-bold uppercase animate-pulse">
- Edit Mode
- </div>
- )}
- </div>
+  return (
+    <>
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50 glass rounded-2xl px-6 h-16 flex items-center justify-between print:hidden">
+        {/* Left: Brand */}
+        <div 
+          className="flex items-center gap-2 cursor-pointer group select-none" 
+          onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsMenuOpen(false); }}
+          onDoubleClick={handleAdminClick}
+          title="더블클릭하여 관리자 모드"
+        >
+          <div className="w-8 h-8 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-lg flex items-center justify-center shadow-lg shadow-[#112D4E]/20 group-hover:scale-105 transition-transform">
+            <User className="text-[#1A59A7] w-5 h-5 cursor-pointer pointer-events-none" />
+          </div>
+          <span className="font-bold tracking-tight text-lg text-[#112D4E] pointer-events-none">지원자 양현우</span>
+          {isEditing && (
+            <div className="ml-2 px-2 py-0.5 bg-[#3F72AF]/20 border border-[#3F72AF]/50 rounded text-[10px] text-[#112D4E] font-bold uppercase animate-pulse pointer-events-none">
+              Edit Mode
+            </div>
+          )}
+        </div>
 
+        {/* Center/Right: Navigation Links (Desktop) */}
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <button
+              key={link.label}
+              onClick={link.action}
+              className="text-[#112D4E] hover:text-[#3F72AF] font-bold text-[0.95rem] tracking-wide transition-colors relative after:content-[''] after:absolute after:-bottom-1.5 after:left-0 after:w-0 after:h-[2px] after:bg-[#3F72AF] hover:after:w-full after:transition-all after:duration-300"
+            >
+              {link.label}
+            </button>
+          ))}
+          <button
+            onClick={handleAdminClick}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#112D4E]/5 hover:bg-[#112D4E]/10 text-[#112D4E] font-bold text-[0.85rem] transition-colors"
+          >
+            {isEditing ? <Lock className="w-3.5 h-3.5" /> : <Settings className="w-3.5 h-3.5" />}
+            {isEditing ? '완료' : '관리자모드'}
+          </button>
+        </div>
 
-	{/* Admin Button */}
-	<div className="flex items-center gap-2">
-	<button 
-	onClick={handleAdminClick}
-	className="p-2 hover:bg-[#112D4E]/5 rounded-lg transition-colors group"
-	title="관리자 모드"
-	>
-	<Lock className={`w-4 h-4 transition-colors ${isEditing ? 'text-[#3F72AF]' : 'text-[#112D4E] group-hover:text-[#112D4E]'}`} />
-	</button>
-	</div>
- </nav>
- <PasswordModal 
- isOpen={isPasswordModalOpen} 
- onClose={() => setIsPasswordModalOpen(false)} 
- onConfirm={handlePasswordConfirm} 
- />
- </>
- );
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-[#112D4E]">
+            {isMenuOpen ? <X className="w-6 h-6" /> : <div className="w-6 h-6 flex flex-col justify-center gap-1.5"><div className="w-full h-0.5 bg-current"></div><div className="w-full h-0.5 bg-current"></div><div className="w-full h-0.5 bg-current"></div></div>}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Dropdown Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-40 glass rounded-2xl p-4 flex flex-col gap-2 md:hidden shadow-2xl"
+          >
+            {navLinks.map((link) => (
+              <button
+                key={link.label}
+                onClick={link.action}
+                className="w-full text-left px-4 py-3 text-[#112D4E] font-bold rounded-xl hover:bg-[#DBE2EF] transition-colors"
+              >
+                {link.label}
+              </button>
+            ))}
+            <button
+              onClick={() => { handleAdminClick(); setIsMenuOpen(false); }}
+              className="w-full flex items-center justify-start gap-2 px-4 py-3 text-[#112D4E] font-bold rounded-xl bg-[#DBE2EF]/50 hover:bg-[#DBE2EF] transition-colors"
+            >
+              {isEditing ? <Lock className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
+              {isEditing ? '관리자 모드 완료' : '관리자 모드'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <PasswordModal 
+        isOpen={isPasswordModalOpen} 
+        onClose={() => setIsPasswordModalOpen(false)} 
+        onConfirm={handlePasswordConfirm} 
+      />
+    </>
+  );
 };
-
-// --- YouTube URL Helper ---
 const convertToEmbedUrl = (url: string): string => {
  if (!url) return url;
  // Already an embed URL
@@ -927,176 +977,128 @@ const Hero = ({ onPortfolioClick, onResumeClick, onSkillsClick, onAboutClick, on
     reader.readAsDataURL(file);
   };
 
-  const navTabs = [
-    { label: '이력서', onClick: onResumeClick, icon: FileText },
-    { label: '핵심역량', onClick: onSkillsClick, icon: Zap },
-    { label: '포트폴리오', onClick: onPortfolioClick, icon: FolderOpen },
-  ];
-
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-20">
+    <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#F9F7F7] pt-20">
+      
+      {/* Background Brush Stroke */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <svg viewBox="0 0 800 800" className="w-[600px] h-[600px] md:w-[800px] md:h-[800px] opacity-[0.08] text-[#3F72AF] absolute -translate-y-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M120.5 450.5C90.2 410.2 78.5 350.5 120.5 280.5C180.8 180.2 320.5 150.5 450.5 120.5C540.2 100.2 650.5 180.5 720.5 280.5C790.8 380.2 750.5 520.5 650.5 620.5C550.2 720.2 380.5 780.5 280.5 720.5C180.2 650.2 150.8 520.2 120.5 450.5Z" />
+          <path d="M220.5 650.5C190.2 610.2 178.5 550.5 220.5 480.5C280.8 380.2 420.5 350.5 550.5 320.5C640.2 300.2 750.5 380.5 820.5 480.5" stroke="currentColor" strokeWidth="40" strokeLinecap="round" opacity="0.5" />
+          <path d="M50.5 350.5C90.2 210.2 178.5 150.5 220.5 280.5" stroke="currentColor" strokeWidth="60" strokeLinecap="round" opacity="0.3" />
+        </svg>
+      </div>
 
-    {/* ═══════ Decorative Backgrounds ═══════ */}
-    <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#0a1e36]/10 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
-    <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-[#3F72AF]/10 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
-    <div className="absolute top-20 right-1/4 w-64 h-64 bg-[#DBE2EF]/40 rounded-full blur-[100px] pointer-events-none"></div>
-
-    {/* ═══════ Profile Image - Portrait ═══════ */}
-    <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-10 pb-0">
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-        className="relative w-[320px] h-[420px] md:w-[400px] md:h-[520px] lg:w-[480px] lg:h-[620px] pointer-events-auto"
-      >
-        <div className="w-full h-full rounded-2xl overflow-hidden bg-transparent">
+      {/* Center Portrait */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[22rem] md:max-w-[32rem] h-[52vh] md:h-[60vh] flex items-end justify-center pointer-events-none z-10">
+        <div className="relative w-full h-full pointer-events-auto flex items-end justify-center">
           {content.heroImage ? (
-            <img src={content.heroImage} alt="Profile" className="w-full h-full object-cover" />
+            <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] border-x border-t border-[#DBE2EF] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
+              <img src={content.heroImage} alt="Profile" className="w-full h-full object-cover object-top" />
+            </div>
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-[#3F72AF]/40">
-              <User className="w-20 h-20 md:w-24 md:h-24 mb-3" />
-              <p className="text-xs md:text-sm font-medium">사진을 업로드하세요</p>
+            <div className="w-[80%] h-[80%] bg-[#DBE2EF] rounded-t-[5rem] flex flex-col items-center justify-center text-[#3F72AF]/40 border-4 border-white shadow-xl">
+              <User className="w-24 h-24 mb-3" />
+              <p className="text-sm font-medium">사진 업로드</p>
+              <p className="text-[10px]">(배경있는 사진도 둥글게 처리됨)</p>
             </div>
           )}
-        </div>
-        {isEditing && (
-          <button
-            onClick={() => imageFileInputRef.current?.click()}
-            className="absolute bottom-4 right-4 z-30 w-12 h-12 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#0a1e36] transition-all"
-          >
-            <Upload className="w-5 h-5" />
-          </button>
-        )}
-        <input
-          ref={imageFileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleImageUpload}
-        />
-      </motion.div>
-    </div>
-
-    {/* ═══════ Text Content - Upper Left ═══════ */}
-    <div className="relative z-20 w-full max-w-7xl mx-auto px-8 lg:px-12 pt-24 lg:pt-28 pointer-events-none">
-      <motion.div
-        initial={{ opacity: 0, x: -40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="max-w-xl pointer-events-auto"
-      >
-        <h1 className="flex flex-col gap-3 mb-8">
-          <EditableText
-            value={content.titleLine1 || "10년의 조율 감각으로 협업을 완성하고"}
-            onSave={(v) => setContent({...content, titleLine1: v})}
-             isEditing={isEditing}
-             multiline
-             className="text-[#112D4E] uppercase opacity-90"
-            style={{
-              fontSize: content.titleLine1Style?.fontSize || '2.2rem',
-               letterSpacing: content.titleLine1Style?.letterSpacing || '0.3em',
-               fontWeight: content.titleLine1Style?.fontWeight || '700',
-               fontFamily: content.titleLine1Style?.fontFamily || undefined,
-               lineHeight: content.titleLine1Style?.lineHeight || '1.2',
-               color: content.titleLine1Style?.color || undefined,
-               backgroundColor: content.titleLine1Style?.backgroundColor || undefined,
-               whiteSpace: 'pre-wrap',
-            }}
-          />
-          {isEditing && <TextStyleEditor style={content.titleLine1Style || {fontSize:'2.2rem',letterSpacing:'0.3em',fontWeight:'700'}} onStyleChange={(s) => setContent({...content, titleLine1Style: s})} />}
-          <EditableText
-            value={content.titleLine2 || "결과로 증명하는 PM"}
-            onSave={(v) => setContent({...content, titleLine2: v})}
-             isEditing={isEditing}
-             multiline
-             className="text-[#1A59A7] drop-shadow-2xl"
-            style={{
-              fontSize: content.titleLine2Style?.fontSize || '3.5rem',
-               letterSpacing: content.titleLine2Style?.letterSpacing || '-0.05em',
-               fontWeight: content.titleLine2Style?.fontWeight || '900',
-               fontFamily: content.titleLine2Style?.fontFamily || undefined,
-               lineHeight: content.titleLine2Style?.lineHeight || '1.05',
-               color: content.titleLine2Style?.color || undefined,
-               backgroundColor: content.titleLine2Style?.backgroundColor || undefined,
-               whiteSpace: 'pre-wrap',
-            }}
-          />
-          {isEditing && <TextStyleEditor style={content.titleLine2Style || {fontSize:'3.5rem',letterSpacing:'-0.05em',fontWeight:'900'}} onStyleChange={(s) => setContent({...content, titleLine2Style: s})} />}
-        </h1>
-        <div className="max-w-xl mb-10">
-          <EditableText
-            value={content.description}
-            onSave={(v) => setContent({...content, description: v})}
-            isEditing={isEditing}
-            multiline
-            className="text-[#112D4E]"
-            style={{
-              fontSize: content.descStyle?.fontSize || '1.1rem',
-               letterSpacing: content.descStyle?.letterSpacing || 'normal',
-               fontWeight: content.descStyle?.fontWeight || '500',
-               fontFamily: content.descStyle?.fontFamily || undefined,
-               lineHeight: content.descStyle?.lineHeight || '1.7',
-               color: content.descStyle?.color || undefined,
-               backgroundColor: content.descStyle?.backgroundColor || undefined,
-               whiteSpace: 'pre-wrap',
-            }}
-          />
-          {isEditing && <TextStyleEditor style={content.descStyle || {fontSize:'1.1rem',letterSpacing:'normal',fontWeight:'500'}} onStyleChange={(s) => setContent({...content, descStyle: s})} />}
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="flex flex-wrap gap-3">
-          {navTabs.map((tab) => (
-            <motion.button
-              key={tab.label}
-              whileHover={{ y: -3, scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={tab.onClick}
-              className="px-6 py-3 glass rounded-2xl font-bold text-[#112D4E] hover:bg-[#112D4E]/10 transition-all flex items-center gap-2 text-sm shadow-lg shadow-[#112D4E]/5 border border-[#3F72AF]/15"
+          {isEditing && (
+            <button
+              onClick={() => imageFileInputRef.current?.click()}
+              className="absolute bottom-8 right-0 md:right-8 z-30 w-12 h-12 md:w-14 md:h-14 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#0a1e36] transition-all border-2 border-white"
             >
-              <tab.icon className="w-4 h-4 text-[#3F72AF]" />
-              {tab.label}
-            </motion.button>
-          ))}
+              <Upload className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+          )}
+          <input ref={imageFileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
         </div>
-      </motion.div>
-    </div>
-
-    {/* Admin Lock Button */}
-    <div className="absolute top-8 right-8 z-30">
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        onClick={onToggleAdmin}
-        className="p-2 glass rounded-xl hover:bg-[#112D4E]/10 transition-all"
-        title="관리자 모드"
-      >
-        <Lock className={`w-4 h-4 transition-colors ${isEditing ? 'text-[#3F72AF]' : 'text-[#112D4E]/40 hover:text-[#112D4E]'}`} />
-      </motion.button>
-    </div>
-
-    {/* Scroll indicator */}
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 1, duration: 1 }}
-      className="absolute bottom-10 left-1/4 -translate-x-1/2 flex flex-col items-center gap-3 z-10"
-    >
-      <div className="w-6 h-10 border-2 border-[#3F72AF]/20 rounded-full flex justify-center p-1">
-        <motion.div
-          animate={{ y: [0, 12, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-          className="w-1.5 h-1.5 bg-indigo-400 rounded-full"
-        />
       </div>
-    </motion.div>
 
+      {/* Grid Layout for Text Corners */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto min-h-[calc(100vh-5rem)] grid grid-cols-1 md:grid-cols-2 grid-rows-[auto_1fr_auto] gap-8 px-6 lg:px-12 py-12 pointer-events-none">
+        
+        {/* Top Left: Title */}
+        <div className="flex flex-col items-start justify-start pointer-events-auto md:pr-12 md:mt-8">
+          <h1 className="font-black leading-[1.1] text-[#112D4E] tracking-tight mb-6">
+            <EditableText
+              value={content.titleLine1 || "10년의 조율\n감각으로 협업\n을 완성하고"}
+              onSave={(v) => setContent({...content, titleLine1: v})}
+              isEditing={isEditing}
+              multiline
+              className="block leading-[1.1]"
+              style={{
+                fontSize: content.titleLine1Style?.fontSize || 'clamp(2.5rem, 4.5vw, 4rem)',
+                 letterSpacing: content.titleLine1Style?.letterSpacing || '-0.02em',
+                 fontWeight: content.titleLine1Style?.fontWeight || '900',
+              }}
+            />
+            {isEditing && <TextStyleEditor style={content.titleLine1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)',letterSpacing:'-0.02em',fontWeight:'900'}} onStyleChange={(s) => setContent({...content, titleLine1Style: s})} />}
+            <EditableText
+              value={content.titleLine2 || "결과로 증명하\n는 PM"}
+              onSave={(v) => setContent({...content, titleLine2: v})}
+              isEditing={isEditing}
+              multiline
+              className="block text-[#3F72AF] mt-2 leading-[1.1]"
+              style={{
+                fontSize: content.titleLine2Style?.fontSize || 'clamp(3rem, 5.5vw, 5rem)',
+                 letterSpacing: content.titleLine2Style?.letterSpacing || '-0.05em',
+                 fontWeight: content.titleLine2Style?.fontWeight || '900',
+              }}
+            />
+            {isEditing && <TextStyleEditor style={content.titleLine2Style || {fontSize:'clamp(3rem, 5.5vw, 5rem)',letterSpacing:'-0.05em',fontWeight:'900'}} onStyleChange={(s) => setContent({...content, titleLine2Style: s})} />}
+          </h1>
+        </div>
+        
+        {/* Top Right: Description */}
+        <div className="flex flex-col items-end justify-start pointer-events-auto text-right md:mt-16">
+          <div className="max-w-[280px]">
+            <EditableText
+              value={content.description || "사용자의 경험을 논리적으로 설계하고, 명확한 문서화를 통해 팀의 비전을 구체화합니다. 데이터와 심리학을 기반으로 한 깊이 있는 기획을 지향합니다."}
+              onSave={(v) => setContent({...content, description: v})}
+              isEditing={isEditing}
+              multiline
+              className="text-[#112D4E] font-medium leading-relaxed"
+              style={{
+                fontSize: content.descStyle?.fontSize || '0.95rem',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Middle Left: Empty */}
+        <div className="hidden md:flex"></div>
+
+        {/* Middle Right: Empty */}
+        <div className="hidden md:flex"></div>
+
+        {/* Bottom Left: Experience */}
+        <div className="flex flex-col items-start justify-end pointer-events-auto pb-8 md:pb-12 z-20">
+          <div className="flex items-center gap-3 bg-[#F9F7F7]/80 backdrop-blur-sm p-4 rounded-3xl border border-[#3F72AF]/10 shadow-sm">
+            <span className="text-5xl md:text-6xl font-black text-[#112D4E] tracking-tighter leading-none">
+              <EditableText
+                value={content.expYears || "10"}
+                onSave={(v) => setContent({...content, expYears: v})}
+                isEditing={isEditing}
+              />
+            </span>
+            <div className="text-xs md:text-sm font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
+              <EditableText
+                value={content.expLabel || "YEARS\nEXPERIENCE"}
+                onSave={(v) => setContent({...content, expLabel: v})}
+                isEditing={isEditing}
+                multiline
+              />
+            </div>
+          </div>
+        </div>
+        
+        {/* Bottom Right: Empty */}
+        <div className="hidden md:flex"></div>
+      </div>
     </section>
   );
 };
-
-
 const About = ({ isEditing, content, setContent }: { isEditing: boolean, content: any, setContent: (c: any) => void }) => (
  <section id="about" className="py-24 px-6 max-w-7xl mx-auto">
  <div className="grid lg:grid-cols-12 gap-12 items-start">
@@ -3377,7 +3379,7 @@ export default function App() {
  <ProjectDetail 
  key="project-detail"
  project={selectedProject} 
- onBack={() => changeView(prevViewForDetail === 'project-detail' ? 'home' : prevViewForDetail)} 
+ onBack={() => changeView((prevViewForDetail === 'project-detail' ? 'home' : prevViewForDetail) as any)} 
  isEditing={isEditing}
  onSaveContent={(content) => {
  const newProjects = [...projectsData];
