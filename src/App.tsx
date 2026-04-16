@@ -2608,147 +2608,105 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </div>
  </div>
 
- {/* Tech Stack - Editable */}
- <div className="space-y-8">
- <div className="pdf-no-break">
- <div className="flex items-center justify-between mb-6">
- <h3 className="text-xs font-bold text-[#0a1e36] uppercase tracking-widest flex items-center gap-2 ">
- <Wrench className="w-4 h-4" /> 기술 스택
- </h3>
- {isEditing && (
- <button
- onClick={() => {
- const newStack = [...techStack, { id: `ts-${Date.now()}`, label: '새 카테고리', items: ['항목'] }];
- setData({...data, techStack: newStack});
- }}
- className="p-1.5 glass rounded-lg text-[#112D4E] hover:bg-[#112D4E]/10 transition-all"
- title="카테고리 추가"
- >
- <Plus className="w-3.5 h-3.5" />
- </button>
- )}
- </div>
- <div className="space-y-4">
- {techStack.map((category, catIdx) => (
- <div key={category.id} className="pdf-no-break">
- <div className="flex items-center justify-between mb-2">
- <p className="text-[10px] font-bold text-[#8fabc8] uppercase">
- <EditableText
- value={category.label}
- onSave={(v) => {
- const newStack = [...techStack];
- newStack[catIdx].label = v;
- setData({...data, techStack: newStack});
- }}
- isEditing={isEditing}
- />
- </p>
- {isEditing && (
- <button
- onClick={() => {
- const newStack = techStack.filter(c => c.id !== category.id);
- setData({...data, techStack: newStack});
- }}
- className="p-1 text-[#8fabc8] hover:text-red-400 transition-colors"
- >
- <X className="w-3 h-3" />
- </button>
- )}
- </div>
- <div className="flex flex-wrap gap-2">
- {category.items.map((item, itemIdx) => (
- <span key={itemIdx} className="px-3 py-1.5 glass rounded-lg text-xs font-medium text-[#3F72AF] flex items-center gap-1">
- <EditableText
- value={item}
- onSave={(v) => {
- const newStack = [...techStack];
- newStack[catIdx].items[itemIdx] = v;
- setData({...data, techStack: newStack});
- }}
- isEditing={isEditing}
- />
- {isEditing && (
- <button
- onClick={() => {
- const newStack = [...techStack];
- newStack[catIdx].items.splice(itemIdx, 1);
- setData({...data, techStack: newStack});
- }}
- className="text-[#8fabc8] hover:text-red-400 transition-colors"
- >
- <X className="w-3 h-3" />
- </button>
- )}
- </span>
- ))}
- {isEditing && (
- <button
- onClick={() => {
- const newStack = [...techStack];
- newStack[catIdx].items.push('새 항목');
- setData({...data, techStack: newStack});
- }}
- className="px-3 py-1.5 border border-dashed border-[#3F72AF]/20 rounded-lg text-xs font-medium text-[#112D4E] hover:border-[#112D4E]/50 transition-all"
- >
- + 추가
- </button>
- )}
- </div>
- </div>
- ))}
- </div>
- </div>
+  {/* Left Side: Education, Experience, Certificates */}
+  <div className="space-y-6">
+    {/* Education Box */}
+    <div className="bg-white rounded-xl p-5 border border-[#DBE2EF] shadow-sm relative pdf-no-break">
+      <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-[#112D4E]"></div>
+      <div className="space-y-6">
+        {data.leftEducation && data.leftEducation.map((edu, idx) => (
+          <div key={idx} className="relative pl-5 group/edu">
+            <div className="absolute -left-[3px] top-1.5 w-2 h-2 rounded-full bg-[#112D4E] z-10"></div>
+            {isEditing && (
+              <button type="button" onClick={() => { const n = [...data.leftEducation]; n.splice(idx,1); setData({...data, leftEducation: n}); }} className="absolute -left-6 top-0 text-red-300 hover:text-red-500 z-10 opacity-0 group-hover/edu:opacity-100"><X className="w-3 h-3"/></button>
+            )}
+            <div className="text-[14px] font-bold text-[#112D4E] mb-2">
+              <EditableText value={edu.title} onSave={(v)=>{const n=[...data.leftEducation]; n[idx].title=v; setData({...data, leftEducation: n});}} isEditing={isEditing} />
+            </div>
+            {edu.period && <div className="text-[12px] text-[#8fabc8] mb-2"><EditableText value={edu.period} onSave={(v)=>{const n=[...data.leftEducation]; n[idx].period=v; setData({...data, leftEducation: n});}} isEditing={isEditing} /></div>}
+            {edu.description && <div className="text-xs text-[#112D4E] font-medium leading-relaxed whitespace-pre-wrap mb-1"><EditableText value={edu.description} multiline onSave={(v)=>{const n=[...data.leftEducation]; n[idx].description=v; setData({...data, leftEducation: n});}} isEditing={isEditing} /></div>}
+            {edu.details && edu.details.length > 0 && (
+              <ul className="list-disc list-inside text-xs text-[#112D4E] space-y-0.5 ml-1 mt-1">
+                {edu.details.map((d, i) => (
+                  <li key={i} className="group/item relative">
+                    <span className="inline-block relative">
+                        <EditableText value={d} onSave={(v)=>{const n=[...data.leftEducation]; n[idx].details[i]=v; setData({...data, leftEducation: n});}} isEditing={isEditing} />
+                    </span>
+                    {isEditing && <button type="button" onClick={()=>{const n=[...data.leftEducation]; n[idx].details.splice(i,1); setData({...data, leftEducation: n});}} className="opacity-0 group-hover/item:opacity-100 absolute -left-4 top-0.5 text-red-300"><X className="w-2.5 h-2.5"/></button>}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {isEditing && <button type="button" onClick={()=>{const n=[...data.leftEducation]; if(!n[idx].details) n[idx].details=[]; n[idx].details.push("항목"); setData({...data, leftEducation: n});}} className="text-[10px] text-gray-400 mt-1 block"><Plus className="w-2 h-2 inline"/> 항목추가</button>}
+          </div>
+        ))}
+        {isEditing && <button type="button" onClick={()=>{const n=data.leftEducation?[...data.leftEducation]:[]; n.push({title:"새 학력", period:"", description:"", details:[]}); setData({...data, leftEducation: n});}} className="text-xs text-blue-400 ml-6 mt-2 block"><Plus className="w-3 h-3 inline"/> 학력추가</button>}
+      </div>
+    </div>
 
- {/* Core Competencies - Editable */}
- <div className="pdf-no-break">
- <div className="flex items-center justify-between mb-6">
- <h3 className="text-xs font-bold text-[#0a1e36] uppercase tracking-widest flex items-center gap-2 ">
- <Zap className="w-4 h-4" /> 핵심 역량
- </h3>
- {isEditing && (
- <button
- onClick={() => {
- const newComp = [...coreCompetencies, '새 역량'];
- setData({...data, coreCompetencies: newComp});
- }}
- className="p-1.5 glass rounded-lg text-[#112D4E] hover:bg-[#112D4E]/10 transition-all"
- title="역량 추가"
- >
- <Plus className="w-3.5 h-3.5" />
- </button>
- )}
- </div>
- <ul className="space-y-3 text-sm text-[#112D4E] ">
- {coreCompetencies.map((comp, idx) => (
- <li key={idx} className="flex items-start gap-2 group">
- <div className="w-1.5 h-1.5 rounded-full bg-[#112D4E] mt-1.5 shrink-0"></div>
- <span className="flex-1">
- <EditableText
- value={comp}
- onSave={(v) => {
- const newComp = [...coreCompetencies];
- newComp[idx] = v;
- setData({...data, coreCompetencies: newComp});
- }}
- isEditing={isEditing}
- />
- </span>
- {isEditing && (
- <button
- onClick={() => {
- const newComp = coreCompetencies.filter((_, i) => i !== idx);
- setData({...data, coreCompetencies: newComp});
- }}
- className="opacity-0 group-hover:opacity-100 text-[#8fabc8] hover:text-red-400 transition-all shrink-0"
- >
- <X className="w-3.5 h-3.5" />
- </button>
- )}
- </li>
- ))}
- </ul>
- </div>
- </div>
+    {/* Experience Box */}
+    <div className="bg-white rounded-xl p-5 border border-[#DBE2EF] shadow-sm relative pdf-no-break">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="font-bold text-[#112D4E] text-[15px]">경력 사항</h3>
+        <span className="text-[12px] font-medium text-[#e85c5c]">총 경력 6년</span>
+      </div>
+      <div className="space-y-8">
+        {data.leftExperience && data.leftExperience.map((exp, idx) => (
+          <div key={idx} className="relative group/exp">
+            {isEditing && (
+              <button type="button" onClick={() => { const n = [...data.leftExperience]; n.splice(idx,1); setData({...data, leftExperience: n}); }} className="absolute -left-4 top-0 text-red-300 hover:text-red-500 z-10 opacity-0 group-hover/exp:opacity-100"><X className="w-3 h-3"/></button>
+            )}
+            <div className="text-[14px] font-bold text-[#112D4E] mb-2">
+              <EditableText value={exp.title} onSave={(v)=>{const n=[...data.leftExperience]; n[idx].title=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
+            </div>
+            <div className="text-[12px] text-[#8fabc8] border-l-2 border-[#DBE2EF] pl-2 mb-2 whitespace-pre-line leading-relaxed pb-1">
+              <EditableText value={exp.period || ''} multiline onSave={(v)=>{const n=[...data.leftExperience]; n[idx].period=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
+            </div>
+            {exp.description && <div className="text-xs text-[#112D4E] font-medium leading-relaxed whitespace-pre-wrap ml-2 mb-2"><EditableText value={exp.description} multiline onSave={(v)=>{const n=[...data.leftExperience]; n[idx].description=v; setData({...data, leftExperience: n});}} isEditing={isEditing} /></div>}
+            {exp.details && exp.details.length > 0 && (
+              <ul className="list-disc list-inside text-xs text-[#112D4E] space-y-1 ml-2 mt-2">
+                {exp.details.map((d, i) => (
+                  <li key={i} className="group/item relative">
+                    <span className="inline-block relative">
+                       <EditableText value={d} onSave={(v)=>{const n=[...data.leftExperience]; n[idx].details[i]=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
+                    </span>
+                    {isEditing && <button type="button" onClick={()=>{const n=[...data.leftExperience]; n[idx].details.splice(i,1); setData({...data, leftExperience: n});}} className="opacity-0 group-hover/item:opacity-100 absolute -left-4 top-0.5 text-red-300"><X className="w-2.5 h-2.5"/></button>}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {isEditing && <button type="button" onClick={()=>{const n=[...data.leftExperience]; if(!n[idx].details) n[idx].details=[]; n[idx].details.push("항목"); setData({...data, leftExperience: n});}} className="text-[10px] text-gray-400 mt-1 ml-2 block"><Plus className="w-2 h-2 inline"/> 항목추가</button>}
+          </div>
+        ))}
+        {isEditing && <button type="button" onClick={()=>{const n=data.leftExperience?[...data.leftExperience]:[]; n.push({title:"새 경력", period:"", description:"", details:[]}); setData({...data, leftExperience: n});}} className="text-xs text-blue-400 block"><Plus className="w-3 h-3 inline"/> 경력추가</button>}
+      </div>
+    </div>
+
+    {/* Certificates Box */}
+    <div className="bg-white rounded-xl p-5 border border-[#DBE2EF] shadow-sm relative pdf-no-break">
+      <h3 className="font-bold text-[#112D4E] text-[15px] mb-5">자격증</h3>
+      <div className="space-y-6">
+        {data.leftCertificates && data.leftCertificates.map((cert, idx) => (
+          <div key={idx} className="relative group/cert">
+            {isEditing && (
+              <button type="button" onClick={() => { const n = [...data.leftCertificates]; n.splice(idx,1); setData({...data, leftCertificates: n}); }} className="absolute -left-4 top-0 text-red-300 hover:text-red-500 z-10 opacity-0 group-hover/cert:opacity-100"><X className="w-3 h-3"/></button>
+            )}
+            <div className="text-[14px] text-[#112D4E] mb-2 font-medium">
+              <EditableText value={cert.title} onSave={(v)=>{const n=[...data.leftCertificates]; n[idx].title=v; setData({...data, leftCertificates: n});}} isEditing={isEditing} />
+            </div>
+            <div className="text-[12px] text-[#8fabc8] border-l-2 border-[#DBE2EF] pl-2 flex flex-col md:flex-row md:items-center gap-1 md:gap-2">
+              <EditableText value={cert.organization} onSave={(v)=>{const n=[...data.leftCertificates]; n[idx].organization=v; setData({...data, leftCertificates: n});}} isEditing={isEditing} />
+              <div className="flex items-center gap-1 opacity-80">
+                 <span className="hidden md:inline">|</span>
+                 <EditableText value={cert.period ? '('+cert.period+')' : '(연도)'} onSave={(v)=>{const n=[...data.leftCertificates]; n[idx].period=v.replace(/[()]/g,''); setData({...data, leftCertificates: n});}} isEditing={isEditing} />
+              </div>
+            </div>
+          </div>
+        ))}
+        {isEditing && <button type="button" onClick={()=>{const c = data.leftCertificates || []; const n=[...c, {title:"새 자격증", organization:"기관", period:"연도"}]; setData({...data, leftCertificates: n});}} className="text-xs text-blue-400 block"><Plus className="w-3 h-3 inline"/> 자격증추가</button>}
+      </div>
+    </div>
+  </div>
  </div>
 
  {/* Main Content */}
