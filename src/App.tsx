@@ -2692,33 +2692,33 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
         </span>
       </div>
       <div className="space-y-8">
-        {data.experience && data.experience.map((exp, idx) => (
+        {data.leftExperience && data.leftExperience.map((exp, idx) => (
           <div key={idx} className="relative group/exp">
             {isEditing && (
-              <button type="button" onClick={() => { const n = [...data.experience]; n.splice(idx,1); setData({...data, experience: n}); }} className="absolute -left-4 top-0 text-red-300 hover:text-red-500 z-10 opacity-0 group-hover/exp:opacity-100"><X className="w-3 h-3"/></button>
+              <button type="button" onClick={() => { const n = [...data.leftExperience]; n.splice(idx,1); setData({...data, leftExperience: n}); }} className="absolute -left-4 top-0 text-red-300 hover:text-red-500 z-10 opacity-0 group-hover/exp:opacity-100"><X className="w-3 h-3"/></button>
             )}
             <div className="text-[14px] font-bold text-[#112D4E] mb-2">
-              <EditableText value={exp.title} onSave={(v)=>{const n=[...data.experience]; n[idx].title=v; setData({...data, experience: n});}} isEditing={isEditing} />
+              <EditableText value={exp.title} onSave={(v)=>{const n=[...data.leftExperience]; n[idx].title=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
             </div>
             <div className="text-[12px] text-[#8fabc8] border-l-2 border-[#DBE2EF] pl-2 mb-2 whitespace-pre-line leading-relaxed flex flex-col gap-0.5">
-              <EditableText value={exp.period || ''} multiline onSave={(v)=>{const n=[...data.experience]; n[idx].period=v; setData({...data, experience: n});}} isEditing={isEditing} />
+              <EditableText value={exp.period || ''} multiline onSave={(v)=>{const n=[...data.leftExperience]; n[idx].period=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
             </div>
             {exp.details && exp.details.length > 0 && (
               <ul className="list-disc list-inside text-xs text-[#112D4E] space-y-1 ml-1 mt-2 font-medium">
                 {exp.details.map((d, i) => (
                   <li key={i} className="group/item relative">
                     <span className="inline-block relative">
-                       <EditableText value={d} onSave={(v)=>{const n=[...data.experience]; n[idx].details[i]=v; setData({...data, experience: n});}} isEditing={isEditing} />
+                       <EditableText value={d} onSave={(v)=>{const n=[...data.leftExperience]; n[idx].details[i]=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
                     </span>
-                    {isEditing && <button type="button" onClick={()=>{const n=[...data.experience]; n[idx].details.splice(i,1); setData({...data, experience: n});}} className="opacity-0 group-hover/item:opacity-100 absolute -left-4 top-0.5 text-red-300"><X className="w-2.5 h-2.5"/></button>}
+                    {isEditing && <button type="button" onClick={()=>{const n=[...data.leftExperience]; n[idx].details.splice(i,1); setData({...data, leftExperience: n});}} className="opacity-0 group-hover/item:opacity-100 absolute -left-4 top-0.5 text-red-300"><X className="w-2.5 h-2.5"/></button>}
                   </li>
                 ))}
               </ul>
             )}
-            {isEditing && <button type="button" onClick={()=>{const n=[...data.experience]; if(!n[idx].details) n[idx].details=[]; n[idx].details.push("항목"); setData({...data, experience: n});}} className="text-[10px] text-gray-400 mt-1 block"><Plus className="w-2 h-2 inline"/> 항목추가</button>}
+            {isEditing && <button type="button" onClick={()=>{const n=[...data.leftExperience]; if(!n[idx].details) n[idx].details=[]; n[idx].details.push("항목"); setData({...data, leftExperience: n});}} className="text-[10px] text-gray-400 mt-1 block"><Plus className="w-2 h-2 inline"/> 항목추가</button>}
           </div>
         ))}
-        {isEditing && <button type="button" onClick={()=>{const n=data.experience?[...data.experience]:[]; n.push({title:"새 경력", period:"", description:"", details:[]}); setData({...data, experience: n});}} className="text-xs text-blue-400 block"><Plus className="w-3 h-3 inline"/> 경력추가</button>}
+        {isEditing && <button type="button" onClick={()=>{const n=data.leftExperience?[...data.leftExperience]:[]; n.push({title:"새 경력", period:"", description:"", details:[]}); setData({...data, leftExperience: n});}} className="text-xs text-blue-400 block"><Plus className="w-3 h-3 inline"/> 경력추가</button>}
       </div>
     </div>
 
