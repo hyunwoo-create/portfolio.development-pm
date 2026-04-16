@@ -2649,7 +2649,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
   <div className="space-y-0">
     
     {/* Education Section */}
-    <div className="py-8 border-b border-[#DBE2EF] relative pdf-no-break">
+    <div className="py-8 border-t border-b border-[#DBE2EF] relative pdf-no-break">
       <h3 className="font-bold text-[#112D4E] text-[15px] mb-6 flex items-center gap-2">
         <GraduationCap className="w-4 h-4 text-[#3F72AF]" /> 학력 및 교육
       </h3>
