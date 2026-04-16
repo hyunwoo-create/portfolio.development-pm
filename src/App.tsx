@@ -52,7 +52,8 @@ import {
  Phone,
  MapPin,
  Calendar,
- Home
+ Home,
+ PlayCircle
 } from 'lucide-react';
 
 // --- Types ---
@@ -1162,131 +1163,232 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
     </>
   );
 };
-const About = ({ isEditing, content, setContent, onMoreMeClick }: { isEditing: boolean, content: any, setContent: (c: any) => void, onMoreMeClick: () => void }) => (
- <section id="about" className="py-24 px-6 max-w-7xl mx-auto">
- <div className="grid lg:grid-cols-12 gap-12 items-start">
- <div className="lg:col-span-7">
- <div className="inline-block px-4 py-1 rounded-lg bg-[#112D4E]/10 text-[#112D4E] text-xs font-bold mb-6">01_ABOUT ME</div>
- <h2 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight leading-tight">
- <EditableText 
- value={content.title} 
- onSave={(v) => setContent({...content, title: v})} 
- isEditing={isEditing} 
- className="block text-[#1A59A7]"
- />
- <EditableText 
- value={content.subtitle} 
- onSave={(v) => setContent({...content, subtitle: v})} 
- isEditing={isEditing} 
- className="block text-[#1A59A7]"
- />
- </h2>
- <div className="space-y-6 text-[#112D4E] text-lg leading-relaxed font-medium">
- <p>
- <EditableText 
- value={content.p1} 
- onSave={(v) => setContent({...content, p1: v})} 
- isEditing={isEditing} 
- multiline
- />
- </p>
- <p>
- <EditableText 
- value={content.p2} 
- onSave={(v) => setContent({...content, p2: v})} 
- isEditing={isEditing} 
- multiline
- />
- </p>
- </div>
- 
- <div className="mt-12">
- <div className="inline-block px-4 py-1 rounded-lg bg-[#112D4E]/10 text-[#112D4E] text-xs font-bold mb-6 uppercase tracking-widest">Point</div>
- <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
- {content.stats.map((stat: any, idx: number) => (
- <div key={idx} className="bento-card !p-6">
- <div className="text-3xl font-bold text-[#112D4E] mb-1">
- <EditableText 
- value={stat.value} 
- onSave={(v) => {
- const newStats = [...content.stats];
- newStats[idx].value = v;
- setContent({...content, stats: newStats});
- }} 
- isEditing={isEditing} 
- />
- </div>
- <div className="text-xs font-bold text-[#0a1e36] uppercase tracking-tighter">
- <EditableText 
- value={stat.label} 
- onSave={(v) => {
- const newStats = [...content.stats];
- newStats[idx].label = v;
- setContent({...content, stats: newStats});
- }} 
- isEditing={isEditing} 
- />
- </div>
- </div>
- ))}
- </div>
- </div>
- </div>
- 
- <div className="lg:col-span-5 relative">
- <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-[#3F72AF]/12 group shadow-2xl shadow-[#112D4E]/10 relative">
- <img 
- src={content.aboutImage || "https://picsum.photos/seed/designer/800/1000"} 
- alt="Designer Profile" 
- className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
- referrerPolicy="no-referrer"
- />
- <div className="absolute inset-0 bg-gradient-to-t from-bg-main via-transparent to-transparent opacity-60"></div>
- <div className="absolute bottom-8 left-8">
- <div className="flex items-center gap-2 mb-2">
- <div className="w-2 h-2 bg-[#3F72AF] rounded-full animate-pulse"></div>
- <span className="text-xs font-bold text-[#3F72AF] tracking-widest"><EditableText value={content.statusText || "STATUS: READY_TO_BUILD"} onSave={(v) => setContent({...content, statusText: v})} isEditing={isEditing} /></span>
- </div>
- <div className="text-[#1A59A7] text-2xl font-bold"><EditableText value={content.roleLabel || "PM 지원자"} onSave={(v) => setContent({...content, roleLabel: v})} isEditing={isEditing} /></div>
- {isEditing && (
- <div className="absolute top-4 right-4 z-20">
- <button
- onClick={() => {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.onchange = (e) => {
-   const file = (e.target as HTMLInputElement).files?.[0];
-   if (!file) return;
-   const reader = new FileReader();
-   reader.onload = (ev) => {
-    setContent({...content, aboutImage: ev.target?.result as string});
-   };
-   reader.readAsDataURL(file);
+const About = ({ isEditing, content, setContent, onMoreMeClick }: { isEditing: boolean, content: any, setContent: (c: any) => void, onMoreMeClick: () => void }) => {
+  const skills = [1, 2, 3];
+  
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setContent({...content, videoUrl: ev.target?.result as string});
+    };
+    reader.readAsDataURL(file);
   };
-  input.click();
- }}
- className="flex items-center gap-2 glass rounded-xl px-4 py-2.5 hover:bg-[#112D4E]/10 transition-all text-[#1A59A7] border border-[#3F72AF]/20"
- >
- <Upload className="w-4 h-4 text-[#112D4E]" />
- <span className="text-xs font-bold">사진 변경</span>
- </button>
- </div>
- )}
- </div>
- </div>
- <div className="mt-8 md:mt-10 flex justify-center lg:justify-end w-full">
-  <button 
-    onClick={onMoreMeClick}
-    className="bg-[#112D4E] text-white px-10 py-4 md:px-12 md:py-5 rounded-full font-bold shadow-xl flex items-center gap-3 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:scale-105"
-  >
-    MORE ME <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
-  </button>
- </div>
- </div>
- </div>
- </section>
-);
+
+  const totalParam = parseInt(content.chartTotal) || 100;
+  const v1 = parseInt(content.skill1Value) || 80;
+  const v2 = parseInt(content.skill2Value) || 60;
+  const v3 = parseInt(content.skill3Value) || 40;
+
+  return (
+    <section id="about" className="py-24 px-6 max-w-7xl mx-auto bg-[#F9F7F7]">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 border-b border-[#3F72AF]/20 pb-6 gap-4">
+        <h2 className="text-3xl md:text-4xl font-black text-[#112D4E] tracking-tight">
+          <EditableText 
+            value={content.titleLeft || "Q. 누구를 채용해야 할까요?"} 
+            onSave={(v) => setContent({...content, titleLeft: v})} 
+            isEditing={isEditing} 
+          />
+        </h2>
+        <h2 className="text-2xl md:text-3xl font-black text-[#3F72AF] tracking-tight text-right w-full md:w-auto">
+          <EditableText 
+            value={content.titleRight || "A. 저 입니다. 지원자 양 현우"} 
+            onSave={(v) => setContent({...content, titleRight: v})} 
+            isEditing={isEditing} 
+          />
+        </h2>
+      </div>
+
+      <div className="grid lg:grid-cols-12 gap-12 relative items-stretch">
+        
+        {/* Left Column: Cards */}
+        <div className="lg:col-span-5 flex flex-col gap-8">
+          
+          {/* Chart Card */}
+          <div className="bg-white rounded-[2rem] shadow-lg shadow-[#112D4E]/5 border border-[#DBE2EF] p-8">
+            <div className="flex flex-col items-center justify-center mb-10 relative">
+              <h3 className="text-lg font-black text-[#112D4E] text-center">
+                <EditableText 
+                  value={content.chartTitle || "막대형 그래프 채용 지원자격 top3"} 
+                  onSave={(v) => setContent({...content, chartTitle: v})} 
+                  isEditing={isEditing} 
+                />
+              </h3>
+              {isEditing && (
+                <div className="mt-4 flex items-center gap-2 bg-[#DBE2EF]/30 px-3 py-1.5 rounded-lg border border-[#DBE2EF]">
+                  <span className="text-[#3F72AF] text-xs font-bold">모수(Total): </span>
+                  <input 
+                    type="number"
+                    value={content.chartTotal || 100}
+                    onChange={(e) => setContent({...content, chartTotal: e.target.value})}
+                    className="w-16 border border-[#3F72AF]/30 rounded px-2 py-0.5 text-xs font-bold text-center"
+                  />
+                </div>
+              )}
+            </div>
+            
+            <div className="space-y-8 relative">
+              {/* Vertical Grid Lines (Cosmetic) */}
+              <div className="absolute inset-0 left-20 flex justify-between pointer-events-none z-0 mt-2">
+                <div className="h-full ml-4 relative flex items-start">
+                  <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20"></div>
+                  <span className="absolute -top-6 -translate-x-1/2 text-[10px] font-bold text-[#3F72AF] opacity-50 bg-white px-1">0</span>
+                </div>
+                <div className="h-full mr-12 relative flex items-start">
+                  <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20"></div>
+                  <span className="absolute -top-6 -translate-x-1/2 text-xs font-black text-[#1A59A7] bg-white px-1.5 py-0.5 shadow-sm rounded z-10 border border-[#DBE2EF]">{totalParam}</span>
+                </div>
+              </div>
+
+              {skills.map((num) => {
+                const v = num === 1 ? v1 : num === 2 ? v2 : v3;
+                const p = Math.min((v / totalParam) * 100, 100);
+                return (
+                <div key={num} className="flex items-center gap-4 relative z-10 pr-4">
+                  <div className="w-14 text-sm font-bold text-[#112D4E] text-right whitespace-nowrap">
+                    <EditableText 
+                      value={content[`skill${num}Name`] || `역량 ${String.fromCharCode(64 + num)}`} 
+                      onSave={(v) => setContent({...content, [`skill${num}Name`]: v})} 
+                      isEditing={isEditing} 
+                    />
+                  </div>
+                  <div className="flex-1 flex flex-col group w-full">
+                    <div className="h-8 bg-transparent relative flex items-center w-full">
+                      <div 
+                        className="h-full bg-[#3F72AF] rounded-r-md transition-all duration-700 shadow-sm flex items-center justify-end px-2 overflow-visible relative"
+                        style={{ width: `${p}%`, minWidth: '1.5rem', maxWidth: '100%' }}
+                      >
+                         {p > 15 && <span className="text-white text-[10px] font-bold drop-shadow-md whitespace-nowrap px-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-2">{Math.round(p)}%</span>}
+                      </div>
+                      <span className="ml-3 text-sm font-black text-[#112D4E] min-w-[2rem]">{v}</span>
+                      
+                      {isEditing && (
+                        <div className="ml-auto flex items-center gap-2">
+                          <span className="text-[10px] font-bold text-[#3F72AF]">값:</span>
+                          <input 
+                            type="number" 
+                            value={content[`skill${num}Value`] || v}
+                            onChange={(e) => setContent({...content, [`skill${num}Value`]: e.target.value})}
+                            className="w-14 text-xs border border-[#DBE2EF] rounded px-1 h-6 font-bold text-[#112D4E] text-center"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )})}
+            </div>
+          </div>
+
+          {/* Video Card */}
+          <div className="bg-white rounded-[2rem] shadow-lg shadow-[#112D4E]/5 border border-[#DBE2EF] p-8 flex flex-col items-center">
+            <h3 className="text-lg font-black text-[#112D4E] text-center mb-6">
+              <EditableText 
+                value={content.videoTitle || "크롤러 동영상"} 
+                onSave={(v) => setContent({...content, videoTitle: v})} 
+                isEditing={isEditing} 
+              />
+            </h3>
+            
+            <div className="w-full aspect-video bg-[#DBE2EF]/30 rounded-2xl overflow-hidden relative flex items-center justify-center border border-[#DBE2EF]">
+              {content.videoUrl ? (
+                <video 
+                  src={content.videoUrl} 
+                  controls 
+                  autoPlay
+                  muted
+                  loop
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-center text-[#3F72AF]">
+                  <PlayCircle className="w-12 h-12 mx-auto mb-2 opacity-60" />
+                </div>
+              )}
+
+              {isEditing && (
+                <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-4 opacity-0 hover:opacity-100 transition-opacity z-10 p-4">
+                  <div className="w-full max-w-[200px]">
+                    <label className="text-white text-xs font-bold mb-1 block">동영상 URL 입력</label>
+                    <input 
+                      type="text" 
+                      placeholder="https://..."
+                      value={content.videoUrl || ""}
+                      onChange={(e) => setContent({...content, videoUrl: e.target.value})}
+                      className="w-full px-3 py-2 rounded text-black text-xs"
+                    />
+                  </div>
+                  <div className="text-white text-[10px] font-bold">OR</div>
+                  <button
+                    onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'video/*,image/*';
+                      input.onchange = handleVideoUpload as any;
+                      input.click();
+                    }}
+                    className="flex items-center gap-2 bg-white text-[#112D4E] px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-200 transition"
+                  >
+                    <Upload className="w-4 h-4" /> 파일 업로드
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Text and Button */}
+        <div className="lg:col-span-7 flex flex-col justify-between py-6">
+          <div className="flex flex-col space-y-16 lg:pl-16 flex-1 justify-around">
+            {skills.map((num) => (
+              <div key={num} className="relative">
+                {/* Desktop Arrow perfectly pointing at this block */}
+                <div className="hidden lg:flex absolute top-1/2 -left-16 w-12 -translate-y-1/2 items-center opacity-30 text-[#3F72AF] pointer-events-none">
+                  <div className="flex-1 border-t-2 border-dashed border-[#3F72AF]"></div>
+                  <ChevronRight className="w-5 h-5 -ml-2" />
+                </div>
+
+                <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight">
+                  <EditableText 
+                    value={content[`descTitle${num}`] || `역량 ${String.fromCharCode(64 + num)}에 해당하는 내용 및 역량`} 
+                    onSave={(v) => setContent({...content, [`descTitle${num}`]: v})} 
+                    isEditing={isEditing} 
+                  />
+                </h4>
+                <p className="text-[#3F72AF] text-[15px] leading-relaxed font-medium">
+                  <EditableText 
+                    value={content[`descText${num}`] || (num === 1 ? '채용 공고에서 요구하는 최우선 역량을 완벽하게 충족하며, 실무에서 즉시 성과를 창출할 수 있는 기획력과 문제해결 능력을 보유하고 있습니다.' : num === 2 ? '다양한 직군과의 협업 경험을 통해 커뮤니케이션 비용을 줄이고, 복잡한 프로젝트를 리드하여 성공적인 런칭을 이끌어냅니다.' : '데이터 수집 및 분석 자동화(크롤링) 경험을 바탕으로, 높은 수준의 기술적 이해도를 지니고 있어 개발팀과 매끄럽게 소통합니다.')} 
+                    onSave={(v) => setContent({...content, [`descText${num}`]: v})} 
+                    isEditing={isEditing} 
+                    multiline
+                  />
+                </p>
+                
+                {/* Arrow for mobile, displayed below text */}
+                <div className="lg:hidden flex items-center w-full opacity-20 text-[#3F72AF] mt-6">
+                  <div className="flex-1 border-t-2 border-dashed border-[#3F72AF]"></div>
+                  <ChevronRight className="w-5 h-5 -ml-2" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 flex justify-end lg:pr-8">
+            <button 
+              onClick={onMoreMeClick}
+              className="bg-[#112D4E] text-white px-8 py-4 rounded-full font-bold shadow-xl flex items-center gap-3 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:scale-105"
+            >
+              MORE ME <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+};
 
 const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, setView }: { onProjectClick: (p: Project) => void, isEditing: boolean, projects: Project[], setProjects: (p: Project[]) => void, limit?: number, setView?: (v: any) => void }) => {
  const displayedProjects = limit ? projects.slice(0, limit) : projects;
@@ -3092,18 +3194,8 @@ const SelfIntroInResume = ({ isEditing, data, setData }: { isEditing: boolean, d
 
 const Footer = () => (
  <footer className="py-16 px-6 text-center">
- <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 border-t border-[#3F72AF]/8 pt-12">
- <div className="flex items-center gap-2">
- <div className="w-6 h-6 bg-[#DBE2EF] rounded flex items-center justify-center">
- <User className="text-[#112D4E] w-4 h-4" />
- </div>
- <span className="font-bold text-[#0a1e36]">지원자 양현우</span>
- </div>
- <p className="text-[#8fabc8] text-sm font-medium">© 2026 PM 지원자 포트폴리오. All rights reserved.</p>
- <div className="flex gap-6 text-[#8fabc8] text-sm font-medium">
- <a href="#" className="hover:text-[#112D4E] transition-colors">Privacy</a>
- <a href="#" className="hover:text-[#112D4E] transition-colors">Terms</a>
- </div>
+ <div className="max-w-7xl mx-auto flex items-center justify-center border-t border-[#3F72AF]/8 pt-12">
+ <p className="text-[#8fabc8] text-sm font-medium">© PM 지원자 양현우 포트폴리오 All rights reserved.</p>
  </div>
  </footer>
 );
