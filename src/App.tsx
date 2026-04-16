@@ -51,7 +51,8 @@ import {
  FileText,
  Phone,
  MapPin,
- Calendar
+ Calendar,
+ Home
 } from 'lucide-react';
 
 // --- Types ---
@@ -768,26 +769,26 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
 
   return (
     <>
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50 glass rounded-2xl px-6 h-16 flex items-center justify-between print:hidden">
-        {/* Left: Brand */}
+      <header className="fixed top-4 w-full z-50 px-4 md:px-8 flex justify-between items-start print:hidden pointer-events-none">
+        {/* Left: Home Brand */}
         <div 
-          className="flex items-center gap-2 cursor-pointer group select-none" 
+          className="pointer-events-auto flex flex-col items-center gap-1 cursor-pointer group select-none relative" 
           onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsMenuOpen(false); }}
           onDoubleClick={handleAdminClick}
           title="더블클릭하여 관리자 모드"
         >
-          <div className="w-8 h-8 bg-gradient-to-br from-[#112D4E] to-[#3F72AF] rounded-lg flex items-center justify-center shadow-lg shadow-[#112D4E]/20 group-hover:scale-105 transition-transform">
-            <User className="text-[#1A59A7] w-5 h-5 cursor-pointer pointer-events-none" />
+          <div className="w-12 h-12 glass rounded-2xl flex items-center justify-center shadow-lg shadow-[#112D4E]/10 group-hover:scale-105 transition-transform border border-white/20">
+            <Home className="text-[#1A59A7] w-6 h-6 cursor-pointer pointer-events-none" />
           </div>
-          <span className="font-bold tracking-tight text-lg text-[#112D4E] pointer-events-none">지원자 양현우</span>          {isEditing && (
-            <div className="ml-2 px-2 py-0.5 bg-[#3F72AF]/20 border border-[#3F72AF]/50 rounded text-[10px] text-[#112D4E] font-bold uppercase animate-pulse pointer-events-none">
+          {isEditing && (
+            <div className="absolute top-14 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#3F72AF]/20 border border-[#3F72AF]/50 rounded text-[10px] text-[#112D4E] font-bold uppercase animate-pulse pointer-events-none whitespace-nowrap">
               Edit Mode
             </div>
           )}
         </div>
 
-        {/* Center/Right: Navigation Links (Desktop) */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Center: Navigation Links in a pill */}
+        <nav className="pointer-events-auto absolute left-1/2 -translate-x-1/2 top-0 hidden md:flex items-center gap-8 glass rounded-full px-8 h-12 shadow-lg shadow-[#112D4E]/10 border border-white/20">
           {navLinks.map((link) => (
             <button
               key={link.label}
@@ -797,22 +798,29 @@ const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: {
               {link.label}
             </button>
           ))}
+        </nav>
+
+        {/* Right: Admin & Mobile Menu */}
+        <div className="pointer-events-auto flex items-center gap-2 relative">
           <button
             onClick={handleAdminClick}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#112D4E]/5 hover:bg-[#112D4E]/10 text-[#112D4E] font-bold text-[0.85rem] transition-colors"
+            className="hidden md:flex w-12 h-12 items-center justify-center glass rounded-2xl hover:bg-[#112D4E]/10 transition-colors shadow-lg shadow-[#112D4E]/10 border border-white/20"
+            title={isEditing ? '완료' : '관리자모드'}
           >
-            {isEditing ? <Lock className="w-3.5 h-3.5" /> : <Settings className="w-3.5 h-3.5" />}
-            {isEditing ? '완료' : '관리자모드'}
+            {isEditing ? <Lock className="w-5 h-5 text-[#112D4E]" /> : <Settings className="w-5 h-5 text-[#112D4E]" />}
           </button>
+          
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)} 
+              className="w-12 h-12 flex items-center justify-center glass rounded-2xl text-[#112D4E] shadow-lg shadow-[#112D4E]/10 border border-white/20"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <div className="w-5 h-5 flex flex-col justify-center gap-1.5"><div className="w-full h-0.5 bg-current"></div><div className="w-full h-0.5 bg-current"></div><div className="w-full h-0.5 bg-current"></div></div>}
+            </button>
+          </div>
         </div>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center">
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-[#112D4E]">
-            {isMenuOpen ? <X className="w-6 h-6" /> : <div className="w-6 h-6 flex flex-col justify-center gap-1.5"><div className="w-full h-0.5 bg-current"></div><div className="w-full h-0.5 bg-current"></div><div className="w-full h-0.5 bg-current"></div></div>}
-          </button>
-        </div>
-      </nav>
+      </header>
 
       {/* Mobile Dropdown Menu */}
       <AnimatePresence>
@@ -990,7 +998,7 @@ const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: { isOpen:
  );
 };
 
-const Hero = ({ onMoreMeClick, isEditing, onToggleAdmin, content, setContent }: { onMoreMeClick: () => void, isEditing: boolean, onToggleAdmin: () => void, content: any, setContent: (c: any) => void }) => {
+const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { onNavClick: (id: string) => void, isEditing: boolean, onToggleAdmin: () => void, content: any, setContent: (c: any) => void }) => {
   const imageFileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1004,7 +1012,8 @@ const Hero = ({ onMoreMeClick, isEditing, onToggleAdmin, content, setContent }: 
   };
 
   return (
-    <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#F9F7F7] pt-20">
+    <>
+      <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#F9F7F7] pt-20">
       
       {/* Background Brush Stroke */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
@@ -1016,7 +1025,7 @@ const Hero = ({ onMoreMeClick, isEditing, onToggleAdmin, content, setContent }: 
       </div>
 
       {/* Center Portrait */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[22rem] md:max-w-[32rem] h-[52vh] md:h-[60vh] flex items-end justify-center pointer-events-none z-10">
+      <div className="absolute bottom-16 md:bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[22rem] md:max-w-[32rem] h-[52vh] md:h-[60vh] flex items-end justify-center pointer-events-none z-10">
         <div className="relative w-full h-full pointer-events-auto flex items-end justify-center">
           {content.heroImage ? (
             <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] border-x border-t border-[#DBE2EF] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
@@ -1091,45 +1100,69 @@ const Hero = ({ onMoreMeClick, isEditing, onToggleAdmin, content, setContent }: 
           </div>
         </div>
 
-        {/* Middle Left: Empty */}
-        <div className="hidden md:flex"></div>
-
-        {/* Middle Right: Empty */}
-        <div className="hidden md:flex"></div>
-
-        {/* Bottom Left: Experience */}
-        <div className="flex flex-col items-start justify-end pointer-events-auto pb-8 md:pb-12 z-20">
-          <div className="flex items-center gap-3 bg-[#F9F7F7]/80 backdrop-blur-sm p-4 rounded-3xl border border-[#3F72AF]/10 shadow-sm">
-            <span className="text-5xl md:text-6xl font-black text-[#112D4E] tracking-tighter leading-none">
-              <EditableText
-                value={content.expYears || "10"}
-                onSave={(v) => setContent({...content, expYears: v})}
-                isEditing={isEditing}
-              />
-            </span>
-            <div className="text-xs md:text-sm font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
-              <EditableText
-                value={content.expLabel || "YEARS\nEXPERIENCE"}
-                onSave={(v) => setContent({...content, expLabel: v})}
-                isEditing={isEditing}
-                multiline
-              />
-            </div>
+        {/* Middle Left: Points */}
+        <div className="hidden md:flex flex-col items-start justify-center pointer-events-auto z-20 gap-6 translate-y-8 md:translate-y-10">
+          <div className="bg-[#DBE2EF] text-[#112D4E] font-black text-[11px] md:text-xs tracking-widest px-5 py-1.5 rounded-full mb-1 shadow-sm">
+            POINT
           </div>
+          {[1, 2, 3].map(num => (
+            <div key={num} className="flex px-5 py-3 md:px-7 md:py-5 bg-white/70 backdrop-blur-md rounded-[1.5rem] border border-[#DBE2EF]/80 shadow-md items-center gap-4 hover:shadow-lg transition-all transform hover:-translate-y-1">
+              <span className="text-4xl md:text-5xl font-black text-[#112D4E] tracking-tighter leading-none">
+                <EditableText
+                  value={content[`point${num}Value`] || "10"}
+                  onSave={(v) => setContent({...content, [`point${num}Value`]: v})}
+                  isEditing={isEditing}
+                />
+              </span>
+              <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
+                <EditableText
+                  value={content[`point${num}Label`] || "YEARS\nEXPERIENCE"}
+                  onSave={(v) => setContent({...content, [`point${num}Label`]: v})}
+                  isEditing={isEditing}
+                  multiline
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Middle Right: Nav Buttons */}
+        <div className="hidden md:flex flex-col items-end justify-center pointer-events-auto z-20 gap-4 translate-y-8 md:translate-y-10">
+          <button 
+             onClick={() => onNavClick('resume-section')}
+             className="px-8 py-4 bg-white/70 backdrop-blur-md rounded-2xl border border-[#DBE2EF]/80 shadow-md flex items-center justify-between gap-6 hover:shadow-lg transition-all transform hover:-translate-y-1 w-[220px] group"
+          >
+            <span className="text-sm font-bold text-[#112D4E] tracking-tight">이력서 바로가기</span>
+            <ChevronRight className="w-5 h-5 text-[#3F72AF] group-hover:translate-x-1 transition-transform" />
+          </button>
+          
+          <button 
+             onClick={() => onNavClick('portfolio-section')}
+             className="px-8 py-4 bg-[#112D4E]/90 backdrop-blur-md rounded-2xl border border-[#112D4E] shadow-xl flex items-center justify-between gap-6 hover:shadow-lg transition-all transform hover:-translate-y-1 w-[220px] group"
+          >
+            <span className="text-sm font-bold text-white tracking-tight">포트폴리오 바로가기</span>
+            <ChevronRight className="w-5 h-5 text-white/70 group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+
+        {/* Bottom Left: Empty */}
+        <div className="flex flex-col items-start justify-end pointer-events-auto pb-8 md:pb-12 z-20">
         </div>        {/* Bottom Right: Empty */}
         <div className="flex flex-col items-end justify-end pointer-events-auto pb-8 md:pb-12 z-20">
-          <button 
-             onClick={onMoreMeClick}
-             className="bg-[#112D4E] text-white px-8 py-5 rounded-full font-bold shadow-2xl flex items-center gap-3 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:scale-105 pointer-events-auto"
-          >
-            MORE ME <ChevronRight className="w-6 h-6" />
-          </button>
         </div>
       </div>
     </section>
+      {/* Scroll Indicator at Boundary */}
+      <div className="relative w-full h-0 flex justify-center z-[100] pointer-events-none">
+        <div className="absolute -top-10 flex flex-col items-center animate-pulse opacity-90">
+          <span className="text-[11px] md:text-sm font-black tracking-widest text-[#3F72AF] mb-2 uppercase drop-shadow-sm">SCROLL</span>
+          <div className="w-[2px] h-16 md:h-24 bg-gradient-to-b from-[#3F72AF] via-[#3F72AF] to-transparent shadow-sm"></div>
+        </div>
+      </div>
+    </>
   );
 };
-const About = ({ isEditing, content, setContent }: { isEditing: boolean, content: any, setContent: (c: any) => void }) => (
+const About = ({ isEditing, content, setContent, onMoreMeClick }: { isEditing: boolean, content: any, setContent: (c: any) => void, onMoreMeClick: () => void }) => (
  <section id="about" className="py-24 px-6 max-w-7xl mx-auto">
  <div className="grid lg:grid-cols-12 gap-12 items-start">
  <div className="lg:col-span-7">
@@ -1241,6 +1274,14 @@ const About = ({ isEditing, content, setContent }: { isEditing: boolean, content
  </div>
  )}
  </div>
+ </div>
+ <div className="mt-8 md:mt-10 flex justify-center lg:justify-end w-full">
+  <button 
+    onClick={onMoreMeClick}
+    className="bg-[#112D4E] text-white px-10 py-4 md:px-12 md:py-5 rounded-full font-bold shadow-xl flex items-center gap-3 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:scale-105"
+  >
+    MORE ME <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+  </button>
  </div>
  </div>
  </div>
@@ -2332,12 +2373,6 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  >
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 print:hidden">
            <div className="flex flex-col items-start gap-4">
-            <button 
-              onClick={() => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className="bg-[#112D4E] text-white px-6 py-3.5 md:px-8 md:py-4 rounded-full text-xs font-bold shadow-2xl flex items-center gap-2 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:-translate-x-2 group relative z-50 pointer-events-auto"
-            >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
-            </button>
             <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-[11px] font-bold tracking-widest mt-2 relative z-50">01_RESUME</div>
           </div>
  <motion.button 
@@ -3321,7 +3356,7 @@ export default function App() {
             transition={{ duration: 0.5, ease: 'easeInOut' }}
           >
             <Hero 
-              onMoreMeClick={() => { changeView('more-me'); window.scrollTo(0,0); }}
+              onNavClick={handleNavClick}
               onToggleAdmin={() => {
                 if (isEditing) { setIsEditing(false); } else {
                   setIsHomePasswordOpen(true);
@@ -3335,6 +3370,7 @@ export default function App() {
               isEditing={isEditing} 
               content={aboutContent} 
               setContent={setAboutContent} 
+              onMoreMeClick={() => { changeView('more-me'); window.scrollTo(0,0); }}
             />
           </motion.div>
         )}
