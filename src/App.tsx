@@ -1057,7 +1057,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
         <div className="flex flex-col items-start justify-start pointer-events-auto md:pr-12 md:mt-8">
           <h1 className="font-black leading-[1.1] text-[#112D4E] tracking-tight mb-6">
             <EditableText
-              value={content.titleLine1 || "10년의 조율\n감각으로 협업\n을 완성하고"}
+              value={content.titleLine1 || "10년의 조율\\n감각으로 협업\\n을 완성하고"}
               onSave={(v) => setContent({...content, titleLine1: v})}
               isEditing={isEditing}
               multiline
@@ -1070,7 +1070,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
             />
             {isEditing && <TextStyleEditor style={content.titleLine1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)',letterSpacing:'-0.02em',fontWeight:'900'}} onStyleChange={(s) => setContent({...content, titleLine1Style: s})} />}
             <EditableText
-              value={content.titleLine2 || "결과로 증명하\n는 PM"}
+              value={content.titleLine2 || "결과로 증명하\\n는 PM"}
               onSave={(v) => setContent({...content, titleLine2: v})}
               isEditing={isEditing}
               multiline
@@ -1117,7 +1117,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
               </span>
               <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
                 <EditableText
-                  value={content[`point${num}Label`] || "YEARS\nEXPERIENCE"}
+                  value={content[`point${num}Label`] || "YEARS\\nEXPERIENCE"}
                   onSave={(v) => setContent({...content, [`point${num}Label`]: v})}
                   isEditing={isEditing}
                   multiline
