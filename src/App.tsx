@@ -2803,7 +2803,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </button>
  )}
  <div className="flex justify-between items-start mb-2">
- <h4 className="font-bold text-lg ">
+ <h4 className="font-bold text-[19px] ">
  <EditableText 
  value={exp.title} 
  onSave={(v) => {
@@ -2814,7 +2814,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </h4>
- <span className="text-xs font-mono text-[#0a1e36]">
+ <span className="text-[13px] font-mono text-[#0a1e36]">
  <EditableText 
  value={exp.period} 
  onSave={(v) => {
@@ -2826,7 +2826,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  />
  </span>
  </div>
- <p className="text-sm text-[#112D4E] mb-4 ">
+ <p className="text-[15px] text-[#112D4E] mb-4 ">
  <EditableText 
  value={exp.description} 
  onSave={(v) => {
@@ -2837,7 +2837,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </p>
- <ul className="text-xs text-[#0a1e36] space-y-2 list-disc list-inside ">
+ <ul className="text-[13px] text-[#0a1e36] space-y-2 list-disc list-inside ">
  {exp.details.map((detail, dIdx) => (
  <li key={dIdx} className="group flex items-center gap-2">
  <EditableText 
