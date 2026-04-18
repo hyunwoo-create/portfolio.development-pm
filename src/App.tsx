@@ -120,7 +120,7 @@ const EditableText = ({
           remarkPlugins={[remarkGfm]}
           urlTransform={(url) => url}
           components={{ 
-            p: ({node, ...props}) => <span className={multiline ? "whitespace-pre-wrap block mb-2 last:mb-0" : "inline"} {...props} />,
+            p: ({node, ...props}) => <span className={multiline ? "block mb-2 last:mb-0" : "inline"} {...props} />,
             a: ({node, ...props}) => {
               const href = props.href ? decodeURIComponent(props.href) : '';
               // Use includes to catch cases where the protocol might be prefixed with a base URL
