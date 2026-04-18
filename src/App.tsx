@@ -158,7 +158,7 @@ const EditableText = ({
             br: () => <br />
           }}
         >
-          {String(value || '').split('\n').map(line => line + '  ').join('\n')}
+          {String(value || '').replace(/\r\n|\n/g, '  \n')}
         </ReactMarkdown>
       </span>
     );
@@ -2279,7 +2279,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
             <div className="text-[14px] font-bold text-[#112D4E] mb-2">
               <EditableText value={exp.title} onSave={(v)=>{const n=[...data.leftExperience]; n[idx].title=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
             </div>
-            <div className="text-[12px] text-[#8fabc8] border-l-2 border-[#DBE2EF] pl-2 mb-2 whitespace-pre-line leading-relaxed flex flex-col gap-0.5">
+            <div className="text-[12px] text-[#8fabc8] border-l-2 border-[#DBE2EF] pl-2 mb-2 leading-relaxed flex flex-col gap-0.5">
               <EditableText value={exp.period || ''} multiline onSave={(v)=>{const n=[...data.leftExperience]; n[idx].period=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
             </div>
             {exp.details && exp.details.length > 0 && (
@@ -2754,7 +2754,7 @@ const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: { project:
         }
         return <a {...props} className="text-[#3F72AF] hover:underline" target="_blank" rel="noopener noreferrer" />;
       },
-      p: ({node, ...props}) => <p className="whitespace-pre-wrap mb-4 last:mb-0" {...props} />,
+      p: ({node, ...props}) => <p className="mb-4 last:mb-0" {...props} />,
       br: () => <br />
     }}
   >
