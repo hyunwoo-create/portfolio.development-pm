@@ -2368,7 +2368,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </button>
  )}
  </div>
- <div className="space-y-10">
+ <div className="space-y-8">
  {data.experience.map((exp, idx) => (
  <div key={idx} className="relative pl-8 border-l border-[#3F72AF]/12 pdf-no-break">
  <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#112D4E] shadow-[0_0_10px_rgba(168,85,247,0.5)] "></div>
@@ -2384,7 +2384,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <X className="w-4 h-4" />
  </button>
  )}
- <div className="flex justify-between items-start mb-2">
+ <div className="flex justify-between items-start mb-1">
  <h4 className="font-bold text-[19px] ">
  <EditableText 
  value={exp.title} 
@@ -2408,7 +2408,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  />
  </span>
  </div>
- <p className="text-[15px] text-[#112D4E] mb-4 whitespace-pre-wrap">
+ <p className="text-[15px] text-[#112D4E] mb-2 whitespace-pre-wrap">
  <EditableText 
  value={exp.description} 
  onSave={(v) => {
