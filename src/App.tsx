@@ -2419,9 +2419,9 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  isEditing={isEditing} 
  />
  </p>
- <ul className="text-[13px] text-[#0a1e36] space-y-2 list-disc list-inside ">
+ <ul className="text-[13px] text-[#0a1e36] space-y-1 list-disc list-inside">
  {exp.details.map((detail, dIdx) => (
- <li key={dIdx} className="group flex items-start gap-2 whitespace-pre-wrap">
+ <li key={dIdx} className="group flex items-start gap-2">
  <EditableText 
  value={detail} 
  onSave={(v) => {
