@@ -680,7 +680,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
               onSave={(v) => setContent({...content, titleLine1: v})}
               isEditing={isEditing}
               multiline
-              className="block leading-[1.1]"
+              className="block leading-[1.1] whitespace-pre-wrap"
               style={content.titleLine1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)',letterSpacing:'-0.02em',fontWeight:'900'}}
               styleData={content.titleLine1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)',letterSpacing:'-0.02em',fontWeight:'900'}}
               onStyleSave={(s) => setContent({...content, titleLine1Style: s})}
@@ -690,7 +690,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
               onSave={(v) => setContent({...content, titleLine2: v})}
               isEditing={isEditing}
               multiline
-              className="block text-[#3F72AF] mt-2 leading-[1.1]"
+              className="block text-[#3F72AF] mt-2 leading-[1.1] whitespace-pre-wrap"
               style={content.titleLine2Style || {fontSize:'clamp(3rem, 5.5vw, 5rem)',letterSpacing:'-0.05em',fontWeight:'900'}}
               styleData={content.titleLine2Style || {fontSize:'clamp(3rem, 5.5vw, 5rem)',letterSpacing:'-0.05em',fontWeight:'900'}}
               onStyleSave={(s) => setContent({...content, titleLine2Style: s})}
@@ -706,7 +706,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
               onSave={(v) => setContent({...content, description: v})}
               isEditing={isEditing}
               multiline
-              className="text-[#112D4E] font-medium leading-relaxed"
+              className="text-[#112D4E] font-medium leading-relaxed whitespace-pre-wrap"
               style={content.descStyle || {fontSize:'0.95rem'}}
               styleData={content.descStyle || {fontSize:'0.95rem'}}
               onStyleSave={(s) => setContent({...content, descStyle: s})}
@@ -728,7 +728,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
                   isEditing={isEditing}
                 />
               </span>
-              <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
+              <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase whitespace-pre-wrap">
                 <EditableText
                   value={content[`point${num}Label`] || "YEARS\nEXPERIENCE"}
                   onSave={(v) => setContent({...content, [`point${num}Label`]: v})}
@@ -798,14 +798,14 @@ const About = ({ isEditing, content, setContent, onMoreMeClick }: { isEditing: b
     <section id="about" className="py-24 px-6 max-w-7xl mx-auto bg-[#F9F7F7]">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 border-b border-[#3F72AF]/20 pb-6 gap-4">
-        <h2 className="text-3xl md:text-4xl font-black text-[#112D4E] tracking-tight">
+        <h2 className="text-3xl md:text-4xl font-black text-[#112D4E] tracking-tight whitespace-pre-wrap">
           <EditableText 
             value={content.titleLeft || "Q. 누구를 채용해야 할까요?"} 
             onSave={(v) => setContent({...content, titleLeft: v})} 
             isEditing={isEditing} 
           />
         </h2>
-        <h2 className="text-2xl md:text-3xl font-black text-[#3F72AF] tracking-tight text-right w-full md:w-auto">
+        <h2 className="text-2xl md:text-3xl font-black text-[#3F72AF] tracking-tight text-right w-full md:w-auto whitespace-pre-wrap">
           <EditableText 
             value={content.titleRight || "A. 저 입니다. 지원자 양 현우"} 
             onSave={(v) => setContent({...content, titleRight: v})} 
@@ -860,7 +860,7 @@ const About = ({ isEditing, content, setContent, onMoreMeClick }: { isEditing: b
                 const p = Math.min((v / totalParam) * 100, 100);
                 return (
                 <div key={num} className="flex items-center gap-4 relative z-10 pr-4">
-                  <div className="w-14 text-sm font-bold text-[#112D4E] text-right whitespace-nowrap">
+                  <div className="w-14 text-sm font-bold text-[#112D4E] text-right whitespace-pre-wrap">
                     <EditableText 
                       value={content[`skill${num}Name`] || `역량 ${String.fromCharCode(64 + num)}`} 
                       onSave={(v) => setContent({...content, [`skill${num}Name`]: v})} 
@@ -963,14 +963,14 @@ const About = ({ isEditing, content, setContent, onMoreMeClick }: { isEditing: b
                   <ChevronRight className="w-5 h-5 -ml-2" />
                 </div>
 
-                <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight">
+                <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight whitespace-pre-wrap">
                   <EditableText 
                     value={content[`descTitle${num}`] || `역량 ${String.fromCharCode(64 + num)}에 해당하는 내용 및 역량`} 
                     onSave={(v) => setContent({...content, [`descTitle${num}`]: v})} 
                     isEditing={isEditing} 
                   />
                 </h4>
-                <p className="text-[#3F72AF] text-[15px] leading-relaxed font-medium">
+                <p className="text-[#3F72AF] text-[15px] leading-relaxed font-medium whitespace-pre-wrap">
                   <EditableText 
                     value={content[`descText${num}`] || (num === 1 ? '채용 공고에서 요구하는 최우선 역량을 완벽하게 충족하며, 실무에서 즉시 성과를 창출할 수 있는 기획력과 문제해결 능력을 보유하고 있습니다.' : num === 2 ? '다양한 직군과의 협업 경험을 통해 커뮤니케이션 비용을 줄이고, 복잡한 프로젝트를 리드하여 성공적인 런칭을 이끌어냅니다.' : '데이터 수집 및 분석 자동화(크롤링) 경험을 바탕으로, 높은 수준의 기술적 이해도를 지니고 있어 개발팀과 매끄럽게 소통합니다.')} 
                     onSave={(v) => setContent({...content, [`descText${num}`]: v})} 
