@@ -534,11 +534,9 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setContent({...content, heroImage: ev.target?.result as string});
-    };
-    reader.readAsDataURL(file);
+    processImageHighQuality(file).then(dataUrl => {
+      setContent({...content, heroImage: dataUrl});
+    }).catch(console.error);
   };
 
   return (
@@ -1983,15 +1981,12 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
  const handleResumeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-   const dataUrl = ev.target?.result as string;
-   setData({...data, resumeImage: dataUrl});
+    const file = e.target.files?.[0];
+    if (!file) return;
+    processImageHighQuality(file).then(dataUrl => {
+      setData({...data, resumeImage: dataUrl});
+    }).catch(console.error);
   };
-  reader.readAsDataURL(file);
- };
  const techStack = data.techStack || [
  { id: 'ts-1', label: 'Engines & Languages', items: ['Unity', 'UE5', 'C#', 'C++', 'Blueprints'] },
  { id: 'ts-2', label: 'Design Tools', items: ['Excel', 'Python', 'Jira', 'Figma', 'Confluence'] }
