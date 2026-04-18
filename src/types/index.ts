@@ -48,6 +48,7 @@ export interface SelfIntroTab {
  id: string;
  title: string;
  content: string;
+ style?: any;
 }
 
 export interface TechStackCategory {
@@ -66,6 +67,7 @@ export interface ResumeData {
  linkedin: string;
  github: string;
  summary: string;
+ summaryStyle?: any;
  selfIntroduction: string;
  selfIntroTabs?: SelfIntroTab[];
  techStack?: TechStackCategory[];

@@ -86,6 +86,29 @@ const EditableText = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleStyleChange = useCallback((newStyle: any) => {
+    if (!onStyleSave || !styleData) return;
+
+    const target = multiline ? textareaRef.current : inputRef.current;
+    if (target && target.selectionStart !== null && target.selectionEnd !== null && target.selectionStart !== target.selectionEnd) {
+      const start = target.selectionStart;
+      const end = target.selectionEnd;
+      const selectedText = value.substring(start, end);
+      
+      const changedProp = Object.keys(newStyle).find(k => newStyle[k] !== styleData[k]);
+      if (changedProp) {
+        const kebabKey = changedProp.replace(/[A-Z]/g, m => "-" + m.toLowerCase());
+        const styleTag = `#style:${kebabKey}:${newStyle[changedProp]}`;
+        const newValue = value.substring(0, start) + `[${selectedText}](${styleTag})` + value.substring(end);
+        onSave(newValue);
+        return;
+      }
+    }
+    onStyleSave(newStyle);
+  }, [multiline, value, onSave, onStyleSave, styleData]);
 
   if (!isEditing) {
     if (disableMarkdown) {
@@ -95,9 +118,35 @@ const EditableText = ({
       <span className={className} style={style}>
         <ReactMarkdown 
           remarkPlugins={[remarkGfm]}
+          urlTransform={(url) => url}
           components={{ 
-            p: ({node, ...props}) => <span className={multiline ? "whitespace-pre-wrap block mb-2 last:mb-0" : ""} {...props} />,
-            a: ({node, ...props}) => <a {...props} className="text-[#3F72AF] hover:underline" target="_blank" rel="noopener noreferrer" />,
+            p: ({node, ...props}) => <span className={multiline ? "whitespace-pre-wrap block mb-2 last:mb-0" : "inline"} {...props} />,
+            a: ({node, ...props}) => {
+              const href = props.href ? decodeURIComponent(props.href) : '';
+              // Use includes to catch cases where the protocol might be prefixed with a base URL
+              if (href.includes('style:')) {
+                const stylePart = href.split('style:')[1];
+                const styleParts = stylePart.split(';');
+                const customStyle: any = {};
+                styleParts.forEach(part => {
+                  const [key, val] = part.split(':');
+                  if (key && val) {
+                    const camelKey = key.trim().replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                    customStyle[camelKey] = val.trim();
+                  }
+                });
+                return (
+                  <span 
+                    style={customStyle} 
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    className="cursor-text"
+                  >
+                    {props.children}
+                  </span>
+                );
+              }
+              return <a {...props} className="text-[#3F72AF] hover:underline" target="_blank" rel="noopener noreferrer" />;
+            },
             strong: ({node, ...props}) => <strong {...props} className="font-extrabold" />,
             em: ({node, ...props}) => <em {...props} className="italic" />,
             ul: ({node, ...props}) => <ul {...props} className="list-disc list-inside mt-1 space-y-1" />,
@@ -105,10 +154,11 @@ const EditableText = ({
             li: ({node, ...props}) => <li {...props} className="leading-snug" />,
             h1: ({node, ...props}) => <strong {...props} className="text-2xl font-bold mt-2 block" />,
             h2: ({node, ...props}) => <strong {...props} className="text-xl font-bold mt-2 block" />,
-            h3: ({node, ...props}) => <strong {...props} className="text-lg font-bold mt-1 block" />
+            h3: ({node, ...props}) => <strong {...props} className="text-lg font-bold mt-1 block" />,
+            br: () => <br />
           }}
         >
-          {String(value || '')}
+          {String(value || '').replace(/\n\s*\n/g, '\n\n&nbsp;\n\n')}
         </ReactMarkdown>
       </span>
     );
@@ -116,13 +166,14 @@ const EditableText = ({
 
   return (
     <div className="relative" ref={containerRef}>
-      {isEditing && isFocused && styleData && onStyleSave && (
+      {isEditing && isFocused && styleData && handleStyleChange && (
         <div className="absolute bottom-full left-0 z-[100] mb-2 pointer-events-auto">
-          <TextStyleEditor style={styleData} onStyleChange={onStyleSave} />
+          <TextStyleEditor style={styleData} onStyleChange={handleStyleChange} />
         </div>
       )}
       {multiline ? (
         <textarea
+          ref={textareaRef}
           className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded p-2 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
           value={value}
           onChange={(e) => onSave(e.target.value)}
@@ -136,6 +187,7 @@ const EditableText = ({
         />
       ) : (
         <input
+          ref={inputRef}
           className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
           value={value}
           onChange={(e) => onSave(e.target.value)}
@@ -587,7 +639,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
                 alt="Profile" 
                 className="w-full h-full object-cover object-top pointer-events-none" 
                 style={{ 
-                  imageRendering: 'high-quality',
+                  imageRendering: 'high-quality' as any,
                   transform: 'translateZ(0)',
                   willChange: 'transform'
                 }}
@@ -1981,28 +2033,29 @@ const SelfIntro = ({ setView, isEditing, data, setData }: ResumeProps) => {
  )}
  </div>
 
- {/* Tab Content */}
- <div className="glass rounded-[2rem] p-8 md:p-12 pdf-no-break">
- {selfIntroTabs.map((tab) => (
- <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
- {isEditing ? (
- <textarea
- className="w-full h-[300px] bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded-2xl p-6 text-[#1A59A7] text-sm leading-relaxed focus:outline-none focus:border-[#112D4E] resize-y"
- value={tab.content}
- onChange={(e) => {
- const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: e.target.value } : t);
- setData({...data, selfIntroTabs: newTabs});
- }}
- placeholder="자기소개 내용을 입력하세요..."
- />
- ) : (
- <div className="text-[#112D4E] leading-relaxed whitespace-pre-wrap font-medium">
- {tab.content}
- </div>
- )}
- </div>
- ))}
- </div>
+  {/* Tab Content */}
+  <div className="glass rounded-[2rem] p-6 pdf-no-break">
+  {selfIntroTabs.map((tab) => (
+  <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
+    <EditableText
+      value={tab.content}
+      onSave={(v) => {
+        const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: v } : t);
+        setData({...data, selfIntroTabs: newTabs});
+      }}
+      isEditing={isEditing}
+      multiline
+      className="leading-relaxed font-medium markdown-body min-h-[300px]"
+      style={tab.style || {}}
+      styleData={tab.style || {}}
+      onStyleSave={(s) => {
+        const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, style: s } : t);
+        setData({...data, selfIntroTabs: newTabs});
+      }}
+    />
+  </div>
+  ))}
+  </div>
  </section>
  </div>
  </motion.section>
@@ -2069,7 +2122,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  {/* Sidebar */}
  <div className="md:col-span-1 space-y-12">
  <div className="text-center md:text-left pdf-no-break">
- <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 relative group z-10">
+ <div className="w-[140px] h-[140px] rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 relative group z-10">
  <img src={data.resumeImage || "https://picsum.photos/seed/profile/300/300"} alt="Profile" className="w-full h-full object-cover" />
  {isEditing && (
  <div className="absolute inset-0 bg-[#112D4E]/40 transition-all flex items-center justify-center cursor-pointer"
@@ -2296,10 +2349,13 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </h3>
  <p className="text-[#112D4E] leading-relaxed font-medium ">
  <EditableText 
- value={data.summary} 
- onSave={(v) => setData({...data, summary: v})} 
- isEditing={isEditing} 
- multiline
+  value={data.summary} 
+  onSave={(v) => setData({...data, summary: v})} 
+  isEditing={isEditing} 
+  multiline
+  style={data.summaryStyle || {}}
+  styleData={data.summaryStyle || {}}
+  onStyleSave={(s) => setData({...data, summaryStyle: s})}
  />
  </p>
  </section>
@@ -2526,24 +2582,25 @@ const SelfIntroInResume = ({ isEditing, data, setData }: { isEditing: boolean, d
   </div>
 
   {/* Tab Content */}
-  <div className="glass rounded-[2rem] p-8 md:p-12 pdf-no-break">
+  <div className="glass rounded-[2rem] p-6 pdf-no-break">
   {selfIntroTabs.map((tab) => (
   <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
-  {isEditing ? (
-  <textarea
-  className="w-full h-[300px] bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded-2xl p-6 text-[#1A59A7] text-sm leading-relaxed focus:outline-none focus:border-[#112D4E] resize-y"
-  value={tab.content}
-  onChange={(e) => {
-  const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: e.target.value } : t);
-  setData({...data, selfIntroTabs: newTabs});
-  }}
-  placeholder="자기소개 내용을 입력하세요... (마크다운 문법 지원)"
-  />
-  ) : (
-  <div className="text-[#112D4E] leading-relaxed font-medium markdown-body">
-  <ReactMarkdown remarkPlugins={[remarkGfm]}>{tab.content}</ReactMarkdown>
-  </div>
-  )}
+    <EditableText
+      value={tab.content}
+      onSave={(v) => {
+        const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: v } : t);
+        setData({...data, selfIntroTabs: newTabs});
+      }}
+      isEditing={isEditing}
+      multiline
+      className="leading-relaxed font-medium markdown-body min-h-[300px]"
+      style={tab.style || {}}
+      styleData={tab.style || {}}
+      onStyleSave={(s) => {
+        const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, style: s } : t);
+        setData({...data, selfIntroTabs: newTabs});
+      }}
+    />
   </div>
   ))}
   </div>
@@ -2681,9 +2738,41 @@ const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: { project:
  onChange={(e) => onSaveContent(e.target.value)}
  />
  ) : (
- <ReactMarkdown remarkPlugins={[remarkGfm]}>
- {project.content}
- </ReactMarkdown>
+  <ReactMarkdown 
+    remarkPlugins={[remarkGfm]}
+    urlTransform={(url) => url}
+    components={{
+      a: ({node, ...props}) => {
+        const href = props.href ? decodeURIComponent(props.href) : '';
+        if (href.includes('style:')) {
+          const stylePart = href.split('style:')[1];
+          const styleParts = stylePart.split(';');
+          const customStyle: any = {};
+          styleParts.forEach(part => {
+            const [key, val] = part.split(':');
+            if (key && val) {
+              const camelKey = key.trim().replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+              customStyle[camelKey] = val.trim();
+            }
+          });
+          return (
+            <span 
+              style={customStyle} 
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              className="cursor-text"
+            >
+              {props.children}
+            </span>
+          );
+        }
+        return <a {...props} className="text-[#3F72AF] hover:underline" target="_blank" rel="noopener noreferrer" />;
+      },
+      p: ({node, ...props}) => <p className="whitespace-pre-wrap mb-4 last:mb-0" {...props} />,
+      br: () => <br />
+    }}
+  >
+    {project.content}
+  </ReactMarkdown>
  )}
  </div>
  </motion.section>
