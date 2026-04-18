@@ -2279,7 +2279,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
             <div className="text-[14px] font-bold text-[#112D4E] mb-2">
               <EditableText value={exp.title} onSave={(v)=>{const n=[...data.leftExperience]; n[idx].title=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
             </div>
-            <div className="text-[12px] text-[#8fabc8] border-l-2 border-[#DBE2EF] pl-2 mb-2 leading-relaxed flex flex-col gap-0.5">
+            <div className="text-[12px] text-[#8fabc8] border-l-2 border-[#DBE2EF] pl-2 mb-2 whitespace-pre-wrap leading-relaxed flex flex-col gap-0.5">
               <EditableText value={exp.period || ''} multiline onSave={(v)=>{const n=[...data.leftExperience]; n[idx].period=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
             </div>
             {exp.details && exp.details.length > 0 && (
@@ -2408,7 +2408,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  />
  </span>
  </div>
- <p className="text-[15px] text-[#112D4E] mb-4 ">
+ <p className="text-[15px] text-[#112D4E] mb-4 whitespace-pre-wrap">
  <EditableText 
  value={exp.description} 
  onSave={(v) => {
@@ -2421,7 +2421,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  </p>
  <ul className="text-[13px] text-[#0a1e36] space-y-2 list-disc list-inside ">
  {exp.details.map((detail, dIdx) => (
- <li key={dIdx} className="group flex items-center gap-2">
+ <li key={dIdx} className="group flex items-start gap-2 whitespace-pre-wrap">
  <EditableText 
  value={detail} 
  onSave={(v) => {
