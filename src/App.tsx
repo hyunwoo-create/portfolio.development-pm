@@ -56,12 +56,11 @@ import {
  PlayCircle
 } from 'lucide-react';
 
-import { Project, SkillTab, ToolItem, GameHistory, ResumeData } from './types';
+import { Project, SkillTab, ToolItem, GameHistory, ResumeData, Skill, SelfIntroTab } from './types';
 import { GAME_HISTORY, RESUME_DATA, PROJECTS, PORTFOLIO_PROJECTS, SKILLS, INITIAL_SKILL_TABS, INITIAL_TOOLS } from './data/constants';
 import { downloadPdf, processImageHighQuality } from './utils';
 
 import { useEditableContent } from './hooks';
-import { uploadToSupabase, deleteFromSupabase, useSupabaseUpload } from './hooks';
 // --- Components ---
 
 const EditableText = ({ 
@@ -71,16 +70,23 @@ const EditableText = ({
  className = "", 
  multiline = false,
 	disableMarkdown = false,
-	style = {} 
+  style = {},
+  styleData,
+  onStyleSave 
 }: { 
- value: string, 
- onSave: (v: string) => void, 
- isEditing: boolean, 
- className?: string,
- multiline?: boolean,
-	disableMarkdown?: boolean,
-	style?: React.CSSProperties
+  value: string, 
+  onSave: (v: string) => void, 
+  isEditing: boolean, 
+  className?: string,
+  multiline?: boolean,
+  disableMarkdown?: boolean,
+  style?: React.CSSProperties,
+  styleData?: any,
+  onStyleSave?: (s: any) => void
 }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   if (!isEditing) {
     if (disableMarkdown) {
       return <span className={className} style={style}>{String(value || '')}</span>;
@@ -108,22 +114,41 @@ const EditableText = ({
     );
   }
 
- return multiline ? (
- <textarea
- className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded p-2 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
- value={value}
- onChange={(e) => onSave(e.target.value)}
- rows={3}
-	style={style}
- />
- ) : (
- <input
- className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
- value={value}
- onChange={(e) => onSave(e.target.value)}
-	style={style}
- />
- );
+  return (
+    <div className="relative" ref={containerRef}>
+      {isEditing && isFocused && styleData && onStyleSave && (
+        <div className="absolute bottom-full left-0 z-[100] mb-2 pointer-events-auto">
+          <TextStyleEditor style={styleData} onStyleChange={onStyleSave} />
+        </div>
+      )}
+      {multiline ? (
+        <textarea
+          className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded p-2 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
+          value={value}
+          onChange={(e) => onSave(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={(e) => {
+            if (containerRef.current?.contains(e.relatedTarget as Node)) return;
+            setIsFocused(false);
+          }}
+          rows={3}
+          style={style}
+        />
+      ) : (
+        <input
+          className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
+          value={value}
+          onChange={(e) => onSave(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={(e) => {
+            if (containerRef.current?.contains(e.relatedTarget as Node)) return;
+            setIsFocused(false);
+          }}
+          style={style}
+        />
+      )}
+    </div>
+  );
 };
 
 
@@ -554,10 +579,10 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
 
       {/* Center Portrait */}
       <div className="absolute bottom-16 md:bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[22rem] md:max-w-[32rem] h-[52vh] md:h-[60vh] flex items-end justify-center pointer-events-none z-10">
-        <div className="relative w-full h-full pointer-events-auto flex items-end justify-center">
+        <div className="relative w-full h-full flex items-end justify-center">
           {content.heroImage ? (
             <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] border-x border-t border-[#DBE2EF] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
-              <img src={content.heroImage} alt="Profile" className="w-full h-full object-cover object-top" />
+              <img src={content.heroImage} alt="Profile" className="w-full h-full object-cover object-top pointer-events-none" />
             </div>
           ) : (            <div className="w-[80%] h-[80%] bg-[#DBE2EF] rounded-t-[5rem] flex flex-col items-center justify-center text-[#3F72AF]/40 border-4 border-white shadow-xl">
               <User className="w-24 h-24 mb-3" />
@@ -565,17 +590,23 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
               <p className="text-[10px]">(배경있는 사진도 둥글게 처리됨)</p>
             </div>
           )}
-          {isEditing && (
+        </div>
+      </div>
+
+      {/* Hero Admin Controls - Separate layer to avoid overlapping text while remaining clickable */}
+      {isEditing && (
+        <div className="absolute bottom-16 md:bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[22rem] md:max-w-[32rem] h-[52vh] md:h-[60vh] pointer-events-none z-50">
+          <div className="relative w-full h-full">
             <button
               onClick={() => imageFileInputRef.current?.click()}
-              className="absolute bottom-8 right-0 md:right-8 z-30 w-12 h-12 md:w-14 md:h-14 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#0a1e36] transition-all border-2 border-white"
+              className="absolute bottom-8 right-0 md:right-8 w-12 h-12 md:w-14 md:h-14 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#0a1e36] transition-all border-2 border-white pointer-events-auto"
             >
               <Upload className="w-5 h-5 md:w-6 md:h-6" />
             </button>
-          )}
-          <input ref={imageFileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+            <input ref={imageFileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Grid Layout for Text Corners */}
       <div className="relative z-20 w-full max-w-7xl mx-auto min-h-[calc(100vh-5rem)] grid grid-cols-1 md:grid-cols-2 grid-rows-[auto_1fr_auto] gap-8 px-6 lg:px-12 py-12 pointer-events-none">
@@ -584,31 +615,25 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
         <div className="flex flex-col items-start justify-start pointer-events-auto md:pr-12 md:mt-8">
           <h1 className="font-black leading-[1.1] text-[#112D4E] tracking-tight mb-6">
             <EditableText
-              value={content.titleLine1 || "10년의 조율\\n감각으로 협업\\n을 완성하고"}
+              value={content.titleLine1 || "10년의 조율\n감각으로 협업\n을 완성하고"}
               onSave={(v) => setContent({...content, titleLine1: v})}
               isEditing={isEditing}
               multiline
               className="block leading-[1.1]"
-              style={{
-                fontSize: content.titleLine1Style?.fontSize || 'clamp(2.5rem, 4.5vw, 4rem)',
-                 letterSpacing: content.titleLine1Style?.letterSpacing || '-0.02em',
-                 fontWeight: content.titleLine1Style?.fontWeight || '900',
-              }}
+              style={content.titleLine1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)',letterSpacing:'-0.02em',fontWeight:'900'}}
+              styleData={content.titleLine1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)',letterSpacing:'-0.02em',fontWeight:'900'}}
+              onStyleSave={(s) => setContent({...content, titleLine1Style: s})}
             />
-            {isEditing && <TextStyleEditor style={content.titleLine1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)',letterSpacing:'-0.02em',fontWeight:'900'}} onStyleChange={(s) => setContent({...content, titleLine1Style: s})} />}
             <EditableText
-              value={content.titleLine2 || "결과로 증명하\\n는 PM"}
+              value={content.titleLine2 || "결과로 증명하\n는 PM"}
               onSave={(v) => setContent({...content, titleLine2: v})}
               isEditing={isEditing}
               multiline
               className="block text-[#3F72AF] mt-2 leading-[1.1]"
-              style={{
-                fontSize: content.titleLine2Style?.fontSize || 'clamp(3rem, 5.5vw, 5rem)',
-                 letterSpacing: content.titleLine2Style?.letterSpacing || '-0.05em',
-                 fontWeight: content.titleLine2Style?.fontWeight || '900',
-              }}
+              style={content.titleLine2Style || {fontSize:'clamp(3rem, 5.5vw, 5rem)',letterSpacing:'-0.05em',fontWeight:'900'}}
+              styleData={content.titleLine2Style || {fontSize:'clamp(3rem, 5.5vw, 5rem)',letterSpacing:'-0.05em',fontWeight:'900'}}
+              onStyleSave={(s) => setContent({...content, titleLine2Style: s})}
             />
-            {isEditing && <TextStyleEditor style={content.titleLine2Style || {fontSize:'clamp(3rem, 5.5vw, 5rem)',letterSpacing:'-0.05em',fontWeight:'900'}} onStyleChange={(s) => setContent({...content, titleLine2Style: s})} />}
           </h1>
         </div>
         
@@ -621,9 +646,9 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
               isEditing={isEditing}
               multiline
               className="text-[#112D4E] font-medium leading-relaxed"
-              style={{
-                fontSize: content.descStyle?.fontSize || '0.95rem',
-              }}
+              style={content.descStyle || {fontSize:'0.95rem'}}
+              styleData={content.descStyle || {fontSize:'0.95rem'}}
+              onStyleSave={(s) => setContent({...content, descStyle: s})}
             />
           </div>
         </div>
@@ -644,7 +669,7 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
               </span>
               <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
                 <EditableText
-                  value={content[`point${num}Label`] || "YEARS\\nEXPERIENCE"}
+                  value={content[`point${num}Label`] || "YEARS\nEXPERIENCE"}
                   onSave={(v) => setContent({...content, [`point${num}Label`]: v})}
                   isEditing={isEditing}
                   multiline
@@ -2035,10 +2060,10 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  {/* Sidebar */}
  <div className="md:col-span-1 space-y-12">
  <div className="text-center md:text-left pdf-no-break">
- <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 relative group">
+ <div className="w-32 h-32 rounded-3xl overflow-hidden mb-6 mx-auto md:mx-0 border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 relative group z-10">
  <img src={data.resumeImage || "https://picsum.photos/seed/profile/300/300"} alt="Profile" className="w-full h-full object-cover" />
  {isEditing && (
- <div className="absolute inset-0 bg-[#112D4E]/50 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center cursor-pointer"
+ <div className="absolute inset-0 bg-[#112D4E]/40 transition-all flex items-center justify-center cursor-pointer"
  onClick={() => resumeImageInputRef.current?.click()}
  >
  <div className="flex flex-col items-center gap-1 text-white">
@@ -2692,7 +2717,7 @@ export default function App() {
  ]
  }, 'about_content');
 
- const [projectsData, setProjectsData] = useEditableContent(PROJECTS, 'projects_data');
+
  const [portfolioData, setPortfolioData] = useEditableContent(PORTFOLIO_PROJECTS, 'portfolio_data');
  const [skillsData, setSkillsData] = useEditableContent(SKILLS, 'skills_data');
  const [skillTabsData, setSkillTabsData] = useEditableContent(INITIAL_SKILL_TABS, 'skill_tabs_data');
@@ -2864,24 +2889,16 @@ export default function App() {
  project={selectedProject} 
  onBack={() => changeView((prevViewForDetail === 'project-detail' ? 'home' : prevViewForDetail) as any)} 
  isEditing={isEditing}
- onSaveContent={(content) => {
- const newProjects = [...projectsData];
- const idx = newProjects.findIndex(p => p.id === selectedProject.id);
- if (idx !== -1) {
- newProjects[idx].content = content;
- setProjectsData(newProjects);
- setSelectedProject({...selectedProject, content});
- } else {
- // Check portfolio projects
- const newPortfolio = [...portfolioData];
- const pIdx = newPortfolio.findIndex(p => p.id === selectedProject.id);
- if (pIdx !== -1) {
- newPortfolio[pIdx].content = content;
- setPortfolioData(newPortfolio);
- setSelectedProject({...selectedProject, content});
- }
- }
- }}
+  onSaveContent={(content) => {
+    if (!selectedProject) return;
+    const newPortfolio = [...portfolioData];
+    const pIdx = newPortfolio.findIndex(p => p.id === selectedProject.id);
+    if (pIdx !== -1) {
+      newPortfolio[pIdx].content = content;
+      setPortfolioData(newPortfolio);
+      setSelectedProject({...selectedProject, content});
+    }
+  }}
  />
  )}
  </AnimatePresence>

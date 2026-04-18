@@ -1,4 +1,4 @@
-import { GameHistory, ResumeData, Project, SkillTab, ToolItem } from '../types';
+import { GameHistory, ResumeData, Project, SkillTab, ToolItem, Skill } from '../types';
 
 // --- Mock Data ---
 export const GAME_HISTORY: GameHistory = {
