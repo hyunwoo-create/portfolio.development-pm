@@ -56,6 +56,14 @@ import {
  PlayCircle
 } from 'lucide-react';
 
+// --- Utils ---
+const downloadPdf = (dataUrl: string, name: string) => {
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = name.endsWith('.pdf') ? name : name + '.pdf';
+  a.click();
+};
+
 // --- Types ---
 interface Project {
  id: number;
@@ -66,6 +74,8 @@ interface Project {
  image: string;
  color: string;
  content: string;
+ downloadUrl?: string;
+ downloadFileName?: string;
 }
 
 interface Skill {
@@ -1583,12 +1593,21 @@ const Projects = ({ onProjectClick, isEditing, projects, setProjects, limit, set
  )}
  </div>
  
- <button 
- onClick={() => onProjectClick(project)}
- className="w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-[#112D4E] group-hover:text-[#F9F7F7] transition-all"
- >
- 상세보기 <ArrowUpRight className="w-4 h-4" />
- </button>
+ <div className="flex gap-2">
+  <button type="button" onClick={() => onProjectClick(project)} className="flex-1 py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-[#112D4E] group-hover:text-[#F9F7F7] transition-all">
+   상세보기 <ArrowUpRight className="w-4 h-4" />
+  </button>
+  <div className="flex-1 relative">
+   <button type="button" onClick={(e) => { e.stopPropagation(); project.downloadUrl ? downloadPdf(project.downloadUrl, project.downloadFileName || 'portfolio.pdf') : (!isEditing && alert('등록된 PDF 파일이 없습니다.')); }} className={`w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${project.downloadUrl ? 'text-[#3F72AF] group-hover:bg-[#3F72AF] group-hover:text-white' : 'text-gray-400 opacity-60'}`}>
+    다운로드 <Download className="w-4 h-4" />
+   </button>
+   {isEditing && (
+    <button type="button" title="PDF 업로드" onClick={(e) => { e.stopPropagation(); const inp = document.createElement('input'); inp.type='file'; inp.accept='application/pdf'; inp.onchange=()=>{ const f=inp.files?.[0]; if(!f) return; const r=new FileReader(); r.onload=(ev)=>{ setProjects(projects.map(p=>p.id===project.id?{...p,downloadUrl:ev.target!.result as string,downloadFileName:f.name}:p)); }; r.readAsDataURL(f); }; inp.click(); }} className="absolute -top-2 -right-2 w-6 h-6 bg-[#3F72AF] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-40 border border-white">
+     <FileText className="w-3 h-3" />
+    </button>
+   )}
+  </div>
+  </div>
  </div>
  </motion.div>
  ))}
@@ -1695,12 +1714,21 @@ const Portfolio = ({ onProjectClick, isEditing, projects, setProjects, setView }
  />
  </p>
  
- <button 
- onClick={() => onProjectClick(project)}
- className="w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-[#112D4E] group-hover:text-[#F9F7F7] transition-all"
- >
- 상세보기 <ArrowUpRight className="w-4 h-4" />
- </button>
+ <div className="flex gap-2">
+  <button type="button" onClick={() => onProjectClick(project)} className="flex-1 py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-[#112D4E] group-hover:text-[#F9F7F7] transition-all">
+   상세보기 <ArrowUpRight className="w-4 h-4" />
+  </button>
+  <div className="flex-1 relative">
+   <button type="button" onClick={(e) => { e.stopPropagation(); project.downloadUrl ? downloadPdf(project.downloadUrl, project.downloadFileName || 'portfolio.pdf') : (!isEditing && alert('등록된 PDF 파일이 없습니다.')); }} className={`w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${project.downloadUrl ? 'text-[#3F72AF] group-hover:bg-[#3F72AF] group-hover:text-white' : 'text-gray-400 opacity-60'}`}>
+    다운로드 <Download className="w-4 h-4" />
+   </button>
+   {isEditing && (
+    <button type="button" title="PDF 업로드" onClick={(e) => { e.stopPropagation(); const inp = document.createElement('input'); inp.type='file'; inp.accept='application/pdf'; inp.onchange=()=>{ const f=inp.files?.[0]; if(!f) return; const r=new FileReader(); r.onload=(ev)=>{ setProjects(projects.map(p=>p.id===project.id?{...p,downloadUrl:ev.target!.result as string,downloadFileName:f.name}:p)); }; r.readAsDataURL(f); }; inp.click(); }} className="absolute -top-2 -right-2 w-6 h-6 bg-[#3F72AF] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-40 border border-white">
+     <FileText className="w-3 h-3" />
+    </button>
+   )}
+  </div>
+  </div>
  </div>
  </motion.div>
  ))}
