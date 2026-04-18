@@ -2334,7 +2334,7 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
  <h3 className="text-xl font-bold mb-6 flex items-center gap-3 ">
  <User className="text-[#112D4E] w-6 h-6" /> 자기소개
  </h3>
- <p className="text-[#112D4E] leading-relaxed font-medium ">
+ <p className="text-[#112D4E] leading-relaxed font-medium whitespace-pre-wrap">
  <EditableText 
   value={data.summary} 
   onSave={(v) => setData({...data, summary: v})} 
