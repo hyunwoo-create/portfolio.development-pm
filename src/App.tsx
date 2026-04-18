@@ -1562,162 +1562,149 @@ const Skills = ({ isEditing, skillTabs, setSkillTabs }: { isEditing: boolean, sk
 };
 
 const MyTools = ({ isEditing, tools, setTools }: { isEditing: boolean, tools: ToolItem[], setTools: (t: ToolItem[]) => void }) => {
- const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
- const handleIconUpload = (toolId: string, e: React.ChangeEvent<HTMLInputElement>) => {
- const file = e.target.files?.[0];
- if (!file) return;
- const reader = new FileReader();
- reader.onload = (ev) => {
- const dataUrl = ev.target?.result as string;
- const newTools = tools.map(t => t.id === toolId ? { ...t, iconUrl: dataUrl } : t);
- setTools(newTools);
- };
- reader.readAsDataURL(file);
- };
+  const handleIconUpload = (toolId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      const newTools = tools.map(t => t.id === toolId ? { ...t, iconUrl: dataUrl } : t);
+      setTools(newTools);
+    };
+    reader.readAsDataURL(file);
+  };
 
- return (
- <section id="my-tools" className="py-32 px-6 max-w-7xl mx-auto border-t border-[#3F72AF]/8">
- <div className="flex items-center justify-between mb-12">
- <div>
- <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-xs font-bold mb-6">04_TOOLS</div>
- <h2 className="text-4xl md:text-5xl font-bold tracking-tight">나의 사용 Tool.</h2>
- </div>
- {isEditing && (
- <button
- onClick={() => {
- const newTool: ToolItem = {
- id: `tool-${Date.now()}`,
- name: '새 Tool',
- iconUrl: '',
- description: '툴에 대한 설명을 입력하세요.'
- };
- setTools([...tools, newTool]);
- }}
- className="px-4 py-2 bg-[#0a1e36] text-[#1A59A7] text-sm font-bold rounded-xl hover:bg-[#112D4E] transition-all flex items-center gap-2"
- >
- <Plus className="w-4 h-4" /> Tool 추가
- </button>
- )}
- </div>
+  return (
+    <section id="my-tools" className="py-32 px-6 max-w-7xl mx-auto border-t border-[#3F72AF]/8">
+      <div className="flex items-center justify-between mb-12">
+        <div>
+          <div className="inline-block px-4 py-1 rounded-lg bg-[#3F72AF]/10 text-[#3F72AF] text-xs font-bold mb-6">04_TOOLS</div>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">나의 사용 Tool.</h2>
+        </div>
+        {isEditing && (
+          <button
+            onClick={() => {
+              const newTool: ToolItem = {
+                id: `tool-${Date.now()}`,
+                name: '새 Tool',
+                iconUrl: '',
+                description: '툴에 대한 설명을 입력하세요.'
+              };
+              setTools([...tools, newTool]);
+            }}
+            className="px-4 py-2 bg-[#0a1e36] text-[#1A59A7] text-sm font-bold rounded-xl hover:bg-[#112D4E] transition-all flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" /> Tool 추가
+          </button>
+        )}
+      </div>
 
- <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
- {tools.map((tool) => (
- <motion.div
- key={tool.id}
- whileHover={{ y: -6 }}
- className="group relative bento-card !rounded-[2rem] flex flex-col"
- >
- {isEditing && (
- <button
- onClick={(e) => {
- e.stopPropagation();
- e.preventDefault();
- setTools(tools.filter(t => t.id !== tool.id));
- }}
- className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-[#1A59A7] rounded-full hover:bg-red-600 transition-colors shadow-lg"
- title="삭제"
- >
- <X className="w-4 h-4" />
- </button>
- )}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {tools.map((tool) => (
+          <motion.div
+            key={tool.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="glass px-4 pt-3.5 pb-3 rounded-xl relative group flex flex-col items-center text-center"
+          >
+            {isEditing && (
+              <button
+                onClick={() => {
+                  const newTools = tools.filter(t => t.id !== tool.id);
+                  setTools(newTools);
+                }}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              >
+                <X size={14} />
+              </button>
+            )}
 
- {/* Icon area */}
- <div className="flex items-center gap-4 mb-6">
- <div
- className={`w-16 h-16 glass rounded-2xl flex items-center justify-center overflow-hidden shrink-0 ${
- isEditing ? 'cursor-pointer hover:bg-[#112D4E]/10 border-2 border-dashed border-[#3F72AF]/20' : ''
- }`}
- onClick={() => {
- if (isEditing) {
- fileInputRefs.current[tool.id]?.click();
- }
- }}
- >
- {tool.iconUrl ? (
- <img src={tool.iconUrl} alt={tool.name} className="w-10 h-10 object-contain" />
- ) : (
- <div className="flex flex-col items-center text-[#0a1e36]">
- {isEditing ? (
- <Upload className="w-6 h-6" />
- ) : (
- <Wrench className="w-6 h-6" />
- )}
- </div>
- )}
- {isEditing && (
- <input
- ref={(el) => { fileInputRefs.current[tool.id] = el; }}
- type="file"
- accept="image/*"
- className="hidden"
- onChange={(e) => handleIconUpload(tool.id, e)}
- />
- )}
- </div>
- <div className="flex-1 min-w-0">
- <h3 className="text-xl font-bold group-hover:text-[#3F72AF] transition-colors">
- <EditableText
- value={tool.name}
- onSave={(v) => {
- const newTools = tools.map(t => t.id === tool.id ? { ...t, name: v } : t);
- setTools(newTools);
- }}
- isEditing={isEditing}
- />
- </h3>
- {isEditing && (
- <p className="text-[10px] text-[#8fabc8] mt-1">아이콘을 클릭하여 이미지를 업로드하세요</p>
- )}
- </div>
- </div>
+            {/* Icon area */}
+            <div 
+              className={`relative w-[43px] h-[43px] mb-2.5 flex items-center justify-center ${isEditing ? 'cursor-pointer hover:opacity-70' : ''}`}
+              onClick={() => isEditing && fileInputRefs.current[tool.id]?.click()}
+            >
+              {tool.iconUrl ? (
+                <img
+                  src={tool.iconUrl}
+                  alt={tool.name}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <Wrench size={30} className="text-[#3F72AF]/20" />
+              )}
+              {isEditing && (
+                <input
+                  ref={(el) => { fileInputRefs.current[tool.id] = el; }}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleIconUpload(tool.id, e)}
+                />
+              )}
+            </div>
 
- {/* Icon URL input for editing */}
- {isEditing && (
- <div className="mb-4">
- <div className="flex items-center gap-2 glass rounded-xl px-3 py-2">
- <ExternalLink className="w-3.5 h-3.5 text-[#0a1e36] shrink-0" />
- <input
- type="text"
- className="flex-1 bg-transparent border-none text-xs text-[#1A59A7] placeholder-[#8fabc8] focus:outline-none"
- value={tool.iconUrl}
- placeholder="또는 아이콘 URL을 직접 입력..."
- onChange={(e) => {
- const newTools = tools.map(t => t.id === tool.id ? { ...t, iconUrl: e.target.value } : t);
- setTools(newTools);
- }}
- />
- </div>
- </div>
- )}
+            {/* Title */}
+            <div className="font-bold text-[#112D4E] text-[13px] mb-1.5">{tool.name}</div>
 
- {/* Description */}
- <p className="text-sm text-[#112D4E] leading-relaxed flex-1">
- <EditableText
- value={tool.description}
- onSave={(v) => {
- const newTools = tools.map(t => t.id === tool.id ? { ...t, description: v } : t);
- setTools(newTools);
- }}
- isEditing={isEditing}
- multiline
- />
- </p>
+            {/* Divider */}
+            <div className="w-8 h-[1px] bg-[#112D4E]/10 my-1"></div>
 
- {/* Decorative bottom accent */}
- <div className="mt-6 h-1 w-full bg-gradient-to-r from-[#3F72AF]/40 via-[#112D4E]/40 to-[#0a1e36]/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
- </motion.div>
- ))}
- </div>
+            {/* Description */}
+            <div className="text-[11px] text-[#3F72AF] leading-tight flex-1">
+              <EditableText
+                value={tool.description}
+                onSave={(v) => {
+                  const newTools = tools.map(t => t.id === tool.id ? { ...t, description: v } : t);
+                  setTools(newTools);
+                }}
+                isEditing={isEditing}
+                multiline
+              />
+            </div>
 
- {tools.length === 0 && (
- <div className="text-center py-20 text-[#8fabc8]">
- <Wrench className="w-16 h-16 mx-auto mb-4 opacity-20" />
- <p className="text-sm">사용 중인 Tool을 추가해주세요.</p>
- </div>
- )}
- </section>
- );
+            {isEditing && (
+              <div className="mt-2 w-full space-y-1">
+                <div className="flex items-center gap-1 glass rounded-lg px-2 py-0.5">
+                  <input
+                    type="text"
+                    className="flex-1 bg-transparent border-none text-[8px] text-[#3F72AF] focus:outline-none"
+                    value={tool.name}
+                    onChange={(e) => {
+                      const newTools = tools.map(t => t.id === tool.id ? { ...t, name: e.target.value } : t);
+                      setTools(newTools);
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-1 glass rounded-lg px-2 py-0.5">
+                  <input
+                    type="text"
+                    className="flex-1 bg-transparent border-none text-[8px] text-[#3F72AF] focus:outline-none"
+                    value={tool.iconUrl}
+                    placeholder="Icon URL..."
+                    onChange={(e) => {
+                      const newTools = tools.map(t => t.id === tool.id ? { ...t, iconUrl: e.target.value } : t);
+                      setTools(newTools);
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+
+      {tools.length === 0 && (
+        <div className="text-center py-20 text-[#8fabc8]">
+          <Wrench className="w-16 h-16 mx-auto mb-4 opacity-20" />
+          <p className="text-sm">사용 중인 Tool을 추가해주세요.</p>
+        </div>
+      )}
+    </section>
+  );
 };
 
 const PlayHistory = ({ isEditing, history, setHistory }: { isEditing: boolean, history: GameHistory, setHistory: (h: GameHistory) => void }) => (
