@@ -582,7 +582,16 @@ const Hero = ({ onNavClick, isEditing, onToggleAdmin, content, setContent }: { o
         <div className="relative w-full h-full flex items-end justify-center">
           {content.heroImage ? (
             <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] border-x border-t border-[#DBE2EF] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
-              <img src={content.heroImage} alt="Profile" className="w-full h-full object-cover object-top pointer-events-none" />
+              <img 
+                src={content.heroImage} 
+                alt="Profile" 
+                className="w-full h-full object-cover object-top pointer-events-none" 
+                style={{ 
+                  imageRendering: 'high-quality',
+                  transform: 'translateZ(0)',
+                  willChange: 'transform'
+                }}
+              />
             </div>
           ) : (            <div className="w-[80%] h-[80%] bg-[#DBE2EF] rounded-t-[5rem] flex flex-col items-center justify-center text-[#3F72AF]/40 border-4 border-white shadow-xl">
               <User className="w-24 h-24 mb-3" />
