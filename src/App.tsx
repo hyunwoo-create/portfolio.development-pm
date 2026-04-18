@@ -158,7 +158,7 @@ const EditableText = ({
             br: () => <br />
           }}
         >
-          {String(value || '').split(/\r?\n/).map(line => line + '  ').join('\n')}
+          {String(value || '')}
         </ReactMarkdown>
       </span>
     );

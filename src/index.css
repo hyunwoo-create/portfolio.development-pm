@@ -71,6 +71,7 @@
     line-height: 1.625; /* leading-relaxed */
     font-size: 0.875rem; /* text-sm */
     font-weight: 500;
+    white-space: pre-wrap;
   }
 
   .markdown-body h1 {
