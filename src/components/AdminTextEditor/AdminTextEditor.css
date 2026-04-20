@@ -1,0 +1,135 @@
+/* AdminTextEditor - Tiptap 에디터 영역 전용 스타일 */
+
+/* 에디터 기본 스타일 */
+.admin-editor .ProseMirror {
+  outline: none;
+  min-height: 160px;
+  line-height: 1.65;
+  color: #112D4E;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans, 'Pretendard Variable', sans-serif);
+}
+
+/* 플레이스홀더 */
+.admin-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: rgba(63, 114, 175, 0.4);
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+/* 선택 영역 */
+.admin-editor .ProseMirror ::selection {
+  background-color: rgba(17, 45, 78, 0.18);
+}
+
+/* 헤딩 */
+.admin-editor .ProseMirror h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0.75rem 0 0.4rem;
+  color: #112D4E;
+  letter-spacing: -0.01em;
+}
+.admin-editor .ProseMirror h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0.6rem 0 0.35rem;
+  color: #112D4E;
+}
+.admin-editor .ProseMirror h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0.5rem 0 0.3rem;
+  color: #112D4E;
+}
+
+/* 단락 */
+.admin-editor .ProseMirror p {
+  margin: 0 0 0.45rem;
+}
+.admin-editor .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+/* 리스트 */
+.admin-editor .ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 1.4rem;
+  margin: 0.3rem 0 0.6rem;
+}
+.admin-editor .ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.4rem;
+  margin: 0.3rem 0 0.6rem;
+}
+.admin-editor .ProseMirror li {
+  margin-bottom: 0.2rem;
+  line-height: 1.55;
+}
+.admin-editor .ProseMirror li p {
+  margin: 0;
+}
+
+/* 인용구 */
+.admin-editor .ProseMirror blockquote {
+  border-left: 3px solid rgba(63, 114, 175, 0.5);
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  color: #3F72AF;
+  font-style: italic;
+  background: rgba(63, 114, 175, 0.06);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+/* 코드 */
+.admin-editor .ProseMirror code {
+  background: rgba(219, 226, 239, 0.7);
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.3rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.85em;
+  color: #112D4E;
+}
+.admin-editor .ProseMirror pre {
+  background: rgba(219, 226, 239, 0.5);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+  border: 1px solid rgba(63, 114, 175, 0.1);
+}
+.admin-editor .ProseMirror pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* 링크 */
+.admin-editor .ProseMirror a {
+  color: #3F72AF;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* 수평선 */
+.admin-editor .ProseMirror hr {
+  border: none;
+  border-top: 1px solid rgba(63, 114, 175, 0.15);
+  margin: 1rem 0;
+}
+
+/* 읽기 전용 모드 마크다운 스타일 (뷰어 모드) */
+.admin-editor-readonly .markdown-body {
+  color: #112D4E;
+  line-height: 1.65;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* BubbleMenu 팝업 z-index 보정 */
+.tippy-box {
+  z-index: 9999 !important;
+}
