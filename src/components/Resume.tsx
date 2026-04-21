@@ -473,8 +473,8 @@ const ProjectsSection = ({ data, setData, isEditing }: any) => (
                 </span>
               </div>
 
-              {/* Metrics Badge Row for Released Games */}
-              {isReleased && (
+              {/* Metrics Badge Row — 지표가 있으면 released 여부와 무관하게 표시 */}
+              {((exp.metrics && exp.metrics.length > 0) || isEditing) && (
                 <div className="flex gap-3 flex-wrap mb-2">
                   {(exp.metrics || []).map((m: any, i: number) => (
                     <div key={i} className="group/metric relative bg-[#F9F7F7] border border-[#DBE2EF] rounded-2xl px-4 py-3 flex flex-col gap-0.5 min-w-[120px] shadow-sm hover:shadow-md transition-all">
