@@ -2465,6 +2465,8 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
 
 
 
+  {/* Self Introduction - merged into resume */}
+  <SelfIntroInResume isEditing={isEditing} data={data} setData={setData} />
  </div>
  </div>
  </div>
@@ -2473,123 +2475,123 @@ const Resume = ({ setView, isEditing, data, setData }: ResumeProps) => {
 };
 
 
-// Self Introduction — standalone section at bottom of page 2
-const SelfIntroSection = ({ isEditing, data, setData }: { isEditing: boolean, data: ResumeData, setData: (d: ResumeData) => void }) => {
+// Self Introduction embedded inside Resume
+const SelfIntroInResume = ({ isEditing, data, setData }: { isEditing: boolean, data: ResumeData, setData: (d: ResumeData) => void }) => {
   const [activeIntroTab, setActiveIntroTab] = useState<string>(
-    data.selfIntroTabs?.[0]?.id || 'intro-1'
+  data.selfIntroTabs?.[0]?.id || 'intro-1'
   );
   const [editingIntroTabId, setEditingIntroTabId] = useState<string | null>(null);
 
   useEffect(() => {
-    const tabs = data.selfIntroTabs || [];
-    if (tabs.length > 0 && !tabs.find(t => t.id === activeIntroTab)) {
-      setActiveIntroTab(tabs[0].id);
-    }
+  const tabs = data.selfIntroTabs || [];
+  if (tabs.length > 0 && !tabs.find(t => t.id === activeIntroTab)) {
+  setActiveIntroTab(tabs[0].id);
+  }
   }, [data.selfIntroTabs, activeIntroTab]);
 
   const selfIntroTabs: SelfIntroTab[] = data.selfIntroTabs || [
-    { id: 'intro-1', title: '직무 지원 동기', content: data.selfIntroduction || '' }
+  { id: 'intro-1', title: '성장 과정 및 가치관', content: data.selfIntroduction || '' }
   ];
 
   return (
-    <section id="self-intro-section" className="py-24 px-6 max-w-5xl mx-auto">
-      {/* Section Header */}
-      <div className="flex items-center justify-between mb-10 border-b border-[#3F72AF]/10 pb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#112D4E] rounded-xl flex items-center justify-center shadow-lg">
-            <ScrollText className="text-white w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-[10px] font-black tracking-[0.2em] text-[#8fabc8] uppercase mb-0.5">02_COVER LETTER</div>
-            <h2 className="text-2xl font-black text-[#112D4E] leading-tight">자기소개서</h2>
-          </div>
-        </div>
-        {isEditing && (
-          <button
-            onClick={() => {
-              const newTab: SelfIntroTab = { id: `intro-${Date.now()}`, title: '새 항목', content: '내용을 입력하세요.' };
-              const newTabs = [...selfIntroTabs, newTab];
-              setData({...data, selfIntroTabs: newTabs});
-              setActiveIntroTab(newTab.id);
-            }}
-            className="flex items-center gap-1.5 px-4 py-2 border-2 border-dashed border-[#3F72AF]/30 rounded-xl text-sm font-bold text-[#3F72AF] hover:bg-[#3F72AF]/5 transition-all"
-          >
-            <Plus className="w-4 h-4" /> 탭 추가
-          </button>
-        )}
-      </div>
+  <section className="pt-12 mt-12 border-t border-[#3F72AF]/8">
+  <div className="flex items-center justify-between mb-8 pdf-no-break">
+  <h3 className="text-xl font-bold flex items-center gap-3">
+  <ScrollText className="text-[#112D4E] w-6 h-6" /> 자기소개서
+  </h3>
+  </div>
 
-      {/* Tab Bar */}
-      <div className="flex items-center gap-2 mb-8 flex-wrap">
-        {selfIntroTabs.map((tab) => (
-          <div key={tab.id} className="relative flex items-center">
-            {isEditing && editingIntroTabId === tab.id ? (
-              <input
-                type="text"
-                className="px-4 py-2 bg-[#DBE2EF]/60 border border-[#112D4E] rounded-xl text-sm font-bold text-[#1A59A7] focus:outline-none min-w-[80px]"
-                value={tab.title}
-                autoFocus
-                onChange={(e) => {
-                  const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, title: e.target.value } : t);
-                  setData({...data, selfIntroTabs: newTabs});
-                }}
-                onBlur={() => setEditingIntroTabId(null)}
-                onKeyDown={(e) => { if (e.key === 'Enter') setEditingIntroTabId(null); }}
-              />
-            ) : (
-              <button
-                onClick={() => setActiveIntroTab(tab.id)}
-                onDoubleClick={() => isEditing && setEditingIntroTabId(tab.id)}
-                className={`px-6 py-2.5 rounded-full text-sm font-black tracking-wide transition-all ${
-                  activeIntroTab === tab.id
-                    ? 'bg-[#0a1e36] text-white shadow-[0_8px_20px_rgba(10,30,54,0.3)] scale-105'
-                    : 'bg-[#DBE2EF]/40 text-[#112D4E] hover:bg-[#DBE2EF] border border-transparent'
-                }`}
-              >
-                {tab.title}
-              </button>
-            )}
-            {isEditing && selfIntroTabs.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const newTabs = selfIntroTabs.filter(t => t.id !== tab.id);
-                  setData({...data, selfIntroTabs: newTabs});
-                  if (activeIntroTab === tab.id && newTabs.length > 0) setActiveIntroTab(newTabs[0].id);
-                }}
-                className="ml-1 p-1 text-red-400/70 hover:text-red-400 rounded-lg transition-all"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+  {/* Tab Bar */}
+  <div className="flex items-center gap-2 mb-6 flex-wrap pdf-no-break">
+  {selfIntroTabs.map((tab) => (
+  <div key={tab.id} className="relative flex items-center">
+  {isEditing && editingIntroTabId === tab.id ? (
+  <input
+  type="text"
+  className="px-4 py-2 bg-[#DBE2EF]/60 border border-[#112D4E] rounded-xl text-sm font-bold text-[#1A59A7] focus:outline-none min-w-[80px]"
+  value={tab.title}
+  autoFocus
+  onChange={(e) => {
+  const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, title: e.target.value } : t);
+  setData({...data, selfIntroTabs: newTabs});
+  }}
+  onBlur={() => setEditingIntroTabId(null)}
+  onKeyDown={(e) => { if (e.key === 'Enter') setEditingIntroTabId(null); }}
+  />
+  ) : (
+  <button
+  onClick={() => setActiveIntroTab(tab.id)}
+  onDoubleClick={() => isEditing && setEditingIntroTabId(tab.id)}
+  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+  activeIntroTab === tab.id
+  ? 'bg-[#0a1e36] text-[#F9F7F7] shadow-lg shadow-[#112D4E]/25'
+  : 'glass text-[#112D4E] hover:text-[#112D4E] hover:bg-[#112D4E]/5'
+  }`}
+  >
+  {tab.title}
+  </button>
+  )}
+  {isEditing && selfIntroTabs.length > 1 && (
+  <button
+  onClick={(e) => {
+  e.stopPropagation();
+  const newTabs = selfIntroTabs.filter(t => t.id !== tab.id);
+  setData({...data, selfIntroTabs: newTabs});
+  if (activeIntroTab === tab.id && newTabs.length > 0) {
+  setActiveIntroTab(newTabs[0].id);
+  }
+  }}
+  className="ml-1 p-1 text-red-400/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+  title="탭 삭제"
+  >
+  <X className="w-3 h-3" />
+  </button>
+  )}
+  </div>
+  ))}
+  {isEditing && (
+  <button
+  onClick={() => {
+  const newTab: SelfIntroTab = {
+  id: `intro-${Date.now()}`,
+  title: '새 항목',
+  content: '내용을 입력하세요.'
+  };
+  const newTabs = [...selfIntroTabs, newTab];
+  setData({...data, selfIntroTabs: newTabs});
+  setActiveIntroTab(newTab.id);
+  }}
+  className="px-3 py-2 border-2 border-dashed border-[#3F72AF]/20 rounded-xl text-sm font-bold text-[#0a1e36] hover:text-[#112D4E] hover:border-[#112D4E]/50 transition-all flex items-center gap-1.5"
+  >
+  <Plus className="w-3.5 h-3.5" /> 탭 추가
+  </button>
+  )}
+  </div>
 
-      {/* Tab Content */}
-      <div className="bg-[#EEF2F7] rounded-[2.5rem] p-8 lg:p-14 border border-[#DBE2EF]/50 shadow-inner">
-        {selfIntroTabs.map((tab) => (
-          <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
-            <EditableText
-              value={tab.content}
-              onSave={(v) => {
-                const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: v } : t);
-                setData({...data, selfIntroTabs: newTabs});
-              }}
-              isEditing={isEditing}
-              multiline
-              className="leading-relaxed font-medium markdown-body min-h-[300px] text-[#112D4E]"
-              style={tab.style || {}}
-              styleData={tab.style || {}}
-              onStyleSave={(s) => {
-                const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, style: s } : t);
-                setData({...data, selfIntroTabs: newTabs});
-              }}
-            />
-          </div>
-        ))}
-      </div>
-    </section>
+  {/* Tab Content */}
+  <div className="glass rounded-[2rem] p-6 pdf-no-break">
+  {selfIntroTabs.map((tab) => (
+  <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
+    <EditableText
+      value={tab.content}
+      onSave={(v) => {
+        const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, content: v } : t);
+        setData({...data, selfIntroTabs: newTabs});
+      }}
+      isEditing={isEditing}
+      multiline
+      className="leading-relaxed font-medium markdown-body min-h-[300px]"
+      style={tab.style || {}}
+      styleData={tab.style || {}}
+      onStyleSave={(s) => {
+        const newTabs = selfIntroTabs.map(t => t.id === tab.id ? { ...t, style: s } : t);
+        setData({...data, selfIntroTabs: newTabs});
+      }}
+    />
+  </div>
+  ))}
+  </div>
+  </section>
   );
 };
 
@@ -3364,8 +3366,6 @@ export default function App() {
                 <MyTools isEditing={isEditing} tools={toolsData} setTools={setToolsData} />
               </div>
             )}
-            
-            <SelfIntroSection isEditing={isEditing} data={resumeData} setData={setResumeData} />
           </motion.div>
         )}
 

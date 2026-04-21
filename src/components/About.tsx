@@ -187,73 +187,51 @@ export const About = ({ isEditing, content, setContent, onMoreMeClick }: AboutPr
         </div>
 
         {/* Right Column: Text and Button */}
-        <div className="lg:col-span-7 relative">
-          <div className="relative h-[600px] lg:h-full lg:absolute lg:inset-0 w-full flex flex-col">
-            
-            {/* TABS */}
-            <div className="flex flex-wrap gap-2 mb-4 shrink-0 z-20 sticky top-0 bg-[#F9F7F7] pb-2 pt-2 lg:pt-0">
-              {skills.map((num) => {
-                const rawTitle = content[`descTitle${num}`] || `역량 ${String.fromCharCode(64 + num)}`;
-                const shortTitle = rawTitle.split('\n')[0].substring(0, 18);
-                return (
-                  <button 
-                    key={`tab-${num}`}
-                    onClick={() => {
-                      const el = document.getElementById(`about-section-${num}`);
-                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}
-                    className="text-[11px] md:text-xs font-black px-4 py-2 flex-grow lg:flex-grow-0 rounded-lg border border-[#DBE2EF] text-[#3F72AF] bg-white shadow-sm hover:bg-[#112D4E] hover:text-white hover:border-[#112D4E] transition-all whitespace-nowrap"
-                  >
-                    {shortTitle}{rawTitle.length > 18 ? '...' : ''}
-                  </button>
-                )
-              })}
-            </div>
+        <div className="lg:col-span-7 flex flex-col justify-between py-6">
+          <div className="flex flex-col space-y-16 lg:pl-16 flex-1 justify-around">
+            {skills.map((num) => (
+              <div key={num} className="relative">
+                {/* Desktop Arrow perfectly pointing at this block */}
+                <div className="hidden lg:flex absolute top-1/2 -left-16 w-12 -translate-y-1/2 items-center opacity-30 text-[#3F72AF] pointer-events-none">
+                  <div className="flex-1 border-t-2 border-dashed border-[#3F72AF]"></div>
+                  <ChevronRight className="w-5 h-5 -ml-2" />
+                </div>
 
-            {/* SCROLLABLE TEXT AREA */}
-            <div className="flex-1 overflow-y-auto min-h-0 pr-4 lg:pl-12 pb-32 no-scrollbar relative z-10 scroll-smooth">
-              <div className="flex flex-col space-y-20 pt-4">
-                {skills.map((num) => (
-                  <div id={`about-section-${num}`} key={num} className="relative scroll-mt-20">
-                    {/* Desktop Arrow perfectly pointing at this block */}
-                    <div className="hidden lg:flex absolute top-4 -left-16 w-12 items-center opacity-30 text-[#3F72AF] pointer-events-none">
-                      <div className="flex-1 border-t-2 border-dashed border-[#3F72AF]"></div>
-                      <ChevronRight className="w-5 h-5 -ml-2" />
-                    </div>
-
-                    <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight whitespace-pre-wrap">
-                      <EditableText 
-                        value={content[`descTitle${num}`] || `역량 ${String.fromCharCode(64 + num)}에 해당하는 내용 및 역량`} 
-                        onSave={(v) => setContent({...content, [`descTitle${num}`]: v})} 
-                        isEditing={isEditing} 
-                      />
-                    </h4>
-                    <div className="text-[#3F72AF] text-[15px] leading-relaxed font-medium">
-                      <AdminTextEditor
-                        isAdmin={isEditing}
-                        hideTitle
-                        bodyValue={content[`descText${num}`] || (num === 1 ? '채용 공고에서 요구하는 최우선 역량을 완벽하게 충족하며, 실무에서 즉시 성과를 창출할 수 있는 기획력과 문제해결 능력을 보유하고 있습니다.' : num === 2 ? '다양한 직군과의 협업 경험을 통해 커뮤니케이션 비용을 줄이고, 복잡한 프로젝트를 리드하여 성공적인 런칭을 이끌어냅니다.' : '데이터 수집 및 분석 자동화(크롤링) 경험을 바탕으로, 높은 수준의 기술적 이해도를 지니고 있어 개발팀과 매끄럽게 소통합니다.')}
-                        onBodyChange={(v) => setContent({...content, [`descText${num}`]: v})}
-                        bodyPlaceholder="상세 설명을 입력하세요..."
-                        minBodyHeight="120px"
-                        readonlyClassName="markdown-body"
-                      />
-                    </div>
-                  </div>
-                ))}
+                <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight whitespace-pre-wrap">
+                  <EditableText 
+                    value={content[`descTitle${num}`] || `역량 ${String.fromCharCode(64 + num)}에 해당하는 내용 및 역량`} 
+                    onSave={(v) => setContent({...content, [`descTitle${num}`]: v})} 
+                    isEditing={isEditing} 
+                  />
+                </h4>
+                <div className="text-[#3F72AF] text-[15px] leading-relaxed font-medium">
+                  <AdminTextEditor
+                    isAdmin={isEditing}
+                    hideTitle
+                    bodyValue={content[`descText${num}`] || (num === 1 ? '채용 공고에서 요구하는 최우선 역량을 완벽하게 충족하며, 실무에서 즉시 성과를 창출할 수 있는 기획력과 문제해결 능력을 보유하고 있습니다.' : num === 2 ? '다양한 직군과의 협업 경험을 통해 커뮤니케이션 비용을 줄이고, 복잡한 프로젝트를 리드하여 성공적인 런칭을 이끌어냅니다.' : '데이터 수집 및 분석 자동화(크롤링) 경험을 바탕으로, 높은 수준의 기술적 이해도를 지니고 있어 개발팀과 매끄럽게 소통합니다.')}
+                    onBodyChange={(v) => setContent({...content, [`descText${num}`]: v})}
+                    bodyPlaceholder="상세 설명을 입력하세요..."
+                    minBodyHeight="120px"
+                    readonlyClassName="markdown-body"
+                  />
+                </div>
+                
+                {/* Arrow for mobile, displayed below text */}
+                <div className="lg:hidden flex items-center w-full opacity-20 text-[#3F72AF] mt-6">
+                  <div className="flex-1 border-t-2 border-dashed border-[#3F72AF]"></div>
+                  <ChevronRight className="w-5 h-5 -ml-2" />
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
 
-            {/* BOTTOM BUTTON OVERLAY */}
-            <div className="absolute bottom-0 left-0 right-0 pt-20 pb-4 bg-gradient-to-t from-[#F9F7F7] via-[#F9F7F7] to-transparent flex justify-end lg:pr-8 z-30 pointer-events-none rounded-b-[2rem]">
-              <button 
-                onClick={onMoreMeClick}
-                className="bg-[#112D4E] pointer-events-auto text-white px-8 py-4 rounded-full font-bold shadow-xl flex items-center gap-3 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:scale-105"
-              >
-                MORE ME <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-
+          <div className="mt-16 flex justify-end lg:pr-8">
+            <button 
+              onClick={onMoreMeClick}
+              className="bg-[#112D4E] text-white px-8 py-4 rounded-full font-bold shadow-xl flex items-center gap-3 hover:bg-[#1A59A7] transition-all whitespace-nowrap transform hover:scale-105"
+            >
+              MORE ME <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
