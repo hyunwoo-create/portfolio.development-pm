@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { EditableText } from './EditableText';
 import { processImageHighQuality } from '../utils';
+import { handlePdfExport } from '../utils/pdf-generator';
 import { ResumeData, SelfIntroTab } from '../types';
 
 interface ResumeProps {
@@ -59,14 +60,22 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
       className="pt-32 pb-24 px-6 max-w-5xl mx-auto print:pt-0 print:pb-0 print:max-w-none"
     >
       {isEditing && (
-        <div className="flex flex-col md:flex-row md:items-center justify-end gap-6 mb-12 print:hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-end gap-3 mb-12 print:hidden">
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handlePdfExport(data)}
+            className="px-6 py-3 bg-[#112D4E] text-white rounded-xl text-sm font-black flex items-center gap-2 hover:bg-[#0f1a2a] transition-all shadow-lg shadow-[#112D4E]/20"
+          >
+            <ScrollText className="w-4 h-4 text-white" /> 고품질 PDF 추출 (추천)
+          </motion.button>
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleDownloadPdf}
-            className="px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[#112D4E]/10 transition-all"
+            className="px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[#112D4E]/5 transition-all text-[#112D4E]"
           >
-            <Download className="w-4 h-4 text-[#112D4E]" /> PDF 이력서 다운로드
+            <Download className="w-4 h-4 text-[#112D4E]" /> 일반 인쇄
           </motion.button>
         </div>
       )}
