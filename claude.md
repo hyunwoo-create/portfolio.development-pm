@@ -20,3 +20,32 @@
 - **[중요]** 새로운 세션(대화)을 시작하거나 작업을 진행하기 전에, 반드시 프로젝트 루트에 있는 `context.md` 파일을 먼저 읽고 현재 프로젝트의 진척도와 목표를 파악하세요.
 - `context.md`의 내용을 기반으로 답변하되, 파일의 전체 내용을 다시 출력하지는 마세요.
 - 작업을 진행하면서 변경된 사항이나 새로 알게 된 정보는 즉시 `context.md`에 기록하여 최신 상태를 유지하세요.
+
+## 6. gstack
+- 모든 웹 브라우징 작업 시 gstack의 `/browse` 스킬을 사용하세요.
+- `mcp__claude-in-chrome__*` 도구는 절대 사용하지 마세요.
+- 사용 가능한 스킬 목록: `/office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /design-shotgun, /design-html, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /connect-chrome, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /plan-devex-review, /devex-review, /careful, /freeze, /guard, /unfreeze`
+
+## gstack (REQUIRED — global install)
+
+**Before doing ANY work, verify gstack is installed:**
+
+```bash
+test -d ~/.claude/skills/gstack/bin && echo "GSTACK_OK" || echo "GSTACK_MISSING"
+```
+
+If GSTACK_MISSING: STOP. Do not proceed. Tell the user:
+
+> gstack is required for all AI-assisted work in this repo.
+> Install it:
+> ```bash
+> git clone --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
+> cd ~/.claude/skills/gstack && ./setup --team
+> ```
+> Then restart your AI coding tool.
+
+Do not skip skills, ignore gstack errors, or work around missing gstack.
+
+Using gstack skills: After install, skills like /qa, /ship, /review, /investigate,
+and /browse are available. Use /browse for all web browsing.
+Use ~/.claude/skills/gstack/... for gstack file paths (the global path).
