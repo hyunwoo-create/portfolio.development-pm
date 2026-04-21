@@ -3009,9 +3009,12 @@ const StatBoard = ({ isEditing, projects, setProjects, skillTabs, setSkillTabs, 
   );
 
   return (
-    <section id="stat-board" className="py-24 px-6 max-w-[1400px] mx-auto border-t border-[#3F72AF]/8 relative z-20 bg-[#F9F7F7]">
-      <div className="text-center mb-16 hidden md:block">
-        <div className="inline-block px-4 py-1 rounded-full bg-[#112D4E] text-[#F9F7F7] text-[10px] font-bold tracking-[0.2em] uppercase mb-4 shadow-lg shadow-[#112D4E]/20">02_STATUS_BOARD</div>
+    <section id="stat-board" className="pt-12 pb-24 px-6 max-w-[1400px] mx-auto relative z-20 bg-[#F9F7F7]">
+      <div className="w-full flex justify-center mb-16 pointer-events-none">
+        <div className="flex flex-col items-center animate-pulse opacity-90">
+          <span className="text-[11px] md:text-sm font-black tracking-widest text-[#3F72AF] mb-2 uppercase drop-shadow-sm">SCROLL</span>
+          <div className="w-[2px] h-16 md:h-24 bg-gradient-to-b from-[#3F72AF] via-[#3F72AF] to-transparent shadow-sm"></div>
+        </div>
       </div>
 
       {/* DESKTOP 3-COLUMN */}
