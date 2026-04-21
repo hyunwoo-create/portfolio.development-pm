@@ -2540,10 +2540,10 @@ const SelfIntroSection = ({ isEditing, data, setData }: { isEditing: boolean, da
               <button
                 onClick={() => setActiveIntroTab(tab.id)}
                 onDoubleClick={() => isEditing && setEditingIntroTabId(tab.id)}
-                className={`px-5 py-2.5 rounded-xl text-sm font-black tracking-wide transition-all ${
+                className={`px-6 py-2.5 rounded-full text-sm font-black tracking-wide transition-all ${
                   activeIntroTab === tab.id
-                    ? 'bg-[#0a1e36] text-[#F9F7F7] shadow-lg shadow-[#112D4E]/25 scale-105'
-                    : 'bg-white border border-[#DBE2EF] text-[#112D4E] hover:bg-[#DBE2EF] shadow-sm'
+                    ? 'bg-[#0a1e36] text-white shadow-[0_8px_20px_rgba(10,30,54,0.3)] scale-105'
+                    : 'bg-[#DBE2EF]/40 text-[#112D4E] hover:bg-[#DBE2EF] border border-transparent'
                 }`}
               >
                 {tab.title}
@@ -2567,7 +2567,7 @@ const SelfIntroSection = ({ isEditing, data, setData }: { isEditing: boolean, da
       </div>
 
       {/* Tab Content */}
-      <div className="bg-white rounded-[2rem] p-8 lg:p-12 border border-[#DBE2EF] shadow-lg shadow-[#112D4E]/5">
+      <div className="bg-[#EEF2F7] rounded-[2.5rem] p-8 lg:p-14 border border-[#DBE2EF]/50 shadow-inner">
         {selfIntroTabs.map((tab) => (
           <div key={tab.id} style={{ display: activeIntroTab === tab.id ? 'block' : 'none' }}>
             <EditableText
