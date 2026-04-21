@@ -212,15 +212,15 @@ export const EditableText = ({
 
   if (!isEditing) {
     if (disableMarkdown) {
-      return <span className={className} style={style}>{String(value || '')}</span>;
+      return <span className={className} style={{ ...style, whiteSpace: multiline ? "pre-wrap" : "normal" }}>{String(value || '')}</span>;
     }
     return (
-      <span className={className} style={{ ...style, whiteSpace: multiline ? "pre-wrap" : "normal" }}>
+      <span className={className} style={style}>
         <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
+          remarkPlugins={[remarkGfm, remarkBreaks]}
           urlTransform={(url) => url}
           components={{
-            p: ({ node, ...props }) => <span className="inline !m-0 !p-0" {...props} />,
+            // 단락 구분을 위해 p 태그 매핑 제거 (index.css의 .markdown-body p 스타일 활용)
             a: ({ node, ...props }) => {
               const href = props.href ? decodeURIComponent(props.href) : '';
               if (href.includes('style:')) {
@@ -250,9 +250,9 @@ export const EditableText = ({
             ul: ({ node, ...props }) => <ul {...props} className="list-disc list-inside mt-1 space-y-1" />,
             ol: ({ node, ...props }) => <ol {...props} className="list-decimal list-inside mt-1 space-y-1" />,
             li: ({ node, ...props }) => <li {...props} className="leading-snug" />,
-            h1: ({ node, ...props }) => <strong {...props} className="text-2xl font-bold mt-2 block" />,
-            h2: ({ node, ...props }) => <strong {...props} className="text-xl font-bold mt-2 block" />,
-            h3: ({ node, ...props }) => <strong {...props} className="text-lg font-bold mt-1 block" />,
+            h1: ({ node, ...props }) => <h1 {...props} />,
+            h2: ({ node, ...props }) => <h2 {...props} />,
+            h3: ({ node, ...props }) => <h3 {...props} />,
             br: () => <br />
           }}
         >
