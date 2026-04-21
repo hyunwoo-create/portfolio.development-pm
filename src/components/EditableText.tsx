@@ -1,6 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 
 interface TextStyleEditorProps {
   style: any;
@@ -153,6 +154,20 @@ export const EditableText = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const adjustTextareaHeight = useCallback(() => {
+    const target = textareaRef.current;
+    if (target) {
+      target.style.height = 'auto';
+      target.style.height = target.scrollHeight + 'px';
+    }
+  }, []);
+
+  useEffect(() => {
+    if (multiline && isEditing) {
+      adjustTextareaHeight();
+    }
+  }, [multiline, isEditing, value, adjustTextareaHeight]);
+
   const handleStyleChange = useCallback((newStyle: any) => {
     if (!onStyleSave || !styleData) return;
 
@@ -179,12 +194,12 @@ export const EditableText = ({
       return <span className={className} style={style}>{String(value || '')}</span>;
     }
     return (
-      <span className={className} style={style}>
+      <span className={className} style={{ ...style, whiteSpace: "pre-wrap" }}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           urlTransform={(url) => url}
           components={{
-            p: ({ node, ...props }) => <span className={multiline ? "block mb-2 last:mb-0" : "inline"} {...props} />,
+            p: ({ node, ...props }) => <span className={`${multiline ? "block" : "inline"} !m-0 !p-0`} {...props} />,
             a: ({ node, ...props }) => {
               const href = props.href ? decodeURIComponent(props.href) : '';
               if (href.includes('style:')) {
@@ -245,8 +260,8 @@ export const EditableText = ({
             if (containerRef.current?.contains(e.relatedTarget as Node)) return;
             setIsFocused(false);
           }}
-          rows={3}
-          style={style}
+          rows={5}
+          style={{ ...style, overflowY: 'hidden', minHeight: '5em' }}
         />
       ) : (
         <input

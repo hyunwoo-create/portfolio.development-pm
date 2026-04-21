@@ -10,6 +10,7 @@ export interface Project {
   content: string;
   downloadUrl?: string;
   downloadFileName?: string;
+  details?: string[];
   chartPoints?: { x: number, y: number, label: string, detail: string }[];
 }
 
@@ -67,6 +68,7 @@ export interface ResumeData {
  email: string;
  linkedin: string;
  github: string;
+ militaryService?: string;
  summary: string;
  summaryStyle?: any;
  selfIntroduction: string;
@@ -81,11 +83,12 @@ export interface ResumeData {
  details: string[];
  }[];
  experience: {
- title: string;
- period: string;
- description: string;
- details: string[];
- }[];
+    title: string;
+    period: string;
+    description: string;
+    details: string[];
+    style?: any;
+  }[];
  awards: {
  title: string;
  organization: string;

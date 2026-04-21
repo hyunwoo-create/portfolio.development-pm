@@ -73,7 +73,7 @@ const saveContentToSupabase = async (key: string, value: any) => {
                 'apikey': SUPABASE_ANON_KEY,
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
               },
-              body: JSON.stringify({ password: 'qwer154', key: 'hero_image', value: imageData }),
+              body: JSON.stringify({ password: import.meta.env.VITE_ADMIN_PASSWORD, key: 'hero_image', value: imageData }),
             }).catch(e => console.error('Failed to save hero_image:', e));
           }
         }
@@ -87,7 +87,7 @@ const saveContentToSupabase = async (key: string, value: any) => {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       },
-      body: JSON.stringify({ password: 'qwer154', key, value: sanitizedValue }),
+      body: JSON.stringify({ password: import.meta.env.VITE_ADMIN_PASSWORD, key, value: sanitizedValue }),
     });
   } catch (e) {
     console.error('Failed to save content:', e);

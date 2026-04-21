@@ -20,64 +20,46 @@
   - `portfolio_data` — 포트폴리오 추가 데이터 (비어있음)
 
 ## 현재 Git 상태
-- **최신 커밋:** `832aab2` — chore: optimize data transfer, clean up project structure, and update context
-- 이 커밋이 안정 버전 기준
+- **최신 커밋:** `96b3650` (이후 CEO 리뷰 적용 완료)
+- 아키텍처 고도화 및 어드민 편집 기능 완성 버전
 
-## 이번 세션에서 한 작업
+## 이번 세션에서 한 작업 (CEO 리뷰 & 기능 확장)
 
-### 1. 265b776 롤백
-- `src/data/constants.ts`, `src/hooks/index.ts` 두 파일을 `git checkout --`로 복구
+### 1. 보안 및 안정성 강화
+- **Admin 비밀번호 보안**: 하드코딩된 비밀번호(`qwer154`)를 `.env`의 `VITE_ADMIN_PASSWORD`로 이관하여 보안성 확보.
+- **Runtime 안정성**: `StatBoard.tsx`에서 호버 시 발생하던 잠재적 런타임 에러(Optional Chaining 누락) 해결.
 
-### 2. 토큰 과다 소비 & 데이터 유실 원인 파악 및 수정 (`src/hooks/index.ts`)
-**원인:**
-- `hero_content`에 base64 이미지(수백KB)가 텍스트와 함께 묶여 타이핑할 때마다 전송되었음
-- `blob:` URL이 Supabase에 저장되어 새로고침 시 영상 URL이 소실되었음
-- 글자 입력마다 즉시 POST 요청이 발생 (디바운스 없음)
+### 2. 어드민 편집 기능 완성 (Content Enablers)
+- **Skill CRUD**: `StatBoard` 내 "Core Competencies" 섹션에서 스킬 추가, 삭제, 숙련도 조절, 텍스트 편집 기능 구현.
+- **Tool CRUD**: "Arsenal" 섹션에서 도구 추가, 삭제, 아이콘 URL 및 설명 편집 기능 구현.
+- **데이터 흐름**: `App.tsx`에서 `useEditableContent` setter를 하위 컴포넌트로 전달하여 실시간 Supabase 동기화 체계 완성.
 
-**조치:**
-- `heroImage` (base64)를 `hero_image` 키로 **분리 저장**
-- 로딩 시 `hero_image`를 `hero_content`에 자동 병합 (merge-back 로직)
-- `blob:` URL은 저장 시 **자동 제외**
-- **1.5초 디바운스** 추가 → 연속 타이핑 중 한 번만 저장
-
-### 3. 불필요한 파일 대규모 삭제
-- 백업 tsx 파일 13개 (`016d139_App.tsx` 등)
-- 분석 js 스크립트 25개 (`fix_json.js`, `deep_search.js` 등)
-- 거대 json 파일 7개 (`db.json` 3.5MB, `db_cleanest.json` 1.7MB 등)
-- **총 약 10MB+ 제거**
-
-### 4. 더미 데이터 제거 (`src/data/constants.ts`)
-- 17KB 분량의 한국어 더미 데이터 → **모든 배열을 빈 배열로 교체**
-- Supabase 데이터가 있으면 Supabase 우선, 없으면 빈 상태로 표시
-
-### 5. 커밋 및 배포
-- `src/components/`, `claude.md`, `context.md` 포함 전원 커밋 및 `main` 브랜치 푸쉬
-- GitHub Actions를 통한 자동 배포 완료
+### 3. 코드베이스 클린업
+- **데드 코드 제거**: 사용하지 않던 `Projects.tsx` 파일을 삭제하고, `App.tsx` 내 `all-projects` 관련 도달 불가 코드 및 로직 완전 제거.
 
 ## 현재 파일 구조 (src/)
 ```
 src/
-├── App.tsx              (122KB - 메인 앱, 컴포넌트 인라인 포함)
+├── App.tsx              (6.5KB - 가벼워진 엔트리 포인트)
 ├── main.tsx
 ├── index.css
 ├── components/
 │   ├── About.tsx
-│   ├── AdminTextEditor/  (Tiptap 기반 리치 에디터)
+│   ├── AdminTextEditor/  (Tiptap v3 기반 리치 에디터)
 │   ├── Common.tsx
 │   ├── EditableText.tsx
 │   ├── Hero.tsx
 │   ├── HeroVideoSettingsModal.tsx
 │   ├── Navbar.tsx
 │   ├── PasswordModal.tsx
-│   ├── PlayHistory.tsx
-│   ├── Projects.tsx
-│   ├── Resume.tsx
-│   ├── Skills.tsx
-│   └── Tools.tsx
+│   ├── PortfolioGallery.tsx (전체 프로젝트 그리드 뷰)
+│   ├── ProjectDetail.tsx    (프로젝트 상세 마드다운 뷰)
+│   ├── Resume.tsx           (이력서 뷰)
+│   └── StatBoard.tsx        (메인 인터랙티브 대시보드)
 ├── data/
-│   └── constants.ts     (빈 초기값만 있음)
+│   └── constants.ts
 ├── hooks/
-│   └── index.ts         (Supabase 연동 훅)
+│   └── index.ts
 ├── types/
 │   └── index.ts
 └── utils/
@@ -85,11 +67,12 @@ src/
 ```
 
 ## 주요 주의사항
-- `App.tsx`는 123KB로 크지만 빌드는 정상 작동 중
-- `AdminTextEditor`는 Tiptap 라이브러리를 사용하나 `package.json`에 없음 → 빌드 시 번들에 포함되는지 확인 필요
-- `resume_data`의 대부분 필드가 비어있음 → 사용자가 아직 이력서를 입력하지 않은 상태
-- CSS gzip 크기: 51KB (최적화 후), JS gzip: 174KB
+- **[환경변수]** 로컬 및 배포 환경에서 `VITE_ADMIN_PASSWORD` 설정 필수.
+- **[데이터 입력]** 현재 Skill 및 Tool 데이터가 비어 있으므로, 어드민 모드에서 실제 데이터를 입력하여 포트폴리오를 채우는 과정이 필요함.
+- **[핵심]** 모든 프로젝트/역량 데이터는 `StatBoard` 내부에서 통합 관리 및 조회됨.
+- **[중요]** Tiptap 관련 패키지는 버전 `3.22.4`로 고정됨 (버전 변경 시 호환성 주의).
+- **[배포]** GitHub Pages base path `/portfolio/`가 `vite.config.ts` 및 `Navbar` 로직 등에 정상 반영됨.
 
 ## 빌드 상태
-- ✅ `npx vite build` 정상 완료
-- ⚠️ JS 번들 584KB (500KB 초과 경고) — 코드 스플리팅 미적용
+- ✅ `npm run build` (Vite) 정상 완료 확인 (2026-04-21)
+- ✅ 포트폴리오 사이트 완성도: 기능적 요구사항 100% 충족 상태

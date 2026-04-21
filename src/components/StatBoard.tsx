@@ -169,7 +169,18 @@ const DraggableChart = ({ isEditing, initialPoints, onSave }: any) => {
   );
 };
 
-export const StatBoard = ({ isEditing, projects, setProjects, skillTabs, tools, onProjectClick, userImage, onImageUpload }: any) => {
+export const StatBoard = ({ 
+  isEditing, 
+  projects, 
+  setProjects, 
+  skillTabs, 
+  setSkillTabs,
+  tools, 
+  setTools,
+  onProjectClick, 
+  userImage, 
+  onImageUpload 
+}: any) => {
   const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [mobileCategory, setMobileCategory] = useState<string>('projects');
   
@@ -181,6 +192,50 @@ export const StatBoard = ({ isEditing, projects, setProjects, skillTabs, tools, 
       onImageUpload?.(ev.target?.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  const addSkill = () => {
+    if (!skillTabs || skillTabs.length === 0) {
+      setSkillTabs([{ id: 'tab1', name: '기본', skills: [{ name: '새 스킬', level: 50, icon: 'Cpu', caption: '상세 설명' }] }]);
+      return;
+    }
+    const newTabs = [...skillTabs];
+    newTabs[0].skills = [...newTabs[0].skills, { name: '새 스킬', level: 50, icon: 'Cpu', caption: '상세 설명' }];
+    setSkillTabs(newTabs);
+  };
+
+  const removeSkill = (tabIdx: number, skillIdx: number) => {
+    const newTabs = [...skillTabs];
+    newTabs[tabIdx].skills.splice(skillIdx, 1);
+    setSkillTabs(newTabs);
+    setHoveredItem(null);
+  };
+
+  const updateSkill = (tabIdx: number, skillIdx: number, field: string, value: any) => {
+    const newTabs = [...skillTabs];
+    newTabs[tabIdx].skills[skillIdx] = { ...newTabs[tabIdx].skills[skillIdx], [field]: value };
+    setSkillTabs(newTabs);
+    if (hoveredItem?.type === 'skill' && hoveredItem.data.name === skillTabs[tabIdx].skills[skillIdx].name) {
+      setHoveredItem({ type: 'skill', data: newTabs[tabIdx].skills[skillIdx] });
+    }
+  };
+
+  const addTool = () => {
+    const newTool = { id: Date.now().toString(), name: '새 도구', iconUrl: '', description: '도구 설명' };
+    setTools([...(tools || []), newTool]);
+  };
+
+  const removeTool = (id: string) => {
+    setTools(tools.filter((t: any) => t.id !== id));
+    setHoveredItem(null);
+  };
+
+  const updateTool = (id: string, field: string, value: string) => {
+    const newTools = tools.map((t: any) => t.id === id ? { ...t, [field]: value } : t);
+    setTools(newTools);
+    if (hoveredItem?.type === 'tool' && hoveredItem.data.id === id) {
+      setHoveredItem({ type: 'tool', data: newTools.find((t: any) => t.id === id) });
+    }
   };
 
   useEffect(() => {
@@ -250,34 +305,75 @@ export const StatBoard = ({ isEditing, projects, setProjects, skillTabs, tools, 
     </div>
   );
 
-  const renderSkillDetail = (s: any) => (
+  const renderSkillDetail = (s: any) => {
+    const tabIdx = skillTabs.findIndex((t: any) => t.skills.some((sk: any) => sk.name === s.name));
+    const skillIdx = skillTabs[tabIdx]?.skills.findIndex((sk: any) => sk.name === s.name);
+
+    return (
     <div className="flex flex-col h-full justify-center animate-fade-in w-full">
-      <div className="w-20 h-20 bg-white rounded-[1.5rem] flex items-center justify-center text-[#1A59A7] mb-8 shadow-lg border border-[#DBE2EF]">
-        {resolveIcon(s.icon)}
+      <div className="flex justify-between items-start mb-4">
+        <div className="w-20 h-20 bg-white rounded-[1.5rem] flex items-center justify-center text-[#1A59A7] shadow-lg border border-[#DBE2EF]">
+          {resolveIcon(s.icon)}
+        </div>
+        {isEditing && (
+          <button onClick={() => removeSkill(tabIdx, skillIdx)} className="text-red-400 hover:text-red-600 bg-red-50 p-1.5 rounded-lg transition-colors"><X className="w-4 h-4"/></button>
+        )}
       </div>
-      <h3 className="text-4xl font-black text-[#112D4E] mb-4">{s.name}</h3>
-      <p className="text-lg text-[#3F72AF] font-medium mb-12 italic leading-relaxed">"{s.caption}"</p>
+      
+      <h3 className="text-4xl font-black text-[#112D4E] mb-4">
+        <EditableText value={s.name} isEditing={isEditing} onSave={(v: string) => updateSkill(tabIdx, skillIdx, 'name', v)} />
+      </h3>
+      <div className="text-lg text-[#3F72AF] font-medium mb-12 italic leading-relaxed">
+        "<EditableText value={s.caption} isEditing={isEditing} onSave={(v: string) => updateSkill(tabIdx, skillIdx, 'caption', v)} />"
+      </div>
       
       <div className="relative pt-8 w-full mt-auto">
         <div className="flex justify-between text-[11px] font-black text-[#112D4E] mb-3 uppercase tracking-widest">
           <span>Proficiency</span>
           <span>{s.level}%</span>
         </div>
-        <div className="h-4 bg-[#DBE2EF]/50 rounded-full overflow-hidden p-0.5">
+        <div className="h-4 bg-[#DBE2EF]/50 rounded-full overflow-hidden p-0.5 relative">
           <motion.div initial={{width:0}} animate={{width:`${s.level}%`}} className="h-full bg-gradient-to-r from-[#3F72AF] to-[#112D4E] rounded-full shadow-inner" />
+          {isEditing && (
+            <input 
+              type="range" min="0" max="100" value={s.level} 
+              onChange={(e) => updateSkill(tabIdx, skillIdx, 'level', parseInt(e.target.value))}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
+            />
+          )}
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderToolDetail = (t: any) => (
     <div className="flex flex-col h-full justify-center text-center items-center animate-fade-in w-full">
-      <div className="w-32 h-32 bg-white rounded-[2rem] flex items-center justify-center shadow-xl border border-[#DBE2EF] mb-8 p-6">
-        {t.iconUrl ? <img src={t.iconUrl} className="w-full h-full object-contain filter drop-shadow-md" alt={t.name}/> : <Wrench className="w-12 h-12 text-[#3F72AF]"/>}
+      <div className="flex justify-end w-full mb-4">
+         {isEditing && (
+          <button onClick={() => removeTool(t.id)} className="text-red-400 hover:text-red-600 bg-red-50 p-1.5 rounded-lg transition-colors"><X className="w-4 h-4"/></button>
+        )}
       </div>
-      <h3 className="text-3xl font-black text-[#112D4E] mb-6">{t.name}</h3>
+      <div className="w-32 h-32 bg-white rounded-[2rem] flex items-center justify-center shadow-xl border border-[#DBE2EF] mb-8 p-6 relative group">
+        {t.iconUrl ? <img src={t.iconUrl} className="w-full h-full object-contain filter drop-shadow-md" alt={t.name}/> : <Wrench className="w-12 h-12 text-[#3F72AF]"/>}
+        {isEditing && (
+          <div className="absolute inset-0 bg-black/40 rounded-[2rem] opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity p-4">
+             <input 
+              className="text-[8px] bg-white text-[#112D4E] p-1 rounded-md w-full focus:outline-none" 
+              placeholder="Icon URL" 
+              value={t.iconUrl} 
+              onChange={(e) => updateTool(t.id, 'iconUrl', e.target.value)}
+            />
+          </div>
+        )}
+      </div>
+      <h3 className="text-3xl font-black text-[#112D4E] mb-6">
+        <EditableText value={t.name} isEditing={isEditing} onSave={(v: string) => updateTool(t.id, 'name', v)} />
+      </h3>
       <div className="w-12 h-1 bg-[#3F72AF]/20 mx-auto rounded-full mb-6" />
-      <p className="text-[#112D4E]/80 text-sm leading-relaxed max-w-sm whitespace-pre-wrap">{t.description}</p>
+      <div className="text-[#112D4E]/80 text-sm leading-relaxed max-w-sm whitespace-pre-wrap">
+        <EditableText value={t.description || "설명이 없습니다."} isEditing={isEditing} multiline onSave={(v: string) => updateTool(t.id, 'description', v)} />
+      </div>
     </div>
   );
 
@@ -311,7 +407,7 @@ export const StatBoard = ({ isEditing, projects, setProjects, skillTabs, tools, 
               <div className="flex flex-col gap-1.5">
                 {projects.map((p: any) => (
                   <div key={p.id} onMouseEnter={() => setHoveredItem({type: 'project', data: p})}
-                       className={`p-3 lg:p-4 rounded-xl cursor-pointer transition-all duration-300 border ${hoveredItem?.data.id === p.id ? 'bg-[#0a1e36] border-[#0a1e36] shadow-xl translate-x-3 scale-[1.02]' : 'bg-white border-[#DBE2EF] hover:bg-[#DBE2EF] hover:translate-x-1 shadow-sm'}`}>
+                       className={`p-3 lg:p-4 rounded-xl cursor-pointer transition-all duration-300 border ${hoveredItem?.data?.id === p.id ? 'bg-[#0a1e36] border-[#0a1e36] shadow-xl translate-x-3 scale-[1.02]' : 'bg-white border-[#DBE2EF] hover:bg-[#DBE2EF] hover:translate-x-1 shadow-sm'}`}>
                     <div className={`text-[9px] font-bold uppercase tracking-widest mb-1 ${hoveredItem?.data.id === p.id ? 'text-[#3F72AF]' : 'text-[#8fabc8]'}`}>{p.category}</div>
                     <div className={`font-black text-xs leading-tight ${hoveredItem?.data.id === p.id ? 'text-white' : 'text-[#112D4E]'}`}>{p.title}</div>
                   </div>
@@ -321,7 +417,12 @@ export const StatBoard = ({ isEditing, projects, setProjects, skillTabs, tools, 
 
             {/* Skills List */}
             <div className="mt-4">
-              <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] mb-2 uppercase pl-2">Core Competencies</h2>
+              <div className="flex items-center justify-between mb-2 pl-2">
+                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">Core Competencies</h2>
+                {isEditing && (
+                  <button onClick={addSkill} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
+                )}
+              </div>
               <div className="flex flex-col gap-1.5">
                 {skillTabs?.map((tab: any) => tab.skills.map((s:any, idx:number) => (
                   <div key={`${tab.id}-${idx}`} onMouseEnter={() => setHoveredItem({type: 'skill', data: s})}
@@ -342,7 +443,12 @@ export const StatBoard = ({ isEditing, projects, setProjects, skillTabs, tools, 
 
             {/* Tools List */}
             <div className="mt-4">
-              <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] mb-2 uppercase pl-2">Arsenal</h2>
+              <div className="flex items-center justify-between mb-2 pl-2">
+                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">Arsenal</h2>
+                {isEditing && (
+                  <button onClick={addTool} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
+                )}
+              </div>
               <div className="flex flex-wrap gap-1.5">
                 {tools?.map((t: any) => (
                   <div key={t.id} onMouseEnter={() => setHoveredItem({type: 'tool', data: t})}
@@ -436,7 +542,10 @@ export const StatBoard = ({ isEditing, projects, setProjects, skillTabs, tools, 
           
           <StatBoardMobileAccordion title="Core Competencies" isActive={mobileCategory === 'skills'} onClick={() => setMobileCategory(mobileCategory === 'skills' ? '' : 'skills')}>
             <div className="flex flex-col gap-12 pt-6 pb-4 w-full">
-              {skillTabs?.map((tab: any) => tab.skills.map((s:any, idx:number) => (
+               {isEditing && (
+                 <button onClick={addSkill} className="flex items-center justify-center gap-2 mb-4 w-full py-3 border-2 border-dashed border-[#1A59A7]/30 rounded-xl text-[#1A59A7] font-bold hover:bg-[#1A59A7]/5"><Plus className="w-4 h-4"/> 새 스킬 추가</button>
+               )}
+               {skillTabs?.map((tab: any) => tab.skills.map((s:any, idx:number) => (
                 <div key={`${tab.id}-${idx}`} className="w-full">
                   {renderSkillDetail(s)}
                 </div>
@@ -445,13 +554,18 @@ export const StatBoard = ({ isEditing, projects, setProjects, skillTabs, tools, 
           </StatBoardMobileAccordion>
           
           <StatBoardMobileAccordion title="Arsenal (Tools)" isActive={mobileCategory === 'tools'} onClick={() => setMobileCategory(mobileCategory === 'tools' ? '' : 'tools')}>
-            <div className="grid grid-cols-2 gap-4 pt-4 pb-4 w-full">
-              {tools?.map((t:any) => (
-                <div key={t.id} className="bg-white rounded-[1.5rem] p-5 shadow flex flex-col items-center text-center border border-[#DBE2EF]">
-                  <div className="w-12 h-12 mb-4">{t.iconUrl ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm"/> : <Wrench className="w-full h-full text-[#3F72AF]"/>}</div>
-                  <div className="font-bold text-[#112D4E] text-xs leading-tight">{t.name}</div>
-                </div>
-              ))}
+            <div className="flex flex-col pt-4 pb-4 w-full">
+               {isEditing && (
+                 <button onClick={addTool} className="flex items-center justify-center gap-2 mb-8 w-full py-3 border-2 border-dashed border-[#1A59A7]/30 rounded-xl text-[#1A59A7] font-bold hover:bg-[#1A59A7]/5"><Plus className="w-4 h-4"/> 새 도구 추가</button>
+               )}
+               <div className="grid grid-cols-2 gap-4">
+                  {tools?.map((t:any) => (
+                    <div key={t.id} className="bg-white rounded-[1.5rem] p-5 shadow flex flex-col items-center text-center border border-[#DBE2EF]">
+                      <div className="w-12 h-12 mb-4">{t.iconUrl ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm"/> : <Wrench className="w-full h-full text-[#3F72AF]"/>}</div>
+                      <div className="font-bold text-[#112D4E] text-xs leading-tight">{t.name}</div>
+                    </div>
+                  ))}
+               </div>
             </div>
           </StatBoardMobileAccordion>
         </div>

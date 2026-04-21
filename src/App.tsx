@@ -23,7 +23,6 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { StatBoard } from './components/StatBoard';
-import { Projects } from './components/Projects';
 import { PortfolioGallery } from './components/PortfolioGallery';
 import { ProjectDetail } from './components/ProjectDetail';
 import { Resume } from './components/Resume';
@@ -126,7 +125,7 @@ const App = () => {
               isEditing={isEditing} 
               content={aboutContent} 
               setContent={setAboutContent} 
-              onMoreMeClick={() => setIsImageModalOpen(true)}
+              onMoreMeClick={() => setView('resume')}
             />
             <StatBoard 
               isEditing={isEditing}
@@ -153,14 +152,13 @@ const App = () => {
         )}
 
         {view === 'all-projects' && (
-          <div key="all-projects" className="pt-20">
-            <Projects 
-              onProjectClick={handleProjectClick} 
-              isEditing={isEditing} 
-              projects={portfolioData} 
-              setProjects={setPortfolioData} 
-            />
-          </div>
+          <PortfolioGallery 
+            onProjectClick={handleProjectClick} 
+            isEditing={isEditing} 
+            projects={portfolioData} 
+            setProjects={setPortfolioData} 
+            setView={setView}
+          />
         )}
 
         {view === 'project-detail' && selectedProject && (

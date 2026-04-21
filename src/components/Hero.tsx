@@ -67,10 +67,10 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
         )}
       </div>
 
-      <div className="absolute bottom-16 md:bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[22rem] md:max-w-[32rem] h-[52vh] md:h-[60vh] flex items-end justify-center pointer-events-none z-10">
+      <div className="absolute bottom-12 md:bottom-16 left-1/2 -translate-x-1/2 w-full max-w-[27rem] md:max-w-[40rem] h-[65vh] md:h-[75vh] flex items-end justify-center pointer-events-none z-10">
         <div className="relative w-full h-full flex items-end justify-center">
           {content.heroImage ? (
-            <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] border-x border-t border-[#DBE2EF] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
+            <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
               <img 
                 src={content.heroImage} 
                 alt="Profile" 
@@ -87,7 +87,7 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
       </div>
 
       {isEditing && (
-        <div className="absolute bottom-16 md:bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[22rem] md:max-w-[32rem] h-[52vh] md:h-[60vh] pointer-events-none z-50">
+        <div className="absolute bottom-12 md:bottom-16 left-1/2 -translate-x-1/2 w-full max-w-[27rem] md:max-w-[40rem] h-[65vh] md:h-[75vh] pointer-events-none z-50">
           <div className="relative w-full h-full">
             <button onClick={() => imageFileInputRef.current?.click()} className="absolute bottom-8 right-0 md:right-8 w-12 h-12 md:w-14 md:h-14 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#0a1e36] transition-all border-2 border-white pointer-events-auto"><Upload className="w-5 h-5 md:w-6 md:h-6" /></button>
             <button onClick={() => setIsVideoModalOpen(true)} className="absolute bottom-8 left-0 md:left-8 w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center text-[#112D4E] shadow-lg hover:bg-[#F9F7F7] transition-all border-2 border-[#DBE2EF] pointer-events-auto"><Settings className="w-5 h-5 md:w-6 md:h-6" /></button>
@@ -104,7 +104,7 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
               onSave={(v) => setContent({...content, titleLine1: v})}
               isEditing={isEditing}
               multiline
-              className="block leading-[1.1] whitespace-pre-wrap"
+              className="block leading-[1.1]"
               style={content.tile1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)', letterSpacing:'-0.02em', fontWeight:'900'}}
               styleData={content.tile1Style || {fontSize:'clamp(2.5rem, 4.5vw, 4rem)', letterSpacing:'-0.02em', fontWeight:'900'}}
               onStyleSave={(s) => setContent({...content, tile1Style: s})}
@@ -114,7 +114,7 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
               onSave={(v) => setContent({...content, titleLine2: v})}
               isEditing={isEditing}
               multiline
-              className="block text-[#3F72AF] mt-2 leading-[1.1] whitespace-pre-wrap"
+              className="block text-[#3F72AF] mt-2 leading-[1.1]"
               style={content.tile2Style || {fontSize:'clamp(3rem, 5.5vw, 5rem)', letterSpacing:'-0.05em', fontWeight:'900'}}
               styleData={content.tile2Style || {fontSize:'clamp(3rem, 5.5vw, 5rem)', letterSpacing:'-0.05em', fontWeight:'900'}}
               onStyleSave={(s) => setContent({...content, tile2Style: s})}
@@ -129,7 +129,7 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
               onSave={(v) => setContent({...content, description: v})}
               isEditing={isEditing}
               multiline
-              className="text-[#112D4E] font-medium leading-relaxed whitespace-pre-wrap"
+              className="text-[#112D4E] font-medium leading-relaxed"
               style={content.descStyle || {fontSize:'0.95rem'}}
               styleData={content.descStyle || {fontSize:'0.95rem'}}
               onStyleSave={(s) => setContent({...content, descStyle: s})}
@@ -144,7 +144,7 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
               <span className="text-4xl md:text-5xl font-black text-[#112D4E] tracking-tighter leading-none">
                 <EditableText value={content[`point${num}Value`] || "10"} onSave={(v) => setContent({...content, [`point${num}Value`]: v})} isEditing={isEditing} />
               </span>
-              <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase whitespace-pre-wrap">
+              <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
                 <EditableText value={content[`point${num}Label`] || "YEARS\nEXPERIENCE"} onSave={(v) => setContent({...content, [`point${num}Label`]: v})} isEditing={isEditing} multiline />
               </div>
             </div>
