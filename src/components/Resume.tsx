@@ -527,8 +527,7 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
               </div>
             </section>
 
-            {/* Self Introduction merged into resume */}
-            <SelfIntroInResume isEditing={isEditing} data={data} setData={setData} />
+            {/* Self Introduction is now shown separately at the bottom of page 2 */}
           </div>
         </div>
       </div>
