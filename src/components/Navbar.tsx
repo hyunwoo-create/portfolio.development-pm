@@ -18,9 +18,7 @@ export const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditi
   const navLinks = [
     { label: '소개', action: () => { onNavClick('about'); setIsMenuOpen(false); } },
     { label: '이력서', action: () => { onNavClick('resume-section'); setIsMenuOpen(false); } },
-    { label: '포트폴리오', action: () => { onNavClick('portfolio-section'); setIsMenuOpen(false); } },
-    { label: '핵심 역량', action: () => { onNavClick('skills'); setIsMenuOpen(false); } },
-    { label: '사용 Tool', action: () => { onNavClick('my-tools'); setIsMenuOpen(false); } }
+    { label: '포트폴리오', action: () => { setView('portfolio'); setIsMenuOpen(false); } }
   ];
 
   const handleAdminClick = () => {

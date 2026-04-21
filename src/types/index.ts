@@ -1,15 +1,16 @@
 // --- Types ---
 export interface Project {
- id: number;
- title: string;
- category: string;
- description: string;
- tags: string[];
- image: string;
- color: string;
- content: string;
- downloadUrl?: string;
- downloadFileName?: string;
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  tags: string[];
+  image: string;
+  color: string;
+  content: string;
+  downloadUrl?: string;
+  downloadFileName?: string;
+  chartPoints?: { x: number, y: number, label: string, detail: string }[];
 }
 
 export interface Skill {

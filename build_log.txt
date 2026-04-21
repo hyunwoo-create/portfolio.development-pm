@@ -1,0 +1,31 @@
+
+> react-example@0.0.0 build
+> vite build
+
+[36mvite v6.4.1 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 4 modules transformed.
+[31m✗[39m Build failed in 99ms
+[31merror during build:
+[31m[vite:esbuild] Transform failed with 1 error:
+C:/Users/c/Desktop/portfolio/portfolio.basic/src/App.tsx:2881:79: ERROR: The character ">" is not valid inside a JSX element[31m
+file: [36mC:/Users/c/Desktop/portfolio/portfolio.basic/src/App.tsx:2881:79[31m
+[33m
+[33mThe character ">" is not valid inside a JSX element[33m
+2879|                <div className="h-full flex flex-col items-center justify-center text-[#8fabc8] font-bold text-center">
+2880|                  <Target className="w-12 h-12 mb-4 opacity-50"/>
+2881|                  <p className="text-sm">좌측 리스? 에 마우?  ? ? 리 ?br/>? 세 ? 보가 ? 캔? 니??</p>
+   |                                                                                 ^
+2882|                </div>
+2883|              )}
+[31m
+    at failureErrorWithLog (C:\Users\c\Desktop\portfolio\portfolio.basic\node_modules\vite\node_modules\esbuild\lib\main.js:1467:15)
+    at C:\Users\c\Desktop\portfolio\portfolio.basic\node_modules\vite\node_modules\esbuild\lib\main.js:736:50
+    at responseCallbacks.<computed> (C:\Users\c\Desktop\portfolio\portfolio.basic\node_modules\vite\node_modules\esbuild\lib\main.js:603:9)
+    at handleIncomingPacket (C:\Users\c\Desktop\portfolio\portfolio.basic\node_modules\vite\node_modules\esbuild\lib\main.js:658:12)
+    at Socket.readFromStdout (C:\Users\c\Desktop\portfolio\portfolio.basic\node_modules\vite\node_modules\esbuild\lib\main.js:581:7)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:563:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:514:3)
+    at Readable.push (node:internal/streams/readable:394:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)[39m

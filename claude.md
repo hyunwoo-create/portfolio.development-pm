@@ -24,7 +24,7 @@
 ## 6. gstack
 - 모든 웹 브라우징 작업 시 gstack의 `/browse` 스킬을 사용하세요.
 - `mcp__claude-in-chrome__*` 도구는 절대 사용하지 마세요.
-- 사용 가능한 스킬 목록: `/office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /design-shotgun, /design-html, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /connect-chrome, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /plan-devex-review, /devex-review, /careful, /freeze, /guard, /unfreeze`
+- 사용 가능한 스킬 목록: `/office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review, /design-consultation, /design-shotgun, /design-html, /review, /ship, /land-and-deploy, /canary, /benchmark, /browse, /connect-chrome, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro, /investigate, /document-release, /codex, /cso, /autoplan, /plan-devex-review, /devex-review, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade, /learn`
 
 ## gstack (REQUIRED — global install)
 
