@@ -31,7 +31,15 @@ export const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditi
   };
 
   const handlePasswordConfirm = (pw: string) => {
-    if (pw === import.meta.env.VITE_ADMIN_PASSWORD) {
+    const adminPw = import.meta.env.VITE_ADMIN_PASSWORD;
+    
+    // 환경 변수가 아예 없거나 빈 문자열인 경우 보안을 위해 차단
+    if (!adminPw || adminPw.trim() === "") {
+      alert("서버 설정 오류: 관리자 비밀번호가 설정되지 않았습니다. GitHub Secrets를 확인해 주세요.");
+      return;
+    }
+
+    if (pw.trim() === adminPw.trim()) {
       setIsEditing(true);
       setIsPasswordModalOpen(false);
       alert("관리자 모드가 활성화되었습니다. 내용을 클릭하여 수정하세요.");
