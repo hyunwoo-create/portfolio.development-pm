@@ -20,7 +20,7 @@
   - `portfolio_data` — 포트폴리오 추가 데이터 (비어있음)
 
 ## 현재 Git 상태
-- **최신 커밋:** `265b776` — fix: restore dense project list spacing
+- **최신 커밋:** `832aab2` — chore: optimize data transfer, clean up project structure, and update context
 - 이 커밋이 안정 버전 기준
 
 ## 이번 세션에서 한 작업
@@ -49,6 +49,10 @@
 ### 4. 더미 데이터 제거 (`src/data/constants.ts`)
 - 17KB 분량의 한국어 더미 데이터 → **모든 배열을 빈 배열로 교체**
 - Supabase 데이터가 있으면 Supabase 우선, 없으면 빈 상태로 표시
+
+### 5. 커밋 및 배포
+- `src/components/`, `claude.md`, `context.md` 포함 전원 커밋 및 `main` 브랜치 푸쉬
+- GitHub Actions를 통한 자동 배포 완료
 
 ## 현재 파일 구조 (src/)
 ```
