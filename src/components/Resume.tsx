@@ -202,22 +202,40 @@ const ExperienceSection = ({ data, setData, isEditing }: any) => (
           <div className="text-[14px] font-bold text-[#112D4E] mb-2">
             <EditableText value={exp.title} onSave={(v)=>{const n=[...(data.leftExperience || [])]; n[idx].title=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
           </div>
-          <div className="text-[12px] text-[#8fabc8] border-l-2 border-[#DBE2EF] pl-2 mb-2 whitespace-pre-wrap leading-relaxed flex flex-col gap-0.5">
-            <EditableText value={exp.period || ''} multiline onSave={(v)=>{const n=[...(data.leftExperience || [])]; n[idx].period=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
+          <div className="text-[12px] border-l-2 border-[#DBE2EF] pl-2 mb-2 leading-relaxed flex flex-col">
+            <div className="text-[#8fabc8]">
+              <EditableText 
+                value={exp.period || ''} 
+                multiline 
+                onSave={(v) => {
+                  const n = [...(data.leftExperience || [])];
+                  n[idx].period = v;
+                  setData({...data, leftExperience: n});
+                }} 
+                isEditing={isEditing} 
+                className="font-medium"
+              />
+            </div>
+            <div className="text-[#1A374D] font-semibold mt-1">
+              <EditableText 
+                value={(exp.details || []).filter((d: string) => d && d.trim() !== '').join('\n')} 
+                multiline 
+                onSave={(v) => {
+                  const n = [...(data.leftExperience || [])];
+                  n[idx].details = v.split('\n');
+                  setData({...data, leftExperience: n});
+                }} 
+                isEditing={isEditing} 
+                style={exp.style || {}}
+                styleData={exp.style || {}}
+                onStyleSave={(s) => {
+                  const n = [...(data.leftExperience || [])];
+                  n[idx].style = s;
+                  setData({...data, leftExperience: n});
+                }}
+              />
+            </div>
           </div>
-          {(exp.details || []).length > 0 && (
-            <ul className="list-disc list-inside text-xs text-[#112D4E] space-y-1 ml-1 mt-2 font-medium">
-              {exp.details.map((d: string, i: number) => (
-                <li key={i} className="group/item relative">
-                  <span className="inline-block relative">
-                     <EditableText value={d} onSave={(v)=>{const n=[...(data.leftExperience || [])]; n[idx].details[i]=v; setData({...data, leftExperience: n});}} isEditing={isEditing} />
-                  </span>
-                  {isEditing && <button type="button" onClick={()=>{const n=[...(data.leftExperience || [])]; n[idx].details.splice(i,1); setData({...data, leftExperience: n});}} className="opacity-0 group-hover/item:opacity-100 absolute -left-4 top-0.5 text-red-300"><X className="w-2.5 h-2.5"/></button>}
-                </li>
-              ))}
-            </ul>
-          )}
-          {isEditing && <button type="button" onClick={()=>{const n=[...(data.leftExperience || [])]; if(!n[idx].details) n[idx].details=[]; n[idx].details.push("항목"); setData({...data, leftExperience: n});}} className="text-[10px] text-gray-400 mt-1 block"><Plus className="w-2 h-2 inline"/> 항목추가</button>}
         </div>
       ))}
       {isEditing && <button type="button" onClick={()=>{const n=data.leftExperience?[...data.leftExperience]:[]; n.push({title:"새 경력", period:"", description:"", details:[]}); setData({...data, leftExperience: n});}} className="text-xs text-blue-400 block"><Plus className="w-3 h-3 inline"/> 경력추가</button>}
@@ -255,7 +273,7 @@ const SummarySection = ({ data, setData, isEditing }: any) => (
     <h3 className="text-xl font-bold mb-6 flex items-center gap-3 ">
       <User className="text-[#112D4E] w-6 h-6" /> 자기소개
     </h3>
-    <p className="text-[#112D4E] leading-relaxed font-medium whitespace-pre-wrap">
+    <p className="text-[#112D4E] leading-relaxed font-medium">
       <EditableText 
         value={data.summary} 
         onSave={(v) => setData({...data, summary: v})} 
@@ -304,10 +322,10 @@ const ProjectsSection = ({ data, setData, isEditing }: any) => (
               <X className="w-4 h-4" />
             </button>
           )}
-          <div className="flex justify-between items-start mb-0">
-            <h4 className="font-bold text-[19px] ">
+          <div className="flex justify-between items-baseline mb-0">
+            <h4 className="font-bold text-[19px]">
               <EditableText 
-                value={exp.title || ""} 
+                value={(exp.title || "").trim()} 
                 onSave={(v) => {
                   const newExp = [...(data.experience || [])];
                   newExp[idx].title = v;
@@ -318,7 +336,7 @@ const ProjectsSection = ({ data, setData, isEditing }: any) => (
             </h4>
             <span className="text-[13px] font-mono text-[#0a1e36]">
               <EditableText 
-                value={exp.period || ""} 
+                value={(exp.period || "").trim()} 
                 onSave={(v) => {
                   const newExp = [...(data.experience || [])];
                   newExp[idx].period = v;
@@ -328,9 +346,9 @@ const ProjectsSection = ({ data, setData, isEditing }: any) => (
               />
             </span>
           </div>
-            <div className="text-[14px] text-[#1A374D] font-semibold leading-[1.7] mt-0.5 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+            <div className="text-[14px] text-[#1A374D] font-semibold leading-[1.8] tracking-tight mt-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
               <EditableText 
-                value={(exp.details || []).join('\n').trim()} 
+                value={(exp.details || []).filter((d: string) => d && d.trim() !== '').join('\n')} 
                 multiline
                 onSave={(v) => {
                   const newExp = [...(data.experience || [])];

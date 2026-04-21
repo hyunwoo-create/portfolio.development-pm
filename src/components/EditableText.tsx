@@ -150,9 +150,14 @@ export const EditableText = ({
   onStyleSave
 }: EditableTextProps) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [tempValue, setTempValue] = useState(value);
   const containerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setTempValue(value);
+  }, [value]);
 
   const adjustTextareaHeight = useCallback(() => {
     const target = textareaRef.current;
@@ -166,7 +171,7 @@ export const EditableText = ({
     if (multiline && isEditing) {
       adjustTextareaHeight();
     }
-  }, [multiline, isEditing, value, adjustTextareaHeight]);
+  }, [multiline, isEditing, tempValue, adjustTextareaHeight]);
 
   const handleStyleChange = useCallback((newStyle: any) => {
     if (!onStyleSave || !styleData) return;
@@ -175,44 +180,59 @@ export const EditableText = ({
     if (target && target.selectionStart !== null && target.selectionEnd !== null && target.selectionStart !== target.selectionEnd) {
       const start = target.selectionStart;
       const end = target.selectionEnd;
-      const selectedText = value.substring(start, end);
+      const selectedText = tempValue.substring(start, end);
 
       const changedProp = Object.keys(newStyle).find(k => newStyle[k] !== styleData[k]);
-      if (changedProp) {
-        const kebabKey = changedProp.replace(/[A-Z]/g, m => "-" + m.toLowerCase());
-        const styleTag = `#style:${kebabKey}:${newStyle[changedProp]}`;
-        const newValue = value.substring(0, start) + `[${selectedText}](${styleTag})` + value.substring(end);
-        onSave(newValue);
-        return;
+      if (!changedProp) return;
+
+      const styleValue = newStyle[changedProp];
+      const linkMatch = selectedText.match(/\[(.*?)\]\(#style:(.*?)\)/);
+      
+      let newValue;
+      if (linkMatch) {
+        const text = linkMatch[1];
+        const existingStyleStr = linkMatch[2];
+        const styles = existingStyleStr.split(',').reduce((acc: any, s: string) => {
+          const [k, v] = s.split(':');
+          if (k && v) acc[k] = v;
+          return acc;
+        }, {});
+        
+        styles[changedProp] = styleValue;
+        const newStyleStr = Object.entries(styles).map(([k, v]) => `${k}:${v}`).join(',');
+        newValue = tempValue.substring(0, start) + `[${text}](#style:${newStyleStr})` + tempValue.substring(end);
+      } else {
+        newValue = tempValue.substring(0, start) + `[${selectedText}](#style:${changedProp}:${styleValue})` + tempValue.substring(end);
       }
+      
+      setTempValue(newValue);
+      onSave(newValue);
     }
-    onStyleSave(newStyle);
-  }, [multiline, value, onSave, onStyleSave, styleData]);
+  }, [multiline, onSave, onStyleSave, styleData, tempValue]);
 
   if (!isEditing) {
     if (disableMarkdown) {
       return <span className={className} style={style}>{String(value || '')}</span>;
     }
     return (
-      <span className={className} style={{ ...style, whiteSpace: "pre-wrap" }}>
+      <span className={className} style={{ ...style, whiteSpace: multiline ? "pre-wrap" : "normal" }}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           urlTransform={(url) => url}
           components={{
-            p: ({ node, ...props }) => <span className={`${multiline ? "block" : "inline"} !m-0 !p-0`} {...props} />,
+            p: ({ node, ...props }) => <span className="inline !m-0 !p-0" {...props} />,
             a: ({ node, ...props }) => {
               const href = props.href ? decodeURIComponent(props.href) : '';
               if (href.includes('style:')) {
-                const stylePart = href.split('style:')[1];
-                const styleParts = stylePart.split(';');
-                const customStyle: any = {};
-                styleParts.forEach(part => {
-                  const [key, val] = part.split(':');
-                  if (key && val) {
-                    const camelKey = key.trim().replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-                    customStyle[camelKey] = val.trim();
+                const styleStr = href.split('style:')[1];
+                const customStyle = styleStr.split(',').reduce((acc: any, s: string) => {
+                  const [k, v] = s.split(':');
+                  if (k && v) {
+                    const camelKey = k.trim().replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                    acc[camelKey] = v.trim();
                   }
-                });
+                  return acc;
+                }, {});
                 return (
                   <span
                     style={customStyle}
@@ -253,12 +273,16 @@ export const EditableText = ({
         <textarea
           ref={textareaRef}
           className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded p-2 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
-          value={value}
-          onChange={(e) => onSave(e.target.value)}
+          value={tempValue}
+          onChange={(e) => {
+            setTempValue(e.target.value);
+            onSave(e.target.value);
+          }}
           onFocus={() => setIsFocused(true)}
           onBlur={(e) => {
             if (containerRef.current?.contains(e.relatedTarget as Node)) return;
             setIsFocused(false);
+            onSave(tempValue);
           }}
           rows={5}
           style={{ ...style, overflowY: 'hidden', minHeight: '5em' }}
@@ -267,12 +291,16 @@ export const EditableText = ({
         <input
           ref={inputRef}
           className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
-          value={value}
-          onChange={(e) => onSave(e.target.value)}
+          value={tempValue}
+          onChange={(e) => {
+            setTempValue(e.target.value);
+            onSave(e.target.value);
+          }}
           onFocus={() => setIsFocused(true)}
           onBlur={(e) => {
             if (containerRef.current?.contains(e.relatedTarget as Node)) return;
             setIsFocused(false);
+            onSave(tempValue);
           }}
           style={style}
         />
