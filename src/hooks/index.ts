@@ -40,48 +40,48 @@ const fetchAllContent = (): Promise<Record<string, any>> => {
   return _contentPromise;
 };
 
-const saveContentToSupabase = async (key: string, value: any) => {
-  try {
-    // Strip large base64 fields from the main object; save them separately
-    let sanitizedValue = value;
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      // Strip blob: URLs — they are session-only and become invalid after reload
-      const hasBlobUrl = Object.values(value).some(
-        (v) => typeof v === 'string' && v.startsWith('blob:')
-      );
-      if (hasBlobUrl) {
-        sanitizedValue = { ...value };
-        for (const k of Object.keys(sanitizedValue)) {
-          if (typeof sanitizedValue[k] === 'string' && sanitizedValue[k].startsWith('blob:')) {
-            delete sanitizedValue[k];
-          }
-        }
-      }
+// Utility to strip base64 images from strings (like HTML content)
+const stripBase64Images = (str: string): string => {
+  if (typeof str !== 'string') return str;
+  // Replace <img src="data:image/..."> with a warning placeholder
+  return str.replace(/<img[^>]+src=["']data:image\/[^"']+["'][^>]*>/gi, '<div class="p-4 bg-red-100 text-red-600 rounded-lg text-sm font-bold my-2 border border-red-200">⚠️ 고화질 이미지는 DB 과부하 방지를 위해 반드시 외부 링크(URL) 형태로만 삽입해주세요. (Base64 이미지 자동 삭제됨)</div>');
+};
 
-      const hasLargeField = LARGE_FIELD_KEYS.some(f => sanitizedValue[f] && typeof sanitizedValue[f] === 'string' && sanitizedValue[f].startsWith('data:'));
-      if (hasLargeField) {
-        sanitizedValue = { ...sanitizedValue };
-        for (const field of LARGE_FIELD_KEYS) {
-          if (sanitizedValue[field] && typeof sanitizedValue[field] === 'string' && sanitizedValue[field].startsWith('data:')) {
-            const imageData = sanitizedValue[field];
-            delete sanitizedValue[field];
-            // Save the large field under its own key
-            fetch(SUPABASE_CONTENT_API, {
-              method: 'POST',
-              keepalive: true,
-              headers: {
-                'Content-Type': 'application/json',
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-              },
-              body: JSON.stringify({ password: import.meta.env.VITE_ADMIN_PASSWORD, key: 'hero_image', value: imageData }),
-            }).catch(e => console.error('Failed to save hero_image:', e));
-          }
-        }
+const recursivelySanitize = (obj: any): any => {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === 'string') {
+    if (obj.startsWith('blob:')) return null; // Remove blob URLs
+    if (obj.startsWith('data:image/')) return null; // Remove direct base64 strings
+    return stripBase64Images(obj); // Strip from HTML
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(recursivelySanitize).filter(item => item !== null);
+  }
+  if (typeof obj === 'object') {
+    const sanitized: any = {};
+    for (const [k, v] of Object.entries(obj)) {
+      const sanitizedValue = recursivelySanitize(v);
+      if (sanitizedValue !== null) {
+        sanitized[k] = sanitizedValue;
       }
     }
+    return sanitized;
+  }
+  return obj;
+};
 
-    await fetch(SUPABASE_CONTENT_API, {
+const saveContentToSupabase = async (key: string, value: any) => {
+  try {
+    const sanitizedValue = recursivelySanitize(value);
+
+    // Safeguard: Do not save if sanitizedValue is empty or completely stripped
+    // Unless the user explicitly cleared it, but an empty object for a normally complex data structure is suspicious.
+    if (!sanitizedValue || (typeof sanitizedValue === 'object' && Object.keys(sanitizedValue).length === 0 && Array.isArray(sanitizedValue) === false && key !== 'hero_image')) {
+      console.warn(`[Supabase Save] Blocked saving empty or fully stripped object to key: ${key}`);
+      return;
+    }
+
+    const response = await fetch(SUPABASE_CONTENT_API, {
       method: 'POST',
       keepalive: true,
       headers: {
@@ -91,8 +91,16 @@ const saveContentToSupabase = async (key: string, value: any) => {
       },
       body: JSON.stringify({ password: import.meta.env.VITE_ADMIN_PASSWORD, key, value: sanitizedValue }),
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[Supabase Save Error] Failed to save key: ${key}. Status: ${response.status}`, errorText);
+      alert(`데이터 저장 실패 (${key}): 서버 통신 오류가 발생했습니다. 데이터 유실 방지를 위해 창을 닫지 마시고 잠시 후 다시 시도해주세요.`);
+      throw new Error(`Supabase save failed: ${response.status}`);
+    }
   } catch (e) {
-    console.error('Failed to save content:', e);
+    console.error(`[Supabase Exception] Failed to save ${key}:`, e);
+    // Don't alert here if it's a network error during beforeunload to avoid breaking the exit flow
   }
 };
 

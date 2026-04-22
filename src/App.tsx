@@ -16,7 +16,7 @@ import {
 } from './data/constants';
 
 // Hooks
-import { useEditableContent } from './hooks';
+import { useAppStore } from './store';
 
 // Components
 import { Navbar } from './components/Navbar';
@@ -32,18 +32,18 @@ const App = () => {
   // --- View State ---
   const [view, setView] = useState<'home' | 'all-projects' | 'portfolio' | 'project-detail' | 'resume'>('home');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
-  // --- Content State (Supabase / LocalStorage) ---
-  const [heroContent, setHeroContent] = useEditableContent(HERO_CONTENT_DEFAULT, 'hero_content');
-  const [aboutContent, setAboutContent] = useEditableContent(ABOUT_CONTENT_DEFAULT, 'about_content');
-  const [portfolioData, setPortfolioData] = useEditableContent(Array.isArray(PORTFOLIO_PROJECTS) ? PORTFOLIO_PROJECTS : [], 'portfolio_data');
-  const [skillTabs, setSkillTabs] = useEditableContent(Array.isArray(INITIAL_SKILL_TABS) ? INITIAL_SKILL_TABS : [], 'skill_tabs');
-  const [tools, setTools] = useEditableContent(Array.isArray(INITIAL_TOOLS) ? INITIAL_TOOLS : [], 'tools');
-  const [gameHistory, setGameHistory] = useEditableContent(GAME_HISTORY, 'game_history');
-  const [resumeData, setResumeData] = useEditableContent(RESUME_DATA, 'resume_data');
-  const [userImage, setUserImage] = useEditableContent('', 'stat_board_user_image');
+  // --- Content State (Zustand Store) ---
+  const {
+    isEditing, setIsEditing,
+    heroContent, aboutContent, portfolioData, skillTabs, tools, gameHistory, resumeData, userImage,
+    updateContent, fetchAll
+  } = useAppStore();
+
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
 
   // --- Handlers ---
   const changeView = useCallback((newView: any) => {
@@ -92,9 +92,9 @@ const App = () => {
     const newProjects = portfolioData.map((p: Project) => 
       p.id === selectedProject.id ? { ...p, content } : p
     );
-    setPortfolioData(newProjects);
+    updateContent('portfolio_data', newProjects);
     setSelectedProject({ ...selectedProject, content });
-  }, [selectedProject, portfolioData, setPortfolioData]);
+  }, [selectedProject, portfolioData, updateContent]);
 
   // Sync scroll to top on view change
   useEffect(() => {
@@ -119,23 +119,23 @@ const App = () => {
               onToggleAdmin={() => setIsEditing(!isEditing)} 
               isEditing={isEditing} 
               content={heroContent} 
-              setContent={setHeroContent} 
+              setContent={(v) => updateContent('hero_content', v)} 
             />
             <About 
               isEditing={isEditing} 
               content={aboutContent} 
-              setContent={setAboutContent} 
+              setContent={(v) => updateContent('about_content', v)} 
               onMoreMeClick={() => setView('resume')}
             />
             <StatBoard 
               isEditing={isEditing}
               projects={portfolioData}
-              setProjects={setPortfolioData}
+              setProjects={(v) => updateContent('portfolio_data', v)}
               skillTabs={skillTabs}
               tools={tools}
               onProjectClick={handleProjectClick}
               userImage={userImage}
-              onImageUpload={setUserImage}
+              onImageUpload={(v) => updateContent('stat_board_user_image', v)}
             />
           </motion.div>
         )}
@@ -146,7 +146,7 @@ const App = () => {
             onProjectClick={handleProjectClick}
             isEditing={isEditing}
             projects={portfolioData}
-            setProjects={setPortfolioData}
+            setProjects={(v) => updateContent('portfolio_data', v)}
             setView={changeView}
           />
         )}
@@ -156,7 +156,7 @@ const App = () => {
             onProjectClick={handleProjectClick} 
             isEditing={isEditing} 
             projects={portfolioData} 
-            setProjects={setPortfolioData} 
+            setProjects={(v) => updateContent('portfolio_data', v)} 
             setView={setView}
           />
         )}
@@ -176,7 +176,7 @@ const App = () => {
             key={`resume-${isEditing}`}
             isEditing={isEditing} 
             data={resumeData} 
-            setData={setResumeData} 
+            setData={(v) => updateContent('resume_data', v)} 
           />
         )}
       </AnimatePresence>

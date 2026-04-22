@@ -151,151 +151,52 @@ export const EditableText = ({
   onStyleSave
 }: EditableTextProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [tempValue, setTempValue] = useState(value);
   const containerRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setTempValue(value);
-  }, [value, isEditing]);
-
-  const adjustTextareaHeight = useCallback(() => {
-    const target = textareaRef.current;
-    if (target) {
-      target.style.height = 'auto';
-      target.style.height = target.scrollHeight + 'px';
-    }
-  }, []);
-
-  useEffect(() => {
-    if (multiline && isEditing) {
-      adjustTextareaHeight();
-    }
-  }, [multiline, isEditing, tempValue, adjustTextareaHeight]);
 
   const handleStyleChange = useCallback((newStyle: any) => {
     if (!onStyleSave || !styleData) return;
-
-    const target = multiline ? undefined : inputRef.current; 
-    
-    // 1. 전체 블록 스타일 업데이트 (항상 수행)
     onStyleSave(newStyle);
+  }, [onStyleSave, styleData]);
 
-    // 2. 만약 인풋(싱글라인)에서 텍스트가 선택되어 있다면 마크다운 스타일링 시도
-    if (target && target.selectionStart !== null && target.selectionEnd !== null && target.selectionStart !== target.selectionEnd) {
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      const selectedText = tempValue.substring(start, end);
-
-      const changedProp = Object.keys(newStyle).find(k => newStyle[k] !== styleData[k]);
-      if (!changedProp) return;
-
-      const styleValue = newStyle[changedProp];
-      const linkMatch = selectedText.match(/\[(.*?)\]\(#style:(.*?)\)/);
-      
-      let newValue;
-      if (linkMatch) {
-        const text = linkMatch[1];
-        const existingStyleStr = linkMatch[2];
-        const styles = existingStyleStr.split(',').reduce((acc: any, s: string) => {
-          const [k, v] = s.split(':');
-          if (k && v) acc[k] = v;
-          return acc;
-        }, {});
-        
-        styles[changedProp] = styleValue;
-        const newStyleStr = Object.entries(styles).map(([k, v]) => `${k}:${v}`).join(',');
-        newValue = tempValue.substring(0, start) + `[${text}](#style:${newStyleStr})` + tempValue.substring(end);
-      } else {
-        newValue = tempValue.substring(0, start) + `[${selectedText}](#style:${changedProp}:${styleValue})` + tempValue.substring(end);
-      }
-      
-      setTempValue(newValue);
-      onSave(newValue);
-    }
-  }, [multiline, onSave, onStyleSave, styleData, tempValue]);
-
+  // ─── READ-ONLY MODE ───
   if (!isEditing) {
     if (disableMarkdown) {
       return <span className={className} style={{ ...style, whiteSpace: multiline ? "pre-wrap" : "normal" }}>{String(value || '')}</span>;
     }
     
-    // HTML 지원 (Tiptap에서 저장된 리치 텍스트 대응)
-    if (multiline && typeof value === 'string' && value.startsWith('<')) {
+    if (multiline) {
+      // Delegate to AdminTextEditor's read-only mode for consistent rendering
       return (
-        <span 
-          className={`${className} inline-block w-full`} 
-          style={style} 
-          dangerouslySetInnerHTML={{ __html: value }} 
-        />
+        <div style={style} className="w-full">
+          <AdminTextEditor
+            isAdmin={false}
+            bodyValue={value || ''}
+            onBodyChange={() => {}}
+            hideTitle={true}
+            readonlyClassName={className}
+          />
+        </div>
       );
     }
 
+    // Single-line read-only
     return (
       <span className={className} style={style}>
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkBreaks]}
-          urlTransform={(url) => url}
-          components={{
-            // 단락 구분을 위해 p 태그 매핑 제거 (index.css의 .markdown-body p 스타일 활용)
-            a: ({ node, ...props }) => {
-              const href = props.href ? decodeURIComponent(props.href) : '';
-              if (href.includes('style:')) {
-                const styleStr = href.split('style:')[1];
-                const customStyle = styleStr.split(',').reduce((acc: any, s: string) => {
-                  const [k, v] = s.split(':');
-                  if (k && v) {
-                    const camelKey = k.trim().replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-                    acc[camelKey] = v.trim();
-                  }
-                  return acc;
-                }, {});
-                return (
-                  <span
-                    style={customStyle}
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                    className="cursor-text"
-                  >
-                    {props.children}
-                  </span>
-                );
-              }
-              return <a {...props} className="text-[#3F72AF] hover:underline" target="_blank" rel="noopener noreferrer" />;
-            },
-            strong: ({ node, ...props }) => <strong {...props} className="font-extrabold" />,
-            em: ({ node, ...props }) => <em {...props} className="italic" />,
-            ul: ({ node, ...props }) => <ul {...props} className="list-disc list-inside mt-1 space-y-1" />,
-            ol: ({ node, ...props }) => <ol {...props} className="list-decimal list-inside mt-1 space-y-1" />,
-            li: ({ node, ...props }) => <li {...props} className="leading-snug" />,
-            h1: ({ node, ...props }) => <h1 {...props} />,
-            h2: ({ node, ...props }) => <h2 {...props} />,
-            h3: ({ node, ...props }) => <h3 {...props} />,
-            br: () => <br />
-          }}
-        >
-          {String(value || '')}
-        </ReactMarkdown>
+        {String(value || '')}
       </span>
     );
   }
 
+  // ─── EDIT MODE ───
   return (
-    <div className="relative" ref={containerRef}>
-      {isEditing && isFocused && styleData && handleStyleChange && (
-        <div className="absolute bottom-full left-0 z-[100] mb-2 pointer-events-auto">
-          <TextStyleEditor style={styleData} onStyleChange={handleStyleChange} />
-        </div>
-      )}
+    <div className="relative w-full" ref={containerRef}>
       {multiline ? (
         <div className="w-full">
           <AdminTextEditor
-            isAdmin={isEditing}
-            bodyValue={tempValue}
-            onBodyChange={(v) => {
-              setTempValue(v);
-              onSave(v);
-            }}
+            isAdmin={true}
+            bodyValue={value || ''}
+            onBodyChange={onSave}
             hideTitle={true}
             className={`admin-minimal-editor ${className}`}
             minBodyHeight="80px"
@@ -303,30 +204,26 @@ export const EditableText = ({
           />
           {styleData && onStyleSave && (
             <div className="mt-2">
-              <TextStyleEditor style={styleData} onStyleChange={(s) => onStyleSave(s)} />
+              <TextStyleEditor style={styleData} onStyleChange={handleStyleChange} />
             </div>
           )}
         </div>
       ) : (
-        <div className="w-full">
+        <div className="w-full relative">
           {isFocused && styleData && onStyleSave && (
             <div className="absolute bottom-full left-0 z-[100] mb-2 pointer-events-auto">
-              <TextStyleEditor style={styleData} onStyleChange={(s) => onStyleSave(s)} />
+              <TextStyleEditor style={styleData} onStyleChange={handleStyleChange} />
             </div>
           )}
           <input
             ref={inputRef}
             className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
-            value={tempValue}
-            onChange={(e) => {
-              setTempValue(e.target.value);
-              onSave(e.target.value);
-            }}
+            value={value || ''}
+            onChange={(e) => onSave(e.target.value)}
             onFocus={() => setIsFocused(true)}
             onBlur={(e) => {
               if (containerRef.current?.contains(e.relatedTarget as Node)) return;
               setIsFocused(false);
-              onSave(tempValue);
             }}
             style={style}
           />
