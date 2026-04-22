@@ -15,9 +15,12 @@ import {
   Monitor,
   Smartphone,
   Gamepad2,
-  Wrench
+  Wrench,
+  Trash2,
+  Link as LinkIcon
 } from 'lucide-react';
 import { EditableText } from './EditableText';
+import { getExternalEmbedUrl } from '../utils';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   'Cpu': <Cpu className="w-5 h-5" />,
@@ -183,6 +186,8 @@ export const StatBoard = ({
 }: any) => {
   const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [mobileCategory, setMobileCategory] = useState<string>('projects');
+  const [showAvatarLink, setShowAvatarLink] = useState(false);
+  const [avatarLinkValue, setAvatarLinkValue] = useState('');
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -362,7 +367,10 @@ export const StatBoard = ({
               className="text-[8px] bg-white text-[#112D4E] p-1 rounded-md w-full focus:outline-none" 
               placeholder="Icon URL" 
               value={t.iconUrl} 
-              onChange={(e) => updateTool(t.id, 'iconUrl', e.target.value)}
+              onChange={(e) => {
+                const finalUrl = getExternalEmbedUrl(e.target.value);
+                updateTool(t.id, 'iconUrl', finalUrl);
+              }}
             />
           </div>
         )}
@@ -471,13 +479,64 @@ export const StatBoard = ({
             </div>
             
             {isEditing && (
-              <div className="absolute inset-0 bg-[#112D4E]/50 rounded-[3rem] flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity z-30"
-                   onClick={() => document.getElementById('statboard-desktop-img')?.click()}>
-                <div className="text-white flex flex-col items-center">
-                  <Upload className="w-10 h-10 mb-3" />
-                  <span className="font-bold text-sm bg-black/30 px-3 py-1 rounded-full">이미지 변경</span>
-                </div>
+              <div className="absolute inset-0 bg-black/60 rounded-[3rem] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-8 z-30 pointer-events-auto">
+                <button 
+                  onClick={() => document.getElementById('statboard-desktop-img')?.click()}
+                  className="w-full max-w-[140px] py-2.5 bg-white text-[#112D4E] rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-gray-100 transition-all shadow-lg"
+                >
+                  <Upload className="w-4 h-4" /> 파일 업로드
+                </button>
+                <button 
+                  onClick={() => setShowAvatarLink(true)}
+                  className="w-full max-w-[140px] py-2.5 bg-[#3F72AF] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#1A59A7] transition-all shadow-lg"
+                >
+                  <LinkIcon className="w-4 h-4" /> 링크 주소
+                </button>
+                <button 
+                  onClick={() => onImageUpload?.("")}
+                  className="w-full max-w-[140px] py-2.5 bg-red-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-red-600 transition-all shadow-lg"
+                >
+                  <Trash2 className="w-4 h-4" /> 사진 삭제
+                </button>
                 <input type="file" id="statboard-desktop-img" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              </div>
+            )}
+
+            {isEditing && showAvatarLink && (
+              <div className="absolute inset-0 bg-white/95 rounded-[3rem] z-[40] p-8 flex flex-col justify-center items-center animate-in fade-in zoom-in duration-300">
+                <div className="w-full max-w-xs">
+                  <p className="text-sm font-black text-[#112D4E] mb-3 text-center">아바타 이미지 URL</p>
+                  <input 
+                    type="text" 
+                    value={avatarLinkValue} 
+                    onChange={(e) => setAvatarLinkValue(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full border-2 border-[#DBE2EF] rounded-xl px-4 py-3 text-xs mb-4 focus:outline-none focus:border-[#3F72AF] shadow-inner"
+                    autoFocus
+                  />
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        const finalUrl = getExternalEmbedUrl(avatarLinkValue);
+                        if (finalUrl) onImageUpload?.(finalUrl);
+                        setAvatarLinkValue('');
+                        setShowAvatarLink(false);
+                      }} 
+                      className="flex-1 bg-[#112D4E] text-white rounded-xl py-3 text-xs font-bold shadow-lg active:scale-95 transition-transform"
+                    >
+                      적용
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setAvatarLinkValue('');
+                        setShowAvatarLink(false);
+                      }} 
+                      className="flex-1 bg-gray-100 text-[#112D4E] rounded-xl py-3 text-xs font-bold"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -514,10 +573,25 @@ export const StatBoard = ({
             </div>
           </div>
           {isEditing && (
-             <div className="absolute inset-0 bg-[#112D4E]/40 rounded-[2.5rem] flex flex-col items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity z-30"
-                  onClick={() => document.getElementById('statboard-mobile-img')?.click()}>
-                <Upload className="w-10 h-10 mb-3 text-white" />
-                <span className="font-bold text-sm text-white bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-sm">이미지 변경</span>
+             <div className="absolute inset-0 bg-black/60 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-30 p-8">
+                <button 
+                  onClick={() => document.getElementById('statboard-mobile-img')?.click()}
+                  className="w-full max-w-[120px] py-2 bg-white text-[#112D4E] rounded-xl text-[10px] font-bold flex items-center justify-center gap-2"
+                >
+                  <Upload className="w-3 h-3" /> 파일
+                </button>
+                <button 
+                  onClick={() => setShowAvatarLink(true)}
+                  className="w-full max-w-[120px] py-2 bg-[#3F72AF] text-white rounded-xl text-[10px] font-bold flex items-center justify-center gap-2"
+                >
+                  <LinkIcon className="w-3 h-3" /> 링크
+                </button>
+                <button 
+                  onClick={() => onImageUpload?.("")}
+                  className="w-full max-w-[120px] py-2 bg-red-500 text-white rounded-xl text-[10px] font-bold flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="w-3 h-3" /> 삭제
+                </button>
                 <input type="file" id="statboard-mobile-img" accept="image/*" className="hidden" onChange={handleImageUpload} />
              </div>
           )}

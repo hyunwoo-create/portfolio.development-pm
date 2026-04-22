@@ -44,9 +44,19 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
                 <Calendar className="w-4 h-4 text-[#3F72AF]" />
                 <span className="font-bold">{data.birthDate || "2000.01.01"}</span>
               </div>
+              {/* Phone Field Added for PDF */}
+              <div className="flex items-center gap-3">
+                <Smartphone className="w-4 h-4 text-[#3F72AF]" />
+                <span className="font-bold">{data.phone || "010-0000-0000"}</span>
+              </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-4 h-4 text-[#3F72AF]" />
                 <span className="font-bold">{data.address || "서울특별시"}</span>
+              </div>
+              {/* Email Field Added for PDF */}
+              <div className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-[#3F72AF]" />
+                <span className="font-bold">{data.email || "email@example.com"}</span>
               </div>
               {data.github && (
                 <div className="flex items-center gap-3 text-wrap break-all">
@@ -85,16 +95,13 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
             </div>
           </div>
 
-          {/* Experience Sidebar */}
+          {/* Experience Sidebar - Badge Removed */}
           <div className="space-y-6 pt-10 border-t border-[#DBE2EF]/60">
             <div className="flex items-center justify-between">
               <h3 className="font-black text-[#112D4E] text-[11px] tracking-[0.2em] uppercase flex items-center gap-2">
                 <Briefcase className="w-4 h-4 text-[#3F72AF]" />
                 Experience
               </h3>
-              <span className="px-2 py-0.5 bg-red-50 text-red-500 text-[9px] font-black rounded-full border border-red-100">
-                {data.totalExperience}
-              </span>
             </div>
             <div className="space-y-8">
               {(data.leftExperience || []).map((exp: any, idx: number) => (
@@ -129,13 +136,13 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
 
         {/* Main Content */}
         <div className="col-span-2 space-y-16">
-          {/* Summary */}
+          {/* Summary - Renamed to 한 줄 소개 */}
           <section className="space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-[#112D4E]/10 flex items-center justify-center text-[#112D4E]">
                 <User className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-black text-[#112D4E]">자기소개</h3>
+              <h3 className="text-xl font-black text-[#112D4E]">한 줄 소개</h3>
             </div>
             <div className="text-[15px] font-bold text-[#112D4E] leading-loose markdown-body">
               <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
@@ -172,11 +179,16 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
                             <div className="flex items-center gap-3">
                               <h4 className="font-black text-[20px] text-[#112D4E] tracking-tight">{exp.title}</h4>
                               {isReleased && (
-                                <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-[9px] font-black rounded border border-orange-100 uppercase tracking-widest">
+                                <div className="px-2 py-0.5 bg-orange-50 text-orange-600 text-[9px] font-black rounded border border-orange-100 uppercase tracking-widest flex items-center gap-1">
+                                  {exp.platformIcon && <img src={exp.platformIcon} alt="" className="w-3 h-3 object-contain" />}
                                   {exp.releasedText || 'Released'}
-                                </span>
+                                </div>
                               )}
                             </div>
+                            {/* Subtitle Added for PDF */}
+                            {exp.subtitle && (
+                              <p className="text-[12px] text-[#3F72AF] font-bold leading-tight -mt-0.5">{exp.subtitle}</p>
+                            )}
                           </div>
                         </div>
                         <span className="text-[11px] font-black text-[#3F72AF] font-mono italic">{exp.period}</span>

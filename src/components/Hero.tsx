@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { Upload, Settings, ChevronRight } from 'lucide-react';
+import { Upload, Settings, ChevronRight, Link as LinkIcon, Trash2, X, Plus } from 'lucide-react';
 import { EditableText } from './EditableText';
-import { processImageHighQuality } from '../utils';
+import { processImageHighQuality, getExternalEmbedUrl } from '../utils';
 import { HeroVideoSettingsModal } from './HeroVideoSettingsModal';
 
 interface HeroProps {
@@ -21,6 +21,8 @@ const isDirectVideoUrl = (url: string): boolean => {
 export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent }: HeroProps) => {
   const imageFileInputRef = useRef<HTMLInputElement>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [showHeroLink, setShowHeroLink] = useState(false);
+  const [heroLinkInput, setHeroLinkInput] = useState('');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,9 +90,67 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
 
       {isEditing && (
         <div className="absolute bottom-12 md:bottom-16 left-1/2 -translate-x-1/2 w-full max-w-[27rem] md:max-w-[40rem] h-[65vh] md:h-[75vh] pointer-events-none z-50">
-          <div className="relative w-full h-full">
-            <button onClick={() => imageFileInputRef.current?.click()} className="absolute bottom-8 right-0 md:right-8 w-12 h-12 md:w-14 md:h-14 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#0a1e36] transition-all border-2 border-white pointer-events-auto"><Upload className="w-5 h-5 md:w-6 md:h-6" /></button>
-            <button onClick={() => setIsVideoModalOpen(true)} className="absolute bottom-8 left-0 md:left-8 w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center text-[#112D4E] shadow-lg hover:bg-[#F9F7F7] transition-all border-2 border-[#DBE2EF] pointer-events-auto"><Settings className="w-5 h-5 md:w-6 md:h-6" /></button>
+          <div className="relative w-full h-full flex items-end justify-center">
+            {/* Control Panel Overlay */}
+            <div className="absolute bottom-8 right-0 md:right-8 flex flex-col gap-2 pointer-events-auto group/hcontrols">
+              <div className="flex flex-col gap-2 opacity-0 group-hover/hcontrols:opacity-100 transition-opacity translate-y-2 group-hover/hcontrols:translate-y-0 duration-300">
+                <button 
+                  onClick={() => imageFileInputRef.current?.click()} 
+                  className="w-12 h-12 bg-white text-[#112D4E] rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:bg-gray-100 transition-all"
+                  title="파일 업로드"
+                >
+                  <Upload className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={() => setShowHeroLink(true)} 
+                  className="w-12 h-12 bg-[#3F72AF] text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:bg-[#1A59A7] transition-all"
+                  title="링크 주소"
+                >
+                  <LinkIcon className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={() => setContent({...content, heroImage: ""})} 
+                  className="w-12 h-12 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:bg-red-600 transition-all"
+                  title="이미지 삭제"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
+              <button className="w-12 h-12 md:w-14 md:h-14 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-xl border-2 border-white">
+                <Plus className="w-6 h-6 transition-transform group-hover/hcontrols:rotate-45" />
+              </button>
+            </div>
+            
+            <button onClick={() => setIsVideoModalOpen(true)} className="absolute bottom-8 left-0 md:left-8 w-12 h-12 md:w-14 md:h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-[#112D4E] shadow-lg hover:bg-white transition-all border-2 border-[#DBE2EF] pointer-events-auto"><Settings className="w-5 h-5 md:w-6 md:h-6" /></button>
+            
+            {showHeroLink && (
+              <div className="absolute bottom-24 right-0 md:right-8 w-64 bg-white rounded-2xl shadow-2xl p-4 border border-[#DBE2EF] pointer-events-auto animate-in slide-in-from-bottom-4 duration-300 z-[60]">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-xs font-black text-[#112D4E] uppercase tracking-wider">Image URL</span>
+                  <button onClick={() => setShowHeroLink(false)}><X className="w-4 h-4 text-gray-400" /></button>
+                </div>
+                <input 
+                  type="text" 
+                  value={heroLinkInput}
+                  onChange={(e) => setHeroLinkInput(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full border border-[#DBE2EF] rounded-xl px-4 py-2 text-xs mb-3 focus:outline-none focus:border-[#3F72AF]"
+                  autoFocus
+                />
+                <button 
+                  onClick={() => {
+                    const finalUrl = getExternalEmbedUrl(heroLinkInput);
+                    if (finalUrl) setContent({...content, heroImage: finalUrl});
+                    setHeroLinkInput('');
+                    setShowHeroLink(false);
+                  }}
+                  className="w-full bg-[#112D4E] text-white rounded-xl py-2 text-xs font-bold"
+                >
+                  적용하기
+                </button>
+              </div>
+            )}
+            
             <input ref={imageFileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
           </div>
         </div>
@@ -140,12 +200,14 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
         <div className="hidden md:flex flex-col items-start justify-center pointer-events-auto z-20 gap-6 translate-y-8 md:translate-y-10">
           <div className="bg-[#DBE2EF] text-[#112D4E] font-black text-[11px] md:text-xs tracking-widest px-5 py-1.5 rounded-full mb-1 shadow-sm">POINT</div>
           {[1, 2, 3].map(num => (
-            <div key={num} className="flex px-5 py-3 md:px-7 md:py-5 bg-white/70 backdrop-blur-md rounded-[1.5rem] border border-[#DBE2EF]/80 shadow-md items-center gap-4 hover:shadow-lg transition-all transform hover:-translate-y-1">
-              <span className="text-4xl md:text-5xl font-black text-[#112D4E] tracking-tighter leading-none">
-                <EditableText value={content[`point${num}Value`] || "10"} onSave={(v) => setContent({...content, [`point${num}Value`]: v})} isEditing={isEditing} />
-              </span>
-              <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
-                <EditableText value={content[`point${num}Label`] || "YEARS\nEXPERIENCE"} onSave={(v) => setContent({...content, [`point${num}Label`]: v})} isEditing={isEditing} multiline />
+            <div key={num} className="flex px-5 py-3 md:px-7 md:py-5 bg-white/70 backdrop-blur-md rounded-[1.5rem] border border-[#DBE2EF]/80 shadow-md items-center gap-4 hover:shadow-lg transition-all transform hover:-translate-y-1 relative group/pitem">
+              <div className="flex items-center gap-4">
+                <span className="text-4xl md:text-5xl font-black text-[#112D4E] tracking-tighter leading-none">
+                  <EditableText value={content[`point${num}Value`] || "10"} onSave={(v) => setContent({...content, [`point${num}Value`]: v})} isEditing={isEditing} />
+                </span>
+                <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase">
+                  <EditableText value={content[`point${num}Label`] || "YEARS\nEXPERIENCE"} onSave={(v) => setContent({...content, [`point${num}Label`]: v})} isEditing={isEditing} multiline />
+                </div>
               </div>
             </div>
           ))}

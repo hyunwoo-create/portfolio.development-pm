@@ -13,14 +13,17 @@ import {
   Briefcase, 
   Award, 
   User, 
-  Plus, 
+  Plus,
   X,
+  Trash2,
+  Check,
+  Link as LinkIcon,
+  Smartphone,
   ScrollText,
-  ShieldCheck,
-  Smartphone
+  ShieldCheck
 } from 'lucide-react';
 import { EditableText } from './EditableText';
-import { processImageHighQuality } from '../utils';
+import { processImageHighQuality, getExternalEmbedUrl } from '../utils';
 import { handlePdfExport } from '../utils/pdf-generator';
 import { ResumeData, SelfIntroTab } from '../types';
 
@@ -33,6 +36,10 @@ interface ResumeProps {
 export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const resumeImageInputRef = useRef<HTMLInputElement>(null);
+  const [showRsLink, setShowRsLink] = useState(false);
+  const [rsLinkValue, setRsLinkValue] = useState('');
+  const [activeLinkEditor, setActiveLinkEditor] = useState<{type: string, idx?: number} | null>(null);
+  const [linkInput, setLinkInput] = useState('');
 
   const handleResumeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -89,22 +96,77 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
               <div className="w-[230px] h-[230px] rounded-3xl overflow-hidden mb-8 mx-auto md:mx-0 border border-[#3F72AF]/12 shadow-2xl shadow-[#112D4E]/10 relative group z-10">
                 <img src={data.resumeImage || "https://picsum.photos/seed/profile/300/300"} alt="Profile" className="w-full h-full object-fill" />
                 {isEditing && (
-                  <div className="absolute inset-0 bg-[#112D4E]/40 transition-all flex items-center justify-center cursor-pointer"
-                    onClick={() => resumeImageInputRef.current?.click()}
-                  >
-                    <div className="flex flex-col items-center gap-1 text-white">
-                      <Upload className="w-6 h-6" />
-                      <span className="text-[10px] font-bold">사진 변경</span>
+                  <div className="absolute bottom-4 right-4 pointer-events-auto group/rscontrols print:hidden z-30">
+                    <div className="flex flex-col gap-2 opacity-0 group-hover/rscontrols:opacity-100 transition-opacity translate-y-2 group-hover/rscontrols:translate-y-0 duration-300 mb-2">
+                      <button 
+                        onClick={() => resumeImageInputRef.current?.click()} 
+                        className="w-10 h-10 bg-white text-[#112D4E] rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:bg-gray-100 transition-all"
+                        title="파일 업로드"
+                      >
+                        <Upload className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => setShowRsLink(true)} 
+                        className="w-10 h-10 bg-[#3F72AF] text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:bg-[#1A59A7] transition-all"
+                        title="링크 주소"
+                      >
+                        <LinkIcon className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => setData({...data, resumeImage: ""})} 
+                        className="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:bg-red-600 transition-all"
+                        title="이미지 삭제"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
-                    <input
-                      ref={resumeImageInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleResumeImageUpload}
-                    />
+                    <button className="w-10 h-10 bg-[#112D4E] rounded-full flex items-center justify-center text-white shadow-xl border-2 border-white">
+                      <Plus className="w-5 h-5 transition-transform group-hover/rscontrols:rotate-45" />
+                    </button>
                   </div>
                 )}
+                {isEditing && showRsLink && (
+                  <div className="absolute inset-0 bg-white/95 z-30 p-4 flex flex-col justify-center animate-in fade-in zoom-in duration-200">
+                    <p className="text-[11px] font-black text-[#112D4E] mb-2">이미지 URL 입력</p>
+                    <input 
+                      type="text" 
+                      value={rsLinkValue} 
+                      onChange={(e) => setRsLinkValue(e.target.value)}
+                      placeholder="https://..."
+                      className="w-full border border-[#DBE2EF] rounded-lg px-3 py-2 text-[11px] mb-3 focus:outline-none focus:border-[#3F72AF]"
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => {
+                          const finalUrl = getExternalEmbedUrl(rsLinkValue);
+                          if (finalUrl) setData({...data, resumeImage: finalUrl});
+                          setRsLinkValue('');
+                          setShowRsLink(false);
+                        }} 
+                        className="flex-1 bg-[#112D4E] text-white rounded-lg py-2 text-[10px] font-bold"
+                      >
+                        적용
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setRsLinkValue('');
+                          setShowRsLink(false);
+                        }} 
+                        className="flex-1 bg-[#DBE2EF] text-[#112D4E] rounded-lg py-2 text-[10px] font-bold"
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <input
+                  ref={resumeImageInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleResumeImageUpload}
+                />
               </div>
               <h1 className="text-3xl font-bold mb-2 ">
                 <EditableText 
@@ -122,7 +184,11 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
               </p>
               <div className="space-y-4 text-sm text-[#112D4E] ">
                 <ContactInfo icon={<Calendar className="w-4 h-4" />} value={data.birthDate || "2000.01.01"} onSave={(v) => setData({...data, birthDate: v})} isEditing={isEditing} />
+                <div className={isEditing ? 'block' : 'hidden print:block'}>
+                  <ContactInfo icon={<Phone className="w-4 h-4" />} value={data.phone || "010-0000-0000"} onSave={(v) => setData({...data, phone: v})} isEditing={isEditing} />
+                </div>
                 <ContactInfo icon={<MapPin className="w-4 h-4" />} value={data.address || "서울특별시 OO구"} onSave={(v) => setData({...data, address: v})} isEditing={isEditing} />
+                <ContactInfo icon={<Mail className="w-4 h-4" />} value={data.email || "email@example.com"} onSave={(v) => setData({...data, email: v})} isEditing={isEditing} />
                 <ContactInfo icon={<Github className="w-4 h-4" />} value={data.github} onSave={(v) => setData({...data, github: v})} isEditing={isEditing} />
                 <ContactInfo icon={<ShieldCheck className="w-4 h-4" />} value={data.militaryService || "군필 (육군 병장)"} onSave={(v) => setData({...data, militaryService: v})} isEditing={isEditing} />
               </div>
@@ -137,7 +203,15 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
 
           <div className="md:col-span-2 space-y-16">
             <SummarySection data={data} setData={setData} isEditing={isEditing} />
-            <ProjectsSection data={data} setData={setData} isEditing={isEditing} />
+            <ProjectsSection 
+              data={data} 
+              setData={setData} 
+              isEditing={isEditing} 
+              activeLinkEditor={activeLinkEditor}
+              setActiveLinkEditor={setActiveLinkEditor}
+              linkInput={linkInput}
+              setLinkInput={setLinkInput}
+            />
             <SelfIntroInResume isEditing={isEditing} data={data} setData={setData} />
           </div>
         </div>
@@ -146,16 +220,32 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
   );
 };
 
-const ContactInfo = ({ icon, value, onSave, isEditing }: any) => (
-  <div className="flex items-center gap-3 justify-center md:justify-start">
-    <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36] ">
-      {icon}
+const ContactInfo = ({ icon, value, onSave, isEditing }: any) => {
+  const isLink = value?.includes('github.com') || value?.includes('http') || value?.includes('@');
+  const href = value?.includes('@') ? `mailto:${value}` : (value?.startsWith('http') ? value : `https://${value}`);
+
+  return (
+    <div className="flex items-center gap-3 justify-center md:justify-start">
+      <div className="w-8 h-8 glass rounded-lg flex items-center justify-center text-[#0a1e36]">
+        {icon}
+      </div>
+      <span className="flex-1">
+        {!isEditing && isLink ? (
+          <a 
+            href={href} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-[#112D4E] hover:text-[#3F72AF] hover:underline transition-colors"
+          >
+            <EditableText value={value} onSave={onSave} isEditing={isEditing} disableMarkdown={true} />
+          </a>
+        ) : (
+          <EditableText value={value} onSave={onSave} isEditing={isEditing} disableMarkdown={true} />
+        )}
+      </span>
     </div>
-    <span>
-      <EditableText value={value} onSave={onSave} isEditing={isEditing} disableMarkdown={true} />
-    </span>
-  </div>
-);
+  );
+};
 
 const EducationSection = ({ data, setData, isEditing }: any) => (
   <div className="py-10 border-t border-b border-[#DBE2EF]/60 relative pdf-no-break">
@@ -203,9 +293,6 @@ const ExperienceSection = ({ data, setData, isEditing }: any) => (
         </div>
         경력 사항
       </h3>
-      <div className="px-3 py-1.5 rounded-full bg-red-50 text-red-500 text-[10px] font-black tracking-tight shadow-[0_0_10px_rgba(239,68,68,0.1)]">
-        <EditableText value={data.totalExperience || "총 경력 6년"} onSave={(v)=>setData({...data, totalExperience: v})} isEditing={isEditing} />
-      </div>
     </div>
     <div className="space-y-10 pl-2 relative">
       <div className="absolute left-[3px] top-1.5 bottom-1.5 w-0.5 bg-gradient-to-b from-[#3F72AF]/30 via-[#3F72AF]/10 to-transparent rounded-full" />
@@ -295,7 +382,7 @@ const CertificatesSection = ({ data, setData, isEditing }: any) => (
 const SummarySection = ({ data, setData, isEditing }: any) => (
   <section className="pdf-no-break">
     <h3 className="text-xl font-bold mb-6 flex items-center gap-3 ">
-      <User className="text-[#112D4E] w-6 h-6" /> 자기소개
+      <User className="text-[#112D4E] w-6 h-6" /> 한 줄 소개
     </h3>
     <p className="text-[#112D4E] leading-relaxed font-medium">
       <EditableText 
@@ -311,7 +398,15 @@ const SummarySection = ({ data, setData, isEditing }: any) => (
   </section>
 );
 
-const ProjectsSection = ({ data, setData, isEditing }: any) => (
+const ProjectsSection = ({ 
+  data, 
+  setData, 
+  isEditing, 
+  activeLinkEditor, 
+  setActiveLinkEditor, 
+  linkInput, 
+  setLinkInput 
+}: any) => (
   <section className="pdf-no-break">
     <div className="flex items-center justify-between mb-8">
       <h3 className="text-xl font-black flex items-center gap-3 text-[#112D4E] tracking-tight">
@@ -367,44 +462,82 @@ const ProjectsSection = ({ data, setData, isEditing }: any) => (
                   {/* Project Icon */}
                   <div className="relative group/icon shrink-0">
                     {exp.icon ? (
-                      <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm border border-[#DBE2EF]/50">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm border border-[#DBE2EF]/50 relative group/icon">
                         <img src={exp.icon} alt={exp.title} className="w-full h-full object-cover" />
                         {isEditing && (
-                          <div 
-                            onClick={() => {
-                              const newExp = [...(data.experience || [])];
-                              newExp[idx].icon = null;
-                              setData({...data, experience: newExp});
-                            }}
-                            className="absolute -right-2 -top-2 bg-red-500 text-white rounded-full p-1 cursor-pointer shadow-md opacity-0 group-hover/icon:opacity-100 transition-opacity z-10"
-                            title="아이콘 제거"
-                          >
-                            <X className="w-2 h-2" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/icon:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-2">
+                            <button onClick={() => {
+                              const input = document.createElement('input');
+                              input.type = 'file';
+                              input.accept = 'image/*';
+                              input.onchange = (e: any) => {
+                                const file = e.target.files?.[0];
+                                if (file) processImageHighQuality(file).then(d => {
+                                  const n = [...(data.experience || [])];
+                                  n[idx].icon = d;
+                                  setData({...data, experience: n});
+                                });
+                              };
+                              input.click();
+                            }} className="w-full py-1 bg-white text-[8px] font-bold rounded-md">파일</button>
+                            <button onClick={() => {
+                              setActiveLinkEditor({type: 'projIcon', idx});
+                              setLinkInput(exp.icon || '');
+                            }} className="w-full py-1 bg-[#3F72AF] text-white text-[8px] font-bold rounded-md">링크</button>
+                            <button onClick={() => {
+                              const n = [...(data.experience || [])];
+                              n[idx].icon = null;
+                              setData({...data, experience: n});
+                            }} className="w-full py-1 bg-red-500 text-white text-[8px] font-bold rounded-md">삭제</button>
+                          </div>
+                        )}
+                        {isEditing && activeLinkEditor?.type === 'projIcon' && activeLinkEditor?.idx === idx && (
+                          <div className="absolute inset-0 bg-white/95 z-30 p-2 flex flex-col justify-center gap-2">
+                            <input type="text" value={linkInput} onChange={e => setLinkInput(e.target.value)} placeholder="URL" className="w-full border border-[#DBE2EF] rounded px-2 py-1 text-[8px]" autoFocus />
+                            <div className="flex gap-1">
+                              <button onClick={() => {
+                                const finalUrl = getExternalEmbedUrl(linkInput);
+                                const n = [...(data.experience || [])];
+                                n[idx].icon = finalUrl;
+                                setData({...data, experience: n});
+                                setActiveLinkEditor(null);
+                              }} className="flex-1 bg-[#112D4E] text-white rounded py-1 text-[8px]">적용</button>
+                              <button onClick={() => setActiveLinkEditor(null)} className="flex-1 bg-[#DBE2EF] text-[#112D4E] rounded py-1 text-[8px]">취소</button>
+                            </div>
                           </div>
                         )}
                       </div>
                     ) : (
                       isEditing && (
-                        <div 
-                          onClick={() => {
-                            const input = document.createElement('input');
-                            input.type = 'file';
-                            input.accept = 'image/*';
-                            input.onchange = (e: any) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                processImageHighQuality(file).then(dataUrl => {
-                                  const newExp = [...(data.experience || [])];
-                                  newExp[idx].icon = dataUrl;
-                                  setData({...data, experience: newExp});
-                                }).catch(console.error);
-                              }
-                            };
-                            input.click();
-                          }}
-                          className="w-12 h-12 rounded-xl border-2 border-dashed border-[#DBE2EF] flex items-center justify-center text-[#DBE2EF] hover:text-[#3F72AF] hover:border-[#3F72AF] cursor-pointer transition-all bg-white/50"
-                        >
-                          <Upload className="w-5 h-5" />
+                        <div className="flex flex-col gap-1">
+                          <button 
+                            onClick={() => {
+                              const input = document.createElement('input');
+                              input.type = 'file';
+                              input.accept = 'image/*';
+                              input.onchange = (e: any) => {
+                                const file = e.target.files?.[0];
+                                if (file) processImageHighQuality(file).then(d => {
+                                  const n = [...(data.experience || [])];
+                                  n[idx].icon = d;
+                                  setData({...data, experience: n});
+                                });
+                              };
+                              input.click();
+                            }}
+                            className="w-12 h-6 rounded-md border border-dashed border-[#DBE2EF] flex items-center justify-center text-[8px] text-[#3F72AF] hover:border-[#3F72AF] transition-all"
+                          >
+                            파일
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setActiveLinkEditor({type: 'projIcon', idx});
+                              setLinkInput('');
+                            }}
+                            className="w-12 h-6 rounded-md border border-dashed border-[#3F72AF] flex items-center justify-center text-[8px] text-[#3F72AF] hover:bg-[#3F72AF]/5 transition-all"
+                          >
+                            링크
+                          </button>
                         </div>
                       )
                     )}
@@ -443,6 +576,78 @@ const ProjectsSection = ({ data, setData, isEditing }: any) => (
                                 title="출시 상태 토글"
                               />
                             )}
+                            
+                            {/* Platform Icon Section */}
+                            <div className="relative group/picon flex-shrink-0">
+                              {exp.platformIcon ? (
+                                <div className="w-3.5 h-3.5 rounded-sm overflow-hidden flex items-center justify-center relative group/picon-active">
+                                  <img src={exp.platformIcon} alt="platform" className="w-full h-full object-contain" />
+                                  {isEditing && (
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/picon-active:opacity-100 flex flex-col items-center justify-center gap-0.5 z-20">
+                                      <button onClick={(e) => {
+                                        e.stopPropagation();
+                                        setActiveLinkEditor({type: 'platIcon', idx});
+                                        setLinkInput(exp.platformIcon || '');
+                                      }} className="text-[5px] bg-white rounded px-0.5">L</button>
+                                      <button onClick={(e) => {
+                                        e.stopPropagation();
+                                        const n = [...(data.experience || [])];
+                                        n[idx].platformIcon = null;
+                                        setData({...data, experience: n});
+                                      }} className="text-[5px] bg-red-500 text-white rounded px-0.5">X</button>
+                                    </div>
+                                  )}
+                                  {isEditing && activeLinkEditor?.type === 'platIcon' && activeLinkEditor?.idx === idx && (
+                                    <div className="absolute left-0 top-0 bg-white border border-[#DBE2EF] rounded shadow-xl p-1 z-30 min-w-[80px]">
+                                      <input type="text" value={linkInput} onChange={e => setLinkInput(e.target.value)} placeholder="URL" className="w-full text-[6px] border rounded mb-1" autoFocus />
+                                      <div className="flex gap-1">
+                                        <button onClick={() => {
+                                          const finalUrl = getExternalEmbedUrl(linkInput);
+                                          const n = [...(data.experience || [])];
+                                          n[idx].platformIcon = finalUrl;
+                                          setData({...data, experience: n});
+                                          setActiveLinkEditor(null);
+                                        }} className="flex-1 bg-[#112D4E] text-white text-[6px] rounded">Ok</button>
+                                        <button onClick={() => setActiveLinkEditor(null)} className="flex-1 bg-gray-200 text-[6px] rounded">C</button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                isEditing && (
+                                  <div className="flex items-center gap-1">
+                                    <button 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = 'image/*';
+                                        input.onchange = (ev: any) => {
+                                          const file = ev.target.files?.[0];
+                                          if (file) processImageHighQuality(file).then(d => {
+                                            const n = [...(data.experience || [])];
+                                            n[idx].platformIcon = d;
+                                            setData({...data, experience: n});
+                                          });
+                                        };
+                                        input.click();
+                                      }}
+                                      className="w-3 h-3 border border-dashed border-gray-300 rounded-sm flex items-center justify-center text-[6px]"
+                                      title="파일"
+                                    >F</button>
+                                    <button 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setActiveLinkEditor({type: 'platIcon', idx});
+                                        setLinkInput('');
+                                      }}
+                                      className="w-3 h-3 border border-dashed border-blue-300 rounded-sm flex items-center justify-center text-[6px]"
+                                      title="링크"
+                                    >L</button>
+                                  </div>
+                                )
+                              )}
+                            </div>
                             <span className={isEditing ? 'cursor-text' : ''}>
                               <EditableText 
                                 value={exp.releasedText || (isReleased ? 'Released' : 'Set Released')} 
@@ -452,11 +657,25 @@ const ProjectsSection = ({ data, setData, isEditing }: any) => (
                                   setData({...data, experience: newExp});
                                 }} 
                                 isEditing={isEditing} 
+                                disableMarkdown={true}
                               />
                             </span>
                           </div>
                         </div>
                       )}
+                    </div>
+                    {/* New Indented Subtitle Field */}
+                    <div className="pl-1 text-[13px] text-[#3F72AF] font-bold leading-tight -mt-1 mb-1">
+                      <EditableText 
+                        value={exp.subtitle || (isEditing ? "프로젝트 부제목 또는 한 줄 설명" : "")} 
+                        onSave={(v) => {
+                          const newExp = [...(data.experience || [])];
+                          newExp[idx].subtitle = v;
+                          setData({...data, experience: newExp});
+                        }} 
+                        isEditing={isEditing} 
+                        disableMarkdown={true}
+                      />
                     </div>
                   </div>
                 </div>

@@ -88,3 +88,46 @@ export const processImageHighQuality = (file: File): Promise<string> => {
   });
 };
 
+/**
+ * 일반적인 미디어 URL(YouTube, Google Drive 등)을 브라우저에서 즉시 사용 가능한 Embed/Direct URL로 변환합니다.
+ */
+export const getExternalEmbedUrl = (url: string): string => {
+  if (!url || typeof url !== 'string') return url || '';
+  
+  const trimmedUrl = url.trim();
+
+  // 1. YouTube (Shorts 포함)
+  const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
+  const ytMatch = trimmedUrl.match(youtubeRegex);
+  if (ytMatch && ytMatch[1]) {
+    return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${ytMatch[1]}`;
+  }
+
+  // 2. Vimeo
+  const vimeoRegex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/;
+  const vimeoMatch = trimmedUrl.match(vimeoRegex);
+  if (vimeoMatch && vimeoMatch[1]) {
+    return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=1&loop=1`;
+  }
+
+  // 3. Google Drive (Direct Link)
+  if (trimmedUrl.includes('drive.google.com')) {
+    const driveIdRegex = /\/d\/([a-zA-Z0-9_-]+)/;
+    const driveMatch = trimmedUrl.match(driveIdRegex);
+    if (driveMatch && driveMatch[1]) {
+      return `https://drive.google.com/uc?id=${driveMatch[1]}`;
+    }
+  }
+
+  // 4. Dropbox (Direct Link)
+  if (trimmedUrl.includes('dropbox.com')) {
+    return trimmedUrl
+      .replace('www.dropbox.com', 'dl.dropboxusercontent.com')
+      .replace('?dl=0', '')
+      .replace('&dl=0', '')
+      .concat(trimmedUrl.includes('?') ? '&raw=1' : '?raw=1');
+  }
+
+  return trimmedUrl;
+};
+

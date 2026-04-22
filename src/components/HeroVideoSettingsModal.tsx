@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Video, Upload } from 'lucide-react';
+import { getExternalEmbedUrl } from '../utils';
 
 interface HeroVideoSettingsModalProps {
   isOpen: boolean;
@@ -8,18 +9,6 @@ interface HeroVideoSettingsModalProps {
   videoUrl: string;
   onSave: (url: string) => void;
 }
-
-const convertToEmbedUrl = (url: string): string => {
-  if (!url) return url;
-  if (url.includes('/embed/')) return url;
-  const watchMatch = url.match(/(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]+)/);
-  if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${watchMatch[1]}`;
-  const shortMatch = url.match(/(?:youtu\.be\/)([a-zA-Z0-9_-]+)/);
-  if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${shortMatch[1]}`;
-  const shortsMatch = url.match(/(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]+)/);
-  if (shortsMatch) return `https://www.youtube.com/embed/${shortsMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${shortsMatch[1]}`;
-  return url;
-};
 
 const isDirectVideoUrl = (url: string): boolean => {
   if (!url) return false;
@@ -42,7 +31,7 @@ export const HeroVideoSettingsModal = ({ isOpen, onClose, videoUrl, onSave }: He
   };
 
   const handleSave = () => {
-    const processedUrl = isDirectVideoUrl(url) ? url : convertToEmbedUrl(url);
+    const processedUrl = isDirectVideoUrl(url) ? url : getExternalEmbedUrl(url);
     onSave(processedUrl);
     onClose();
   };
