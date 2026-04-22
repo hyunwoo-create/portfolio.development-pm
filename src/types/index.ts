@@ -61,7 +61,9 @@ export interface TechStackCategory {
 
 export interface ResumeData {
  name: string;
+ nameStyle?: any;
  role: string;
+ roleStyle?: any;
  birthDate: string;
  address: string;
  phone: string;
@@ -84,6 +86,7 @@ export interface ResumeData {
  }[];
  experience: {
     title: string;
+    titleStyle?: any;
     period: string;
     description: string;
     details: string[];

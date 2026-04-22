@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
+import { AdminTextEditor } from './AdminTextEditor';
 
 interface TextStyleEditorProps {
   style: any;
@@ -157,7 +158,7 @@ export const EditableText = ({
 
   useEffect(() => {
     setTempValue(value);
-  }, [value]);
+  }, [value, isEditing]);
 
   const adjustTextareaHeight = useCallback(() => {
     const target = textareaRef.current;
@@ -176,7 +177,12 @@ export const EditableText = ({
   const handleStyleChange = useCallback((newStyle: any) => {
     if (!onStyleSave || !styleData) return;
 
-    const target = multiline ? textareaRef.current : inputRef.current;
+    const target = multiline ? undefined : inputRef.current; 
+    
+    // 1. 전체 블록 스타일 업데이트 (항상 수행)
+    onStyleSave(newStyle);
+
+    // 2. 만약 인풋(싱글라인)에서 텍스트가 선택되어 있다면 마크다운 스타일링 시도
     if (target && target.selectionStart !== null && target.selectionEnd !== null && target.selectionStart !== target.selectionEnd) {
       const start = target.selectionStart;
       const end = target.selectionEnd;
@@ -214,6 +220,18 @@ export const EditableText = ({
     if (disableMarkdown) {
       return <span className={className} style={{ ...style, whiteSpace: multiline ? "pre-wrap" : "normal" }}>{String(value || '')}</span>;
     }
+    
+    // HTML 지원 (Tiptap에서 저장된 리치 텍스트 대응)
+    if (multiline && typeof value === 'string' && value.startsWith('<')) {
+      return (
+        <span 
+          className={`${className} inline-block w-full`} 
+          style={style} 
+          dangerouslySetInnerHTML={{ __html: value }} 
+        />
+      );
+    }
+
     return (
       <span className={className} style={style}>
         <ReactMarkdown
@@ -270,40 +288,49 @@ export const EditableText = ({
         </div>
       )}
       {multiline ? (
-        <textarea
-          ref={textareaRef}
-          className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded p-2 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
-          value={tempValue}
-          onChange={(e) => {
-            setTempValue(e.target.value);
-            onSave(e.target.value);
-          }}
-          onFocus={() => setIsFocused(true)}
-          onBlur={(e) => {
-            if (containerRef.current?.contains(e.relatedTarget as Node)) return;
-            setIsFocused(false);
-            onSave(tempValue);
-          }}
-          rows={5}
-          style={{ ...style, overflowY: 'hidden', minHeight: '5em' }}
-        />
+        <div className="w-full">
+          <AdminTextEditor
+            isAdmin={isEditing}
+            bodyValue={tempValue}
+            onBodyChange={(v) => {
+              setTempValue(v);
+              onSave(v);
+            }}
+            hideTitle={true}
+            className={`admin-minimal-editor ${className}`}
+            minBodyHeight="80px"
+            bodyPlaceholder="내용을 입력하세요..."
+          />
+          {styleData && onStyleSave && (
+            <div className="mt-2">
+              <TextStyleEditor style={styleData} onStyleChange={(s) => onStyleSave(s)} />
+            </div>
+          )}
+        </div>
       ) : (
-        <input
-          ref={inputRef}
-          className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
-          value={tempValue}
-          onChange={(e) => {
-            setTempValue(e.target.value);
-            onSave(e.target.value);
-          }}
-          onFocus={() => setIsFocused(true)}
-          onBlur={(e) => {
-            if (containerRef.current?.contains(e.relatedTarget as Node)) return;
-            setIsFocused(false);
-            onSave(tempValue);
-          }}
-          style={style}
-        />
+        <div className="w-full">
+          {isFocused && styleData && onStyleSave && (
+            <div className="absolute bottom-full left-0 z-[100] mb-2 pointer-events-auto">
+              <TextStyleEditor style={styleData} onStyleChange={(s) => onStyleSave(s)} />
+            </div>
+          )}
+          <input
+            ref={inputRef}
+            className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] ${className}`}
+            value={tempValue}
+            onChange={(e) => {
+              setTempValue(e.target.value);
+              onSave(e.target.value);
+            }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={(e) => {
+              if (containerRef.current?.contains(e.relatedTarget as Node)) return;
+              setIsFocused(false);
+              onSave(tempValue);
+            }}
+            style={style}
+          />
+        </div>
       )}
     </div>
   );

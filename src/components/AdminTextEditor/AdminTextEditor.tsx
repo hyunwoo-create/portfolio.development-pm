@@ -56,22 +56,19 @@ export const AdminTextEditor = ({
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        // StarterKit 내 bold/italic 등은 유지, codeBlock 커스텀 없이 기본 사용
-      }),
+      StarterKit,
       TextStyle,
       Color,
       Highlight.configure({ multicolor: true }),
       Underline,
       Link.configure({ openOnClick: false }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Markdown,
     ],
     content: bodyValue || '',
     editable: isAdmin,
     onUpdate: ({ editor }) => {
-      const md = (editor as any).getMarkdown();
-      onBodyChange(md);
+      const html = editor.getHTML();
+      onBodyChange(html);
     },
   });
 
@@ -83,12 +80,17 @@ export const AdminTextEditor = ({
   }, [isAdmin, editor]);
 
   // 외부에서 bodyValue가 변경될 때 에디터 내용 동기화
-  // (단, 에디터가 현재 포커스 중이면 덮어쓰지 않음)
   useEffect(() => {
-    if (!editor || editor.isFocused) return;
-    const currentMd = (editor as any).getMarkdown();
-    if (currentMd !== bodyValue) {
-      editor.commands.setContent(bodyValue || '');
+    if (!editor) return;
+    const currentHtml = editor.getHTML();
+    
+    // 외부 데이터(bodyValue)가 현재 에디터 내용과 다를 경우에만 업데이트
+    if (bodyValue !== undefined && currentHtml !== bodyValue) {
+      // 1. 에디터가 비어있는 상태거나 (초기 로드)
+      // 2. 현재 포커스 중이 아닐 때만 강제 업데이트
+      if (currentHtml === '<p></p>' || currentHtml === '' || !editor.isFocused) {
+        editor.commands.setContent(bodyValue || '');
+      }
     }
   }, [bodyValue, editor]);
 
@@ -103,9 +105,14 @@ export const AdminTextEditor = ({
           <h3 className="text-xl font-bold text-[#112D4E] mb-2">{titleValue}</h3>
         )}
         <div className="markdown-body">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {bodyValue || ''}
-          </ReactMarkdown>
+          {/* HTML이 포함된 경우 직접 렌더링, 아니면 마크다운으로 처리 (하위 호환성) */}
+          {bodyValue?.startsWith('<') ? (
+            <div dangerouslySetInnerHTML={{ __html: bodyValue }} />
+          ) : (
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {bodyValue || ''}
+            </ReactMarkdown>
+          )}
         </div>
       </div>
     );

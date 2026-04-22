@@ -145,9 +145,13 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
               <h3 className="text-xl font-black text-[#112D4E]">한 줄 소개</h3>
             </div>
             <div className="text-[15px] font-bold text-[#112D4E] leading-loose markdown-body">
-              <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                {data.summary || ""}
-              </ReactMarkdown>
+              {data.summary?.startsWith('<') ? (
+                <div dangerouslySetInnerHTML={{ __html: data.summary }} />
+              ) : (
+                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                  {data.summary || ""}
+                </ReactMarkdown>
+              )}
             </div>
           </section>
 
@@ -161,7 +165,7 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
             </h3>
             <div className="space-y-12">
               {(data.experience || []).map((exp: any, idx: number) => {
-                const isReleased = exp.isReleased !== false && (exp.title?.includes('출시') || exp.metrics);
+                const isReleased = exp.isReleased;
                 return (
                   <div key={idx} className="relative pl-8 border-l-2 border-[#3F72AF] page-break-inside-avoid">
                     {/* Timeline Dot */}
@@ -206,9 +210,17 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
                       )}
 
                       <div className="text-[14px] text-[#1A374D] font-bold leading-relaxed markdown-body">
-                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                          {Array.isArray(exp.details) ? exp.details.join('\n') : exp.details}
-                        </ReactMarkdown>
+                        {(() => {
+                          const content = Array.isArray(exp.details) ? exp.details.join('\n') : exp.details;
+                          if (content?.startsWith('<')) {
+                            return <div dangerouslySetInnerHTML={{ __html: content }} />;
+                          }
+                          return (
+                            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                              {content}
+                            </ReactMarkdown>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -223,7 +235,7 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
                <div className="w-9 h-9 rounded-xl bg-[#112D4E]/10 flex items-center justify-center text-[#112D4E]">
                 <ScrollText className="w-5 h-5" />
               </div>
-              자기소개서
+              자기소개
             </h3>
             <div className="space-y-12">
               {(data.selfIntroTabs || []).map((intro: any, idx: number) => (
@@ -233,9 +245,13 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
                     {intro.title}
                   </h4>
                   <div className="text-[14px] text-[#112D4E] font-medium leading-loose markdown-body pl-4">
-                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                      {intro.content}
-                    </ReactMarkdown>
+                    {intro.content?.startsWith('<') ? (
+                      <div dangerouslySetInnerHTML={{ __html: intro.content }} />
+                    ) : (
+                      <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                        {intro.content}
+                      </ReactMarkdown>
+                    )}
                   </div>
                 </div>
               ))}

@@ -173,7 +173,7 @@ const App = () => {
 
         {view === 'resume' && (
           <Resume 
-            key="resume"
+            key={`resume-${isEditing}`}
             isEditing={isEditing} 
             data={resumeData} 
             setData={setResumeData} 

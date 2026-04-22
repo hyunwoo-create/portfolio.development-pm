@@ -67,11 +67,10 @@
 
   /* Notion-like Markdown Styles */
   .markdown-body {
-    color: #112D4E;
-    line-height: 1.625; /* leading-relaxed */
-    font-size: 0.875rem; /* text-sm */
-    font-weight: 500;
-    /* white-space: pre-wrap; - remarkBreaks와 중복되어 이중 줄바꿈을 유발하므로 제거 */
+    color: inherit;
+    line-height: inherit;
+    font-size: inherit;
+    font-weight: inherit;
   }
 
   .markdown-body h1, 
@@ -81,27 +80,26 @@
   .markdown-body ul, 
   .markdown-body ol {
     margin-top: 0;
-    margin-bottom: 1.8em; /* 줄 간격(1.8)에 맞춰 엔터 두 번이 빈 줄 하나가 되도록 설정 */
+    margin-bottom: 1.2em;
     line-height: inherit;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
   }
 
   .markdown-body h1 {
-    font-size: 1.75rem;
+    font-size: 1.5em;
     font-weight: 900;
-    color: #112D4E;
-    letter-spacing: -0.025em;
   }
 
   .markdown-body h2 {
-    font-size: 1.5rem;
+    font-size: 1.3em;
     font-weight: 800;
-    color: #112D4E;
   }
 
   .markdown-body h3 {
-    font-size: 1.25rem;
+    font-size: 1.15em;
     font-weight: 700;
-    color: #112D4E;
   }
 
   .markdown-body ul, .markdown-body ol {

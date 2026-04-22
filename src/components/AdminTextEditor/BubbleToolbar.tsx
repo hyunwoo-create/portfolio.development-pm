@@ -32,13 +32,24 @@ const HIGHLIGHT_COLORS = [
   { label: '로즈', value: 'rgba(210, 110, 120, 0.28)' },
 ];
 
+const FONT_FAMILIES = [
+  { label: '기본', value: 'inherit' },
+  { label: 'Pretendard', value: 'Pretendard Variable, Pretendard, sans-serif' },
+  { label: 'Noto Sans', value: '"Noto Sans KR", sans-serif' },
+  { label: 'Do Hyeon', value: '"Do Hyeon", sans-serif' },
+  { label: 'Black Han Sans', value: '"Black Han Sans", sans-serif' },
+  { label: 'Nanum Myeongjo', value: '"Nanum Myeongjo", serif' },
+];
+
 export const BubbleToolbar = ({ editor }: BubbleToolbarProps) => {
   const [colorOpen, setColorOpen] = useState(false);
   const [highlightOpen, setHighlightOpen] = useState(false);
   const [sizeOpen, setSizeOpen] = useState(false);
+  const [fontOpen, setFontOpen] = useState(false);
   const colorRef = useRef<HTMLDivElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
   const sizeRef = useRef<HTMLDivElement>(null);
+  const fontRef = useRef<HTMLDivElement>(null);
 
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -46,6 +57,7 @@ export const BubbleToolbar = ({ editor }: BubbleToolbarProps) => {
       if (!colorRef.current?.contains(e.target as Node)) setColorOpen(false);
       if (!highlightRef.current?.contains(e.target as Node)) setHighlightOpen(false);
       if (!sizeRef.current?.contains(e.target as Node)) setSizeOpen(false);
+      if (!fontRef.current?.contains(e.target as Node)) setFontOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -92,7 +104,7 @@ export const BubbleToolbar = ({ editor }: BubbleToolbarProps) => {
 
         {/* --- 글자 크기 드롭다운 --- */}
         <div className="relative" ref={sizeRef}>
-          <ToolbarButton onClick={() => { setSizeOpen(v => !v); setColorOpen(false); setHighlightOpen(false); }} title="글자 크기">
+          <ToolbarButton onClick={() => { setSizeOpen(v => !v); setColorOpen(false); setHighlightOpen(false); setFontOpen(false); }} title="글자 크기">
             <span className="text-[10px] font-black leading-none">A↕</span>
           </ToolbarButton>
           {sizeOpen && (
@@ -108,9 +120,33 @@ export const BubbleToolbar = ({ editor }: BubbleToolbarProps) => {
           )}
         </div>
 
+        {/* --- 폰트 드롭다운 --- */}
+        <div className="relative" ref={fontRef}>
+          <ToolbarButton onClick={() => { setFontOpen(v => !v); setSizeOpen(false); setColorOpen(false); setHighlightOpen(false); }} title="글꼴">
+            <span className="text-[10px] font-black leading-none">F</span>
+          </ToolbarButton>
+          {fontOpen && (
+            <div className="absolute top-full left-0 mt-1 z-[200] flex flex-col rounded-xl overflow-hidden"
+              style={{ background: 'rgba(219,226,239,0.98)', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 8px 24px rgba(17,45,78,0.15)', minWidth: '100px' }}>
+              {FONT_FAMILIES.map((f) => (
+                <button key={f.value} type="button" onMouseDown={(e) => { 
+                  e.preventDefault(); 
+                  editor.chain().focus().setMark('textStyle', { fontFamily: f.value }).run();
+                  setFontOpen(false);
+                }}
+                  className="px-3 py-1.5 text-left text-[10px] font-bold text-[#112D4E] hover:bg-[#3F72AF]/15 transition-colors whitespace-nowrap"
+                  style={{ fontFamily: f.value }}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* --- 글자색 드롭다운 --- */}
         <div className="relative" ref={colorRef}>
-          <ToolbarButton onClick={() => { setColorOpen(v => !v); setSizeOpen(false); setHighlightOpen(false); }} title="글자 색상">
+          <ToolbarButton onClick={() => { setColorOpen(v => !v); setSizeOpen(false); setHighlightOpen(false); setFontOpen(false); }} title="글자 색상">
             <span className="text-[12px] font-black" style={{ color: editor.getAttributes('textStyle').color || '#112D4E' }}>A</span>
           </ToolbarButton>
           {colorOpen && (
@@ -137,7 +173,7 @@ export const BubbleToolbar = ({ editor }: BubbleToolbarProps) => {
         {/* --- 형광펜 드롭다운 --- */}
         <div className="relative" ref={highlightRef}>
           <ToolbarButton
-            onClick={() => { setHighlightOpen(v => !v); setColorOpen(false); setSizeOpen(false); }}
+            onClick={() => { setHighlightOpen(v => !v); setColorOpen(false); setSizeOpen(false); setFontOpen(false); }}
             isActive={editor.isActive('highlight')}
             title="형광펜"
           >

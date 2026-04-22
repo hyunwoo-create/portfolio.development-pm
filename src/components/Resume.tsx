@@ -168,18 +168,24 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
                   onChange={handleResumeImageUpload}
                 />
               </div>
-              <h1 className="text-3xl font-bold mb-2 ">
+              <h1 className="text-3xl font-bold mb-2">
                 <EditableText 
                   value={data.name} 
                   onSave={(v) => setData({...data, name: v})} 
                   isEditing={isEditing} 
+                  style={data.nameStyle || {}}
+                  styleData={data.nameStyle || {}}
+                  onStyleSave={(s) => setData({...data, nameStyle: s})}
                 />
               </h1>
-              <p className="text-[#112D4E] font-medium mb-6 ">
+              <p className="text-[#112D4E] font-medium mb-6">
                 <EditableText 
                   value={data.role} 
                   onSave={(v) => setData({...data, role: v})} 
                   isEditing={isEditing} 
+                  style={data.roleStyle || {}}
+                  styleData={data.roleStyle || {}}
+                  onStyleSave={(s) => setData({...data, roleStyle: s})}
                 />
               </p>
               <div className="space-y-4 text-sm text-[#112D4E] ">
@@ -554,6 +560,13 @@ const ProjectsSection = ({
                             setData({...data, experience: newExp});
                           }} 
                           isEditing={isEditing} 
+                          style={exp.titleStyle || {}}
+                          styleData={exp.titleStyle || {}}
+                          onStyleSave={(s) => {
+                            const newExp = [...(data.experience || [])];
+                            newExp[idx].titleStyle = s;
+                            setData({...data, experience: newExp});
+                          }}
                         />
                       </h4>
                       {(isReleased || isEditing) && (
@@ -757,7 +770,13 @@ const ProjectsSection = ({
                   multiline
                   onSave={(v) => {
                     const newExp = [...(data.experience || [])];
-                    newExp[idx].details = v.split('\n');
+                    if (v.startsWith('<')) {
+                      // HTML인 경우 리스트로 쪼개지 않고 전체를 하나로 저장 (Tiptap 호환)
+                      newExp[idx].details = [v];
+                    } else {
+                      // 일반 텍스트인 경우 기존처럼 줄바꿈으로 분리
+                      newExp[idx].details = v.split('\n').map(line => line.trim()).filter(line => line !== '');
+                    }
                     setData({...data, experience: newExp});
                   }} 
                   isEditing={isEditing} 
@@ -833,7 +852,7 @@ const SelfIntroInResume = ({ isEditing, data, setData }: { isEditing: boolean, d
     <section className="mt-4 relative scroll-mt-24">
       <div className="flex items-center justify-between mb-8 pdf-no-break">
         <h3 className="text-xl font-black flex items-center gap-3 text-[#112D4E]">
-          <ScrollText className="w-6 h-6" /> 자기소개서
+          <ScrollText className="w-6 h-6" /> 자기소개
         </h3>
       </div>
 

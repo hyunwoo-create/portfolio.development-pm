@@ -3,12 +3,24 @@
 /* 에디터 기본 스타일 */
 .admin-editor .ProseMirror {
   outline: none;
-  min-height: 160px;
-  line-height: 1.65;
-  color: #112D4E;
-  font-size: 0.875rem;
-  font-weight: 500;
-  font-family: var(--font-sans, 'Pretendard Variable', sans-serif);
+  min-height: inherit;
+  line-height: inherit;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+}
+
+/* Minimal Editor (EditableText용) */
+.admin-minimal-editor .admin-editor {
+  background: transparent !important;
+  border: 1px dashed rgba(63, 114, 175, 0.3) !important;
+  padding: 0.5rem !important;
+  border-radius: 0.75rem !important;
+}
+
+.admin-minimal-editor .admin-editor .ProseMirror {
+  min-height: 60px !important;
 }
 
 /* 플레이스홀더 */

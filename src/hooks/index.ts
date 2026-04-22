@@ -68,6 +68,7 @@ const saveContentToSupabase = async (key: string, value: any) => {
             // Save the large field under its own key
             fetch(SUPABASE_CONTENT_API, {
               method: 'POST',
+              keepalive: true,
               headers: {
                 'Content-Type': 'application/json',
                 'apikey': SUPABASE_ANON_KEY,
@@ -82,6 +83,7 @@ const saveContentToSupabase = async (key: string, value: any) => {
 
     await fetch(SUPABASE_CONTENT_API, {
       method: 'POST',
+      keepalive: true,
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_ANON_KEY,
@@ -95,10 +97,15 @@ const saveContentToSupabase = async (key: string, value: any) => {
 };
 
 // --- Editable Content Hook ---
-// Uses a 1.5s debounce so rapid typing/edits only trigger ONE save
 export const useEditableContent = (initialData: any, key: string) => {
   const [data, setData] = useState(initialData);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dataRef = useRef(data);
+
+  // Keep dataRef in sync for the cleanup/beforeunload save
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   useEffect(() => {
     fetchAllContent().then(allContent => {
@@ -106,15 +113,39 @@ export const useEditableContent = (initialData: any, key: string) => {
         setData(allContent[key]);
       }
     });
+
+    // Cleanup: save immediately on unmount if there's a pending change
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+        saveContentToSupabase(key, dataRef.current);
+      }
+    };
+  }, [key]);
+
+  // Handle browser close/reload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (debounceTimer.current) {
+        saveContentToSupabase(key, dataRef.current);
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [key]);
 
   const updateData = (newData: any) => {
     setData(newData);
-    // Debounce: cancel previous timer and wait 1.5s of inactivity before saving
+    // Update global cache so other components (or remounts) get the latest data
+    if (_contentCache) {
+      _contentCache[key] = newData;
+    }
+
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       saveContentToSupabase(key, newData);
-    }, 1500);
+      debounceTimer.current = null;
+    }, 800);
   };
 
   return [data, updateData];
