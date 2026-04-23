@@ -36,7 +36,7 @@ const App = () => {
 
   // --- Content State (Zustand Store) ---
   const {
-    isEditing, setIsEditing,
+    isEditing, setIsEditing, isLoading,
     heroContent, aboutContent, portfolioData, skillTabs, tools, gameHistory, resumeData, userImage,
     updateContent, fetchAll
   } = useAppStore();
@@ -111,75 +111,84 @@ const App = () => {
         setIsEditing={setIsEditing} 
       />
 
-      <AnimatePresence mode="wait">
-        {view === 'home' && (
-          <motion.div key="home">
-            <Hero 
-              onNavClick={handleNavClick} 
-              onToggleAdmin={() => setIsEditing(!isEditing)} 
-              isEditing={isEditing} 
-              content={heroContent} 
-              setContent={(v) => updateContent('hero_content', v)} 
-            />
-            <About 
-              isEditing={isEditing} 
-              content={aboutContent} 
-              setContent={(v) => updateContent('about_content', v)} 
-              onMoreMeClick={() => setView('resume')}
-            />
-            <StatBoard 
+      {isLoading ? (
+        <div className="flex-1 flex items-center justify-center min-h-[80vh]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-[#3F72AF]/20 border-t-[#3F72AF] rounded-full animate-spin"></div>
+            <p className="text-[#3F72AF] font-bold tracking-widest text-sm uppercase">Loading Content...</p>
+          </div>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          {view === 'home' && (
+            <motion.div key="home">
+              <Hero 
+                onNavClick={handleNavClick} 
+                onToggleAdmin={() => setIsEditing(!isEditing)} 
+                isEditing={isEditing} 
+                content={heroContent} 
+                setContent={(v) => updateContent('hero_content', v)} 
+              />
+              <About 
+                isEditing={isEditing} 
+                content={aboutContent} 
+                setContent={(v) => updateContent('about_content', v)} 
+                onMoreMeClick={() => setView('resume')}
+              />
+              <StatBoard 
+                isEditing={isEditing}
+                projects={portfolioData}
+                setProjects={(v) => updateContent('portfolio_data', v)}
+                skillTabs={skillTabs}
+                tools={tools}
+                onProjectClick={handleProjectClick}
+                userImage={userImage}
+                onImageUpload={(v) => updateContent('stat_board_user_image', v)}
+              />
+            </motion.div>
+          )}
+
+          {view === 'portfolio' && (
+            <PortfolioGallery 
+              key="portfolio"
+              onProjectClick={handleProjectClick}
               isEditing={isEditing}
               projects={portfolioData}
               setProjects={(v) => updateContent('portfolio_data', v)}
-              skillTabs={skillTabs}
-              tools={tools}
-              onProjectClick={handleProjectClick}
-              userImage={userImage}
-              onImageUpload={(v) => updateContent('stat_board_user_image', v)}
+              setView={changeView}
             />
-          </motion.div>
-        )}
+          )}
 
-        {view === 'portfolio' && (
-          <PortfolioGallery 
-            key="portfolio"
-            onProjectClick={handleProjectClick}
-            isEditing={isEditing}
-            projects={portfolioData}
-            setProjects={(v) => updateContent('portfolio_data', v)}
-            setView={changeView}
-          />
-        )}
+          {view === 'all-projects' && (
+            <PortfolioGallery 
+              onProjectClick={handleProjectClick} 
+              isEditing={isEditing} 
+              projects={portfolioData} 
+              setProjects={(v) => updateContent('portfolio_data', v)} 
+              setView={setView}
+            />
+          )}
 
-        {view === 'all-projects' && (
-          <PortfolioGallery 
-            onProjectClick={handleProjectClick} 
-            isEditing={isEditing} 
-            projects={portfolioData} 
-            setProjects={(v) => updateContent('portfolio_data', v)} 
-            setView={setView}
-          />
-        )}
+          {view === 'project-detail' && selectedProject && (
+            <ProjectDetail 
+              key="project-detail"
+              project={selectedProject} 
+              onBack={() => setView('home')} 
+              isEditing={isEditing}
+              onSaveContent={handleSaveProjectContent}
+            />
+          )}
 
-        {view === 'project-detail' && selectedProject && (
-          <ProjectDetail 
-            key="project-detail"
-            project={selectedProject} 
-            onBack={() => setView('home')} 
-            isEditing={isEditing}
-            onSaveContent={handleSaveProjectContent}
-          />
-        )}
-
-        {view === 'resume' && (
-          <Resume 
-            key={`resume-${isEditing}`}
-            isEditing={isEditing} 
-            data={resumeData} 
-            setData={(v) => updateContent('resume_data', v)} 
-          />
-        )}
-      </AnimatePresence>
+          {view === 'resume' && (
+            <Resume 
+              key={`resume-${isEditing}`}
+              isEditing={isEditing} 
+              data={resumeData} 
+              setData={(v) => updateContent('resume_data', v)} 
+            />
+          )}
+        </AnimatePresence>
+      )}
 
       <Footer />
       <BackToTop />

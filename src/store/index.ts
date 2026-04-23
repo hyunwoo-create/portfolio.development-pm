@@ -76,6 +76,7 @@ const saveToSupabase = async (key: string, value: any) => {
 interface AppState {
   isEditing: boolean;
   setIsEditing: (val: boolean) => void;
+  isLoading: boolean;
   
   // Data stores
   heroContent: any;
@@ -97,6 +98,7 @@ interface AppState {
 export const useAppStore = create<AppState>((set, get) => ({
   isEditing: false,
   setIsEditing: (val) => set({ isEditing: val }),
+  isLoading: true,
   
   heroContent: HERO_CONTENT_DEFAULT,
   aboutContent: ABOUT_CONTENT_DEFAULT,
@@ -147,10 +149,14 @@ export const useAppStore = create<AppState>((set, get) => ({
           gameHistory: data['game_history'] !== undefined ? data['game_history'] : state.gameHistory,
           resumeData: data['resume_data'] !== undefined ? data['resume_data'] : state.resumeData,
           userImage: data['stat_board_user_image'] !== undefined ? data['stat_board_user_image'] : state.userImage,
+          isLoading: false,
         }));
+      } else {
+        set({ isLoading: false });
       }
     } catch (e) {
       console.error('Failed to fetch initial data', e);
+      set({ isLoading: false });
     }
   }
 }));
