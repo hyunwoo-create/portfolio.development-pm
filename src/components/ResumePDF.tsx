@@ -238,23 +238,71 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
               자기소개
             </h3>
             <div className="space-y-12">
-              {(data.selfIntroTabs || []).map((intro: any, idx: number) => (
-                <div key={idx} className="page-break-inside-avoid">
-                  <h4 className="text-[16px] font-black text-[#3F72AF] mb-4 flex items-center gap-2">
-                    <span className="w-2 h-4 bg-[#3F72AF] rounded-sm" />
-                    {intro.title}
-                  </h4>
-                  <div className="text-[14px] text-[#112D4E] font-medium leading-loose markdown-body pl-4">
-                    {intro.content?.startsWith('<') ? (
-                      <div dangerouslySetInnerHTML={{ __html: intro.content }} />
-                    ) : (
-                      <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                        {intro.content}
-                      </ReactMarkdown>
-                    )}
+              {(data.selfIntroTabs || []).map((intro: any, idx: number) => {
+                // (시각화) 마커를 기준으로 텍스트 분할 (p 태그가 감싸고 있을 경우를 대비해 정규식 사용)
+                const segments = (intro.content || '').split(/<p>\s*\(시각화\)\s*<\/p>|\(시각화\)/);
+                
+                return (
+                  <div key={idx} className="page-break-inside-avoid">
+                    <h4 className="text-[16px] font-black text-[#3F72AF] mb-4 flex items-center gap-2">
+                      <span className="w-2 h-4 bg-[#3F72AF] rounded-sm" />
+                      {intro.title}
+                    </h4>
+                    <div className="text-[14px] text-[#112D4E] font-medium leading-loose markdown-body pl-4">
+                      {segments.map((seg: string, i: number) => {
+                        const hasCards = !!(intro.vizBlocks && intro.vizBlocks[i] && intro.vizBlocks[i].length > 0);
+                        const legacyCards = i === 0 && !hasCards && intro.cards && intro.cards.length > 0 ? intro.cards : null;
+                        const cardsToRender = hasCards ? intro.vizBlocks[i] : legacyCards;
+
+                        // 깨진 태그 정리 (TipTap 없이 렌더링되므로)
+                        let cleanSeg = seg;
+                        if (cleanSeg.trim() === '<p>' || cleanSeg.trim() === '</p>') cleanSeg = '';
+
+                        return (
+                          <React.Fragment key={i}>
+                            {cleanSeg.trim().length > 0 && (
+                              cleanSeg.startsWith('<') ? (
+                                <div dangerouslySetInnerHTML={{ __html: cleanSeg }} />
+                              ) : (
+                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                                  {cleanSeg}
+                                </ReactMarkdown>
+                              )
+                            )}
+                            {i < segments.length - 1 && cardsToRender && (
+                              <div className="my-6 flex items-stretch gap-2 flex-nowrap w-full overflow-hidden page-break-inside-avoid">
+                                {cardsToRender.map((card: any, cIdx: number) => (
+                                  <React.Fragment key={card.id || cIdx}>
+                                    <div
+                                      className="flex-1 flex flex-col items-center text-center bg-[#EEF4FF] border border-[#C8D9F5] rounded-xl p-4"
+                                      style={{ minWidth: 0 }}
+                                    >
+                                      <p className="text-[14px] font-black text-[#112D4E] mb-1.5 leading-tight w-full text-center">
+                                        {card.title}
+                                      </p>
+                                      <div className="w-8 h-[2px] bg-[#3F72AF]/30 rounded-full mb-3" />
+                                      <p className="text-[12px] font-medium text-[#3D5A80] leading-[1.6] whitespace-pre-wrap w-full text-center">
+                                        {card.description}
+                                      </p>
+                                    </div>
+                                    {cIdx < cardsToRender.length - 1 && (
+                                      <div className="flex items-center justify-center flex-shrink-0 px-1">
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                          <path d="M3.5 8H12.5M12.5 8L9 4.5M12.5 8L9 11.5" stroke="#3F72AF" strokeOpacity={0.65} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                      </div>
+                                    )}
+                                  </React.Fragment>
+                                ))}
+                              </div>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </div>
