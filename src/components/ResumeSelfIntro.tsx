@@ -194,6 +194,31 @@ const TabContent = ({
     });
   };
 
+  const removeBlock = (index: number) => {
+    if (!window.confirm("이 시각화 블록을 완전히 삭제하시겠습니까? (복구할 수 없습니다)")) return;
+    
+    // 1. 텍스트 세그먼트 병합 (해당 마커 삭제)
+    const newSegments = [...segments];
+    const merged = newSegments[index] + '<br/>' + newSegments[index + 1];
+    newSegments.splice(index, 2, merged);
+    const newContent = newSegments.join(VIZ_MARKER);
+
+    // 2. vizBlocks 인덱스 당기기 (이후 블록들의 인덱스를 1씩 감소)
+    const newVizBlocks: any = {};
+    if (tab.vizBlocks) {
+      Object.keys(tab.vizBlocks).forEach((key) => {
+        const k = parseInt(key, 10);
+        if (k < index) {
+          newVizBlocks[k] = tab.vizBlocks![k];
+        } else if (k > index) {
+          newVizBlocks[k - 1] = tab.vizBlocks![k];
+        }
+      });
+    }
+
+    onUpdateTab({ content: newContent, vizBlocks: newVizBlocks });
+  };
+
   return (
     <>
       {segments.map((seg, i) => {
@@ -220,29 +245,30 @@ const TabContent = ({
 
             {/* Marker Visualization Block (only between segments) */}
             {i < segments.length - 1 && (
-              <div className="my-6">
+              <div className="my-6 relative group/block">
                 {isEditing && (
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <LayoutGrid className="w-3.5 h-3.5 text-[#3F72AF]/50" />
                       <span className="text-[10px] font-black text-[#3F72AF]/50 tracking-widest uppercase">시각화 블록 #{i+1}</span>
                     </div>
-                    {!hasCards && (
+                    <div className="flex items-center gap-2">
+                      {!hasCards && (
+                        <button 
+                          onClick={() => initBlock(i)}
+                          className="text-[10px] font-bold text-[#3F72AF] bg-[#EEF4FF] px-2 py-1 rounded-lg hover:bg-[#3F72AF] hover:text-white transition-all"
+                        >
+                          + 데이터 초기화 (4개)
+                        </button>
+                      )}
                       <button 
-                        onClick={() => initBlock(i)}
-                        className="text-[10px] font-bold text-[#3F72AF] bg-[#EEF4FF] px-2 py-1 rounded-lg hover:bg-[#3F72AF] hover:text-white transition-all"
-                      >
-                        + 데이터 초기화 (4개)
-                      </button>
-                    )}
-                    {hasCards && (
-                      <button 
-                        onClick={() => onUpdateTab({ vizBlocks: { ...(tab.vizBlocks || {}), [i]: [] } })}
-                        className="text-[10px] font-bold text-red-400 hover:text-red-600 transition-all"
+                        onClick={() => removeBlock(i)}
+                        className="text-[10px] font-bold text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg transition-all"
+                        title="텍스트에서 마커를 완전히 삭제합니다"
                       >
                         블록 삭제
                       </button>
-                    )}
+                    </div>
                   </div>
                 )}
 
