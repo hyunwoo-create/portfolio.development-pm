@@ -23,13 +23,15 @@ export const ProjectsSection = ({
       {isEditing && (
         <button 
           onClick={() => {
-            const newExp = [...(data.experience || [])];
-            newExp.push({ title: "새 프로젝트", period: "기간", description: "설명", details: [], isReleased: true, metrics: [
-              { label: "사용자", value: "0" },
-              { label: "좋아요", value: "0" },
-              { label: "성과", value: "설명" }
-            ] });
-            setData({...data, experience: newExp});
+            setData((prev: any) => {
+              const newExp = [...(prev.experience || [])];
+              newExp.push({ title: "새 프로젝트", period: "기간", description: "설명", details: [], isReleased: true, metrics: [
+                { label: "사용자", value: "0" },
+                { label: "좋아요", value: "0" },
+                { label: "성과", value: "설명" }
+              ] });
+              return {...prev, experience: newExp};
+            });
           }}
           className="px-4 py-2 bg-[#112D4E] text-white rounded-xl hover:bg-[#0f1a2a] transition-all flex items-center gap-2 text-xs font-extrabold shadow-sm"
         >
@@ -51,9 +53,11 @@ export const ProjectsSection = ({
             {isEditing && (
               <button 
                 onClick={() => {
-                  const newExp = [...(data.experience || [])];
-                  newExp.splice(idx, 1);
-                  setData({...data, experience: newExp});
+                  setData((prev: any) => {
+                    const newExp = [...(prev.experience || [])];
+                    newExp.splice(idx, 1);
+                    return {...prev, experience: newExp};
+                  });
                 }}
                 className="absolute -left-10 top-0 p-1 text-red-300 hover:text-red-500 opacity-0 group-hover/exp:opacity-100 transition-all"
               >
@@ -77,11 +81,7 @@ export const ProjectsSection = ({
                               input.accept = 'image/*';
                               input.onchange = (e: any) => {
                                 const file = e.target.files?.[0];
-                                if (file) processImageHighQuality(file).then(d => {
-                                  const n = [...(data.experience || [])];
-                                  n[idx].icon = d;
-                                  setData({...data, experience: n});
-                                });
+                                if (file) processImageHighQuality(file, 200).then(d => { setData((prev: any) => { const n = [...(prev.experience || [])]; n[idx] = { ...n[idx], icon: d }; return {...prev, experience: n}; }); });
                               };
                               input.click();
                             }} className="w-full py-1 bg-white text-[8px] font-bold rounded-md">파일</button>
@@ -90,9 +90,11 @@ export const ProjectsSection = ({
                               setLinkInput(exp.icon || '');
                             }} className="w-full py-1 bg-[#3F72AF] text-white text-[8px] font-bold rounded-md">링크</button>
                             <button onClick={() => {
-                              const n = [...(data.experience || [])];
-                              n[idx].icon = null;
-                              setData({...data, experience: n});
+                              setData((prev: any) => {
+                                const n = [...(prev.experience || [])];
+                                n[idx].icon = null;
+                                return {...prev, experience: n};
+                              });
                             }} className="w-full py-1 bg-red-500 text-white text-[8px] font-bold rounded-md">삭제</button>
                           </div>
                         )}
@@ -102,9 +104,11 @@ export const ProjectsSection = ({
                             <div className="flex gap-1">
                               <button onClick={() => {
                                 const finalUrl = getExternalEmbedUrl(linkInput);
-                                const n = [...(data.experience || [])];
-                                n[idx].icon = finalUrl;
-                                setData({...data, experience: n});
+                                setData((prev: any) => {
+                                  const n = [...(prev.experience || [])];
+                                  n[idx].icon = finalUrl;
+                                  return {...prev, experience: n};
+                                });
                                 setActiveLinkEditor(null);
                               }} className="flex-1 bg-[#112D4E] text-white rounded py-1 text-[8px]">적용</button>
                               <button onClick={() => setActiveLinkEditor(null)} className="flex-1 bg-[#DBE2EF] text-[#112D4E] rounded py-1 text-[8px]">취소</button>
@@ -122,11 +126,7 @@ export const ProjectsSection = ({
                               input.accept = 'image/*';
                               input.onchange = (e: any) => {
                                 const file = e.target.files?.[0];
-                                if (file) processImageHighQuality(file).then(d => {
-                                  const n = [...(data.experience || [])];
-                                  n[idx].icon = d;
-                                  setData({...data, experience: n});
-                                });
+                                if (file) processImageHighQuality(file, 200).then(d => { setData((prev: any) => { const n = [...(prev.experience || [])]; n[idx] = { ...n[idx], icon: d }; return {...prev, experience: n}; }); });
                               };
                               input.click();
                             }}
@@ -154,17 +154,21 @@ export const ProjectsSection = ({
                         <EditableText 
                           value={(exp.title || "").trim()} 
                           onSave={(v) => {
-                            const newExp = [...(data.experience || [])];
-                            newExp[idx].title = v;
-                            setData({...data, experience: newExp});
+                            setData((prev: any) => {
+                              const newExp = [...(prev.experience || [])];
+                              newExp[idx] = { ...newExp[idx], title: v };
+                              return {...prev, experience: newExp};
+                            });
                           }} 
                           isEditing={isEditing} 
                           style={exp.titleStyle || {}}
                           styleData={exp.titleStyle || {}}
                           onStyleSave={(s) => {
-                            const newExp = [...(data.experience || [])];
-                            newExp[idx].titleStyle = s;
-                            setData({...data, experience: newExp});
+                            setData((prev: any) => {
+                              const newExp = [...(prev.experience || [])];
+                              newExp[idx] = { ...newExp[idx], titleStyle: s };
+                              return {...prev, experience: newExp};
+                            });
                           }}
                         />
                       </h4>
@@ -180,9 +184,11 @@ export const ProjectsSection = ({
                             {isEditing && (
                               <button
                                 onClick={() => {
-                                  const newExp = [...(data.experience || [])];
-                                  newExp[idx].isReleased = !isReleased;
-                                  setData({...data, experience: newExp});
+                                  setData((prev: any) => {
+                                    const newExp = [...(prev.experience || [])];
+                                    newExp[idx].isReleased = !isReleased;
+                                    return {...prev, experience: newExp};
+                                  });
                                 }}
                                 className={`w-2 h-2 rounded-full transition-colors ${isReleased ? 'bg-orange-500' : 'bg-gray-300'}`}
                                 title="출시 상태 토글"
@@ -203,11 +209,7 @@ export const ProjectsSection = ({
                                         input.accept = 'image/*';
                                         input.onchange = (ev: any) => {
                                           const file = ev.target.files?.[0];
-                                          if (file) processImageHighQuality(file).then(d => {
-                                            const n = [...(data.experience || [])];
-                                            n[idx].platformIcon = d;
-                                            setData({...data, experience: n});
-                                          });
+                                          if (file) processImageHighQuality(file, 100).then(d => { setData((prev: any) => { const n = [...(prev.experience || [])]; n[idx] = { ...n[idx], platformIcon: d }; return {...prev, experience: n}; }); });
                                         };
                                         input.click();
                                       }} className="text-[5px] bg-white rounded px-0.5">F</button>
@@ -218,9 +220,11 @@ export const ProjectsSection = ({
                                       }} className="text-[5px] bg-white rounded px-0.5">L</button>
                                       <button onClick={(e) => {
                                         e.stopPropagation();
-                                        const n = [...(data.experience || [])];
-                                        n[idx].platformIcon = null;
-                                        setData({...data, experience: n});
+                                        setData((prev: any) => {
+                                          const n = [...(prev.experience || [])];
+                                          n[idx].platformIcon = null;
+                                          return {...prev, experience: n};
+                                        });
                                       }} className="text-[5px] bg-red-500 text-white rounded px-0.5">X</button>
                                     </div>
                                   )}
@@ -230,9 +234,11 @@ export const ProjectsSection = ({
                                       <div className="flex gap-1">
                                         <button onClick={() => {
                                           const finalUrl = getExternalEmbedUrl(linkInput);
-                                          const n = [...(data.experience || [])];
-                                          n[idx].platformIcon = finalUrl;
-                                          setData({...data, experience: n});
+                                          setData((prev: any) => {
+                                            const n = [...(prev.experience || [])];
+                                            n[idx].platformIcon = finalUrl;
+                                            return {...prev, experience: n};
+                                          });
                                           setActiveLinkEditor(null);
                                         }} className="flex-1 bg-[#112D4E] text-white text-[6px] rounded">Ok</button>
                                         <button onClick={() => setActiveLinkEditor(null)} className="flex-1 bg-gray-200 text-[6px] rounded">C</button>
@@ -251,11 +257,7 @@ export const ProjectsSection = ({
                                         input.accept = 'image/*';
                                         input.onchange = (ev: any) => {
                                           const file = ev.target.files?.[0];
-                                          if (file) processImageHighQuality(file).then(d => {
-                                            const n = [...(data.experience || [])];
-                                            n[idx].platformIcon = d;
-                                            setData({...data, experience: n});
-                                          });
+                                          if (file) processImageHighQuality(file, 100).then(d => { setData((prev: any) => { const n = [...(prev.experience || [])]; n[idx] = { ...n[idx], platformIcon: d }; return {...prev, experience: n}; }); });
                                         };
                                         input.click();
                                       }}
@@ -279,9 +281,11 @@ export const ProjectsSection = ({
                               <EditableText 
                                 value={exp.releasedText || (isReleased ? 'Released' : 'Set Released')} 
                                 onSave={(v) => {
-                                  const newExp = [...(data.experience || [])];
-                                  newExp[idx].releasedText = v;
-                                  setData({...data, experience: newExp});
+                                  setData((prev: any) => {
+                                    const newExp = [...(prev.experience || [])];
+                                    newExp[idx] = { ...newExp[idx], releasedText: v };
+                                    return {...prev, experience: newExp};
+                                  });
                                 }} 
                                 isEditing={isEditing} 
                                 disableMarkdown={true}
@@ -296,9 +300,11 @@ export const ProjectsSection = ({
                       <EditableText 
                         value={exp.subtitle || (isEditing ? "프로젝트 부제목 또는 한 줄 설명" : "")} 
                         onSave={(v) => {
-                          const newExp = [...(data.experience || [])];
-                          newExp[idx].subtitle = v;
-                          setData({...data, experience: newExp});
+                          setData((prev: any) => {
+                            const newExp = [...(prev.experience || [])];
+                            newExp[idx] = { ...newExp[idx], subtitle: v };
+                            return {...prev, experience: newExp};
+                          });
                         }} 
                         isEditing={isEditing} 
                         disableMarkdown={true}
@@ -310,9 +316,11 @@ export const ProjectsSection = ({
                   <EditableText 
                     value={(exp.period || "").trim()} 
                     onSave={(v) => {
-                      const newExp = [...(data.experience || [])];
-                      newExp[idx].period = v;
-                      setData({...data, experience: newExp});
+                      setData((prev: any) => {
+                        const newExp = [...(prev.experience || [])];
+                        newExp[idx] = { ...newExp[idx], period: v };
+                        return {...prev, experience: newExp};
+                      });
                     }} 
                     isEditing={isEditing} 
                   />
@@ -328,9 +336,11 @@ export const ProjectsSection = ({
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            const newExp = [...(data.experience || [])];
-                            newExp[idx].metrics.splice(i, 1);
-                            setData({...data, experience: newExp});
+                            setData((prev: any) => {
+                              const newExp = [...(prev.experience || [])];
+                              newExp[idx].metrics.splice(i, 1);
+                              return {...prev, experience: newExp};
+                            });
                           }}
                           className="absolute -right-2 -top-2 bg-white border border-red-200 text-red-500 rounded-full p-0.5 opacity-0 group-hover/metric:opacity-100 shadow-sm transition-all z-20"
                         >
@@ -341,9 +351,13 @@ export const ProjectsSection = ({
                         <EditableText 
                           value={m.label} 
                           onSave={(v) => {
-                            const newExp = [...(data.experience || [])];
-                            newExp[idx].metrics[i].label = v;
-                            setData({...data, experience: newExp});
+                            setData((prev: any) => {
+                              const newExp = [...(prev.experience || [])];
+                              const newMetrics = [...(newExp[idx].metrics || [])];
+                              newMetrics[i] = { ...newMetrics[i], label: v };
+                              newExp[idx] = { ...newExp[idx], metrics: newMetrics };
+                              return {...prev, experience: newExp};
+                            });
                           }} 
                           isEditing={isEditing} 
                         />
@@ -352,9 +366,13 @@ export const ProjectsSection = ({
                         <EditableText 
                           value={m.value} 
                           onSave={(v) => {
-                            const newExp = [...(data.experience || [])];
-                            newExp[idx].metrics[i].value = v;
-                            setData({...data, experience: newExp});
+                            setData((prev: any) => {
+                              const newExp = [...(prev.experience || [])];
+                              const newMetrics = [...(newExp[idx].metrics || [])];
+                              newMetrics[i] = { ...newMetrics[i], value: v };
+                              newExp[idx] = { ...newExp[idx], metrics: newMetrics };
+                              return {...prev, experience: newExp};
+                            });
                           }} 
                           isEditing={isEditing} 
                         />
@@ -364,10 +382,12 @@ export const ProjectsSection = ({
                   {isEditing && (
                     <button 
                       onClick={() => {
-                        const newExp = [...(data.experience || [])];
-                        if(!newExp[idx].metrics) newExp[idx].metrics = [];
-                        newExp[idx].metrics.push({ label: "신규 지표", value: "데이터" });
-                        setData({...data, experience: newExp});
+                        setData((prev: any) => {
+                          const newExp = [...(prev.experience || [])];
+                          if(!newExp[idx].metrics) newExp[idx].metrics = [];
+                          newExp[idx].metrics.push({ label: "신규 지표", value: "데이터" });
+                          return {...prev, experience: newExp};
+                        });
                       }}
                       className="border-2 border-dashed border-[#3F72AF]/20 rounded-2xl px-4 py-3 flex flex-col items-center justify-center min-w-[120px] text-[#3F72AF]/40 hover:text-[#3F72AF] hover:border-[#3F72AF]/50 transition-all"
                     >
@@ -383,23 +403,25 @@ export const ProjectsSection = ({
                   value={(exp.details || []).filter((d: string) => d && d.trim() !== '').join('\n')} 
                   multiline
                   onSave={(v) => {
-                    const newExp = [...(data.experience || [])];
-                    if (v.startsWith('<')) {
-                      // HTML인 경우 리스트로 쪼개지 않고 전체를 하나로 저장 (Tiptap 호환)
-                      newExp[idx].details = [v];
-                    } else {
-                      // 일반 텍스트인 경우 기존처럼 줄바꿈으로 분리
-                      newExp[idx].details = v.split('\n').map((line: string) => line.trim()).filter((line: string) => line !== '');
-                    }
-                    setData({...data, experience: newExp});
+                    setData((prev: any) => {
+                      const newExp = [...(prev.experience || [])];
+                      if (v.startsWith('<')) {
+                        newExp[idx].details = [v];
+                      } else {
+                        newExp[idx].details = v.split('\n').map((line: string) => line.trim()).filter((line: string) => line !== '');
+                      }
+                      return {...prev, experience: newExp};
+                    });
                   }} 
                   isEditing={isEditing} 
                   style={exp.style || {}}
                   styleData={exp.style || {}}
                   onStyleSave={(s) => {
-                    const newExp = [...(data.experience || [])];
-                    newExp[idx].style = s;
-                    setData({...data, experience: newExp});
+                    setData((prev: any) => {
+                      const newExp = [...(prev.experience || [])];
+                      newExp[idx] = { ...newExp[idx], style: s };
+                      return {...prev, experience: newExp};
+                    });
                   }}
                 />
               </div>

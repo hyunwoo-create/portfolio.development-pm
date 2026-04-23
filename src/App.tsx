@@ -5,15 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Project } from './types';
 
 // Constants
-import { 
-  HERO_CONTENT_DEFAULT, 
-  ABOUT_CONTENT_DEFAULT, 
-  GAME_HISTORY, 
-  RESUME_DATA, 
-  PORTFOLIO_PROJECTS, 
-  INITIAL_SKILL_TABS, 
-  INITIAL_TOOLS 
-} from './data/constants';
+// (Constants are now initialized directly within the store)
 
 // Hooks
 import { useAppStore } from './store';

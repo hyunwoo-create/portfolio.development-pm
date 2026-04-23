@@ -6,7 +6,7 @@ export const downloadPdf = (dataUrl: string, name: string) => {
   a.click();
 };
 
-export const processImageHighQuality = (file: File): Promise<string> => {
+export const processImageHighQuality = (file: File, maxWidth: number = 800): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -23,14 +23,18 @@ export const processImageHighQuality = (file: File): Promise<string> => {
           return;
         }
 
-        // 고해상도 품질을 위해 충분한 타겟 해상도 설정 (2000px)
-        const targetWidth = 2000;
+        // 서버 payload 한도(512KB) 초과를 막기 위해 최적화된 타겟 해상도 설정
+        const targetWidth = maxWidth;
         let currWidth = img.width;
         let currHeight = img.height;
 
         // 원본 자체가 이미 충분히 작다면 가공하지 않음
         if (currWidth <= targetWidth) {
-          resolve(e.target?.result as string);
+          // 그래도 WebP로 변환하여 용량 최소화
+          canvas.width = currWidth;
+          canvas.height = currHeight;
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/webp', 0.8));
           return;
         }
 
@@ -67,7 +71,7 @@ export const processImageHighQuality = (file: File): Promise<string> => {
         const finalCanvas = document.createElement('canvas');
         const finalCtx = finalCanvas.getContext('2d');
         if (!finalCtx) {
-          resolve(canvas.toDataURL('image/webp', 0.95));
+          resolve(canvas.toDataURL('image/webp', 0.8));
           return;
         }
 
@@ -77,8 +81,8 @@ export const processImageHighQuality = (file: File): Promise<string> => {
         finalCtx.imageSmoothingQuality = 'high';
         finalCtx.drawImage(canvas, 0, 0, finalWidth, finalHeight);
 
-        // WebP 95% 품질은 육안상 무손실에 가까우면서도 속도가 빠릅니다.
-        resolve(finalCanvas.toDataURL('image/webp', 0.95));
+        // WebP 80% 품질로 대폭 압축하여 용량 문제 완벽 해결
+        resolve(finalCanvas.toDataURL('image/webp', 0.8));
       };
       img.onerror = () => reject(new Error('Failed to load image'));
       img.src = e.target?.result as string;

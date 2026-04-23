@@ -2,6 +2,7 @@ import React from 'react';
 import { PlayCircle, Upload, ChevronRight } from 'lucide-react';
 import { EditableText } from './EditableText';
 import { AdminTextEditor } from './AdminTextEditor';
+import { processImageHighQuality } from '../utils';
 
 interface AboutProps {
   isEditing: boolean;
@@ -13,14 +14,29 @@ interface AboutProps {
 export const About = ({ isEditing, content, setContent, onMoreMeClick }: AboutProps) => {
   const skills = [1, 2, 3];
   
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setContent({...content, videoUrl: ev.target?.result as string});
-    };
-    reader.readAsDataURL(file);
+    
+    if (file.type.startsWith('image/')) {
+      try {
+        const base64 = await processImageHighQuality(file);
+        setContent({...content, videoUrl: base64});
+      } catch (err) {
+        console.error(err);
+        alert('이미지 최적화 중 오류가 발생했습니다.');
+      }
+    } else {
+      if (file.size > 500 * 1024) {
+        alert("서버 용량 제한으로 인해 500KB 이상의 동영상은 직접 업로드할 수 없습니다. 유튜브, 구글 드라이브 등의 외부 링크를 이용해주세요.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setContent({...content, videoUrl: ev.target?.result as string});
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const totalParam = parseInt(content.chartTotal) || 100;

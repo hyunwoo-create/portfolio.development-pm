@@ -23,8 +23,12 @@ const recursivelySanitize = (obj: any): any => {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj === 'string') {
     if (obj.startsWith('blob:')) return null; 
-    if (obj.startsWith('data:image/')) return null; 
-    return stripBase64Images(obj); 
+    // Only run expensive regex if the string looks like HTML to avoid accidental stripping
+    // or performance issues with large base64 strings in non-HTML fields.
+    if (obj.includes('<img') && obj.includes('src="data:image')) {
+      return stripBase64Images(obj); 
+    }
+    return obj;
   }
   if (Array.isArray(obj)) {
     return obj.map(recursivelySanitize).filter(item => item !== null);
@@ -55,7 +59,6 @@ const saveToSupabase = async (key: string, value: any) => {
 
     const response = await fetch(SUPABASE_CONTENT_API, {
       method: 'POST',
-      keepalive: true,
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_ANON_KEY,
@@ -109,8 +112,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   resumeData: RESUME_DATA,
   userImage: '',
   
-  updateContent: (key: string, value: any) => {
-    // 1. Update local state immediately for instant UI response
+  updateContent: (key: string, valueOrUpdater: any) => {
     const stateKey = key === 'hero_content' ? 'heroContent' :
                      key === 'about_content' ? 'aboutContent' :
                      key === 'portfolio_data' ? 'portfolioData' :
@@ -120,14 +122,19 @@ export const useAppStore = create<AppState>((set, get) => ({
                      key === 'resume_data' ? 'resumeData' :
                      key === 'stat_board_user_image' ? 'userImage' : null;
                      
+    let finalValue = valueOrUpdater;
+    if (typeof valueOrUpdater === 'function' && stateKey) {
+      finalValue = valueOrUpdater(get()[stateKey as keyof AppState]);
+    }
+
     if (stateKey) {
-      set({ [stateKey]: value } as any);
+      set({ [stateKey]: finalValue } as any);
     }
     
     // 2. Debounce Supabase saving (800ms)
     if (debounceTimers[key]) clearTimeout(debounceTimers[key]);
     debounceTimers[key] = setTimeout(() => {
-      saveToSupabase(key, value);
+      saveToSupabase(key, finalValue);
     }, 800);
   },
   

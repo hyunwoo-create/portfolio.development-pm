@@ -20,7 +20,7 @@ import {
   Link as LinkIcon
 } from 'lucide-react';
 import { EditableText } from './EditableText';
-import { getExternalEmbedUrl } from '../utils';
+import { getExternalEmbedUrl, processImageHighQuality } from '../utils';
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   'Cpu': <Cpu className="w-5 h-5" />,
@@ -189,14 +189,16 @@ export const StatBoard = ({
   const [showAvatarLink, setShowAvatarLink] = useState(false);
   const [avatarLinkValue, setAvatarLinkValue] = useState('');
   
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      onImageUpload?.(ev.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const base64 = await processImageHighQuality(file);
+      onImageUpload?.(base64);
+    } catch (err) {
+      console.error(err);
+      alert('이미지 최적화 중 오류가 발생했습니다.');
+    }
   };
 
   const addSkill = () => {

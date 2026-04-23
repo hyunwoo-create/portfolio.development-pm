@@ -46,11 +46,19 @@ export interface GameHistory {
  package: GamePlay[];
 }
 
+export interface IntroCard {
+ id: string;
+ title: string;
+ description: string;
+}
+
 export interface SelfIntroTab {
  id: string;
  title: string;
  content: string;
  style?: any;
+ cards?: IntroCard[]; // Legacy support
+ vizBlocks?: { [markerIndex: number]: IntroCard[] }; // Support for multiple (시각화) markers
 }
 
 export interface TechStackCategory {
