@@ -54,6 +54,11 @@ export const AdminTextEditor = ({
   readonlyClassName = '',
 }: AdminTextEditorProps) => {
 
+  const onBodyChangeRef = React.useRef(onBodyChange);
+  useEffect(() => {
+    onBodyChangeRef.current = onBodyChange;
+  }, [onBodyChange]);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -68,7 +73,7 @@ export const AdminTextEditor = ({
     editable: isAdmin,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      onBodyChange(html);
+      onBodyChangeRef.current(html);
     },
   });
 

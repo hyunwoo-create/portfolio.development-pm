@@ -195,13 +195,16 @@ const TabContent = ({
   };
 
   const removeBlock = (index: number) => {
-    if (!window.confirm("이 시각화 블록을 완전히 삭제하시겠습니까? (복구할 수 없습니다)")) return;
+    console.log("removeBlock triggered for index:", index);
     
     // 1. 텍스트 세그먼트 병합 (해당 마커 삭제)
     const newSegments = [...segments];
-    const merged = newSegments[index] + '<br/>' + newSegments[index + 1];
+    // <p> 태그 사이를 자연스럽게 이어주기 위해 빈칸으로 병합 (TipTap이 빈 줄 등을 <p>로 알아서 처리함)
+    const merged = newSegments[index] + ' ' + newSegments[index + 1];
     newSegments.splice(index, 2, merged);
     const newContent = newSegments.join(VIZ_MARKER);
+    console.log("newSegments length after splice:", newSegments.length);
+    console.log("newContent:", newContent);
 
     // 2. vizBlocks 인덱스 당기기 (이후 블록들의 인덱스를 1씩 감소)
     const newVizBlocks: any = {};
@@ -215,6 +218,7 @@ const TabContent = ({
         }
       });
     }
+    console.log("newVizBlocks:", newVizBlocks);
 
     onUpdateTab({ content: newContent, vizBlocks: newVizBlocks });
   };
