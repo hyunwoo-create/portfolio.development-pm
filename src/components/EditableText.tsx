@@ -192,7 +192,7 @@ export const EditableText = ({
   return (
     <div className="relative w-full" ref={containerRef}>
       {multiline ? (
-        <div className="w-full">
+        <div className="w-full" style={style}>
           <AdminTextEditor
             isAdmin={true}
             bodyValue={value || ''}

@@ -142,6 +142,17 @@
     padding: 0;
   }
 
+  /* Ensure TipTap editor inherits dynamic styles */
+  .ProseMirror {
+    line-height: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+  }
+  .ProseMirror p {
+    line-height: inherit;
+  }
+
   .markdown-body blockquote {
     border-left: 4px solid #112D4E;
     padding-left: 1rem;
