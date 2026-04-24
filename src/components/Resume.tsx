@@ -60,6 +60,35 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
     }, 100);
   }, [data.name]);
 
+  const handleBackupData = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `portfolio_backup_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const handleRestoreData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        if (window.confirm("기존 데이터를 덮어쓰고 복원하시겠습니까?")) {
+          setData(parsed);
+          alert("데이터가 성공적으로 복원되었습니다.");
+        }
+      } catch (err) {
+        alert("유효하지 않은 백업 파일입니다.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   return (
     <motion.section
       id="resume-section"
@@ -69,23 +98,38 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
       className="pt-32 pb-24 px-6 max-w-5xl mx-auto print:pt-0 print:pb-0 print:max-w-none"
     >
       {isEditing && (
-        <div className="flex flex-col md:flex-row md:items-center justify-end gap-3 mb-12 print:hidden">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handlePdfExport(data)}
-            className="px-6 py-3 bg-[#112D4E] text-white rounded-xl text-sm font-black flex items-center gap-2 hover:bg-[#0f1a2a] transition-all shadow-lg shadow-[#112D4E]/20"
-          >
-            <ScrollText className="w-4 h-4 text-white" /> 고품질 PDF 추출 (추천)
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleDownloadPdf}
-            className="px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[#112D4E]/5 transition-all text-[#112D4E]"
-          >
-            <Download className="w-4 h-4 text-[#112D4E]" /> 일반 인쇄
-          </motion.button>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-12 print:hidden">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleBackupData}
+              className="px-4 py-2 bg-[#EEF4FF] text-[#3F72AF] border border-[#3F72AF]/30 rounded-xl text-[12px] font-bold flex items-center gap-2 hover:bg-[#3F72AF] hover:text-white transition-all shadow-sm"
+              title="현재 데이터를 JSON 파일로 백업합니다"
+            >
+              <Download className="w-3.5 h-3.5" /> 데이터 백업
+            </button>
+            <label className="px-4 py-2 bg-white text-[#112D4E] border border-[#DBE2EF] rounded-xl text-[12px] font-bold flex items-center gap-2 hover:bg-gray-50 cursor-pointer transition-all shadow-sm">
+              <Upload className="w-3.5 h-3.5" /> 데이터 복원
+              <input type="file" accept=".json" className="hidden" onChange={handleRestoreData} />
+            </label>
+          </div>
+          <div className="flex flex-col md:flex-row md:items-center gap-3">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handlePdfExport(data)}
+              className="px-6 py-3 bg-[#112D4E] text-white rounded-xl text-sm font-black flex items-center gap-2 hover:bg-[#0f1a2a] transition-all shadow-lg shadow-[#112D4E]/20"
+            >
+              <ScrollText className="w-4 h-4 text-white" /> 고품질 PDF 추출 (추천)
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleDownloadPdf}
+              className="px-6 py-3 glass rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[#112D4E]/5 transition-all text-[#112D4E]"
+            >
+              <Download className="w-4 h-4 text-[#112D4E]" /> 일반 인쇄
+            </motion.button>
+          </div>
         </div>
       )}
 
