@@ -239,8 +239,8 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
             </h3>
             <div className="space-y-12">
               {(data.selfIntroTabs || []).map((intro: any, idx: number) => {
-                // (시각화) 마커를 기준으로 텍스트 분할 (p 태그가 감싸고 있을 경우를 대비해 정규식 사용)
-                const segments = (intro.content || '').split(/<p>\s*\(시각화\)\s*<\/p>|\(시각화\)/);
+                // 웹 UI와 동일하게 정확히 '(시각화)' 텍스트로 분할
+                const segments = (intro.content || '').split('(시각화)');
                 
                 return (
                   <div key={idx} className="page-break-inside-avoid">
@@ -254,9 +254,14 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
                         const legacyCards = i === 0 && !hasCards && intro.cards && intro.cards.length > 0 ? intro.cards : null;
                         const cardsToRender = hasCards ? intro.vizBlocks[i] : legacyCards;
 
-                        // 깨진 태그 정리 (TipTap 없이 렌더링되므로)
-                        let cleanSeg = seg;
-                        if (cleanSeg.trim() === '<p>' || cleanSeg.trim() === '</p>') cleanSeg = '';
+                        // 단순 문자열 분할로 인해 발생한 깨진 <p>, </p> 태그 정리
+                        let cleanSeg = seg.trim();
+                        // 끝에 남은 열린 <p> 태그 제거
+                        cleanSeg = cleanSeg.replace(/<p>\s*$/i, '');
+                        // 시작에 남은 닫힌 </p> 태그 제거
+                        cleanSeg = cleanSeg.replace(/^\s*<\/p>/i, '');
+                        // 빈 p태그나 불필요한 줄바꿈 태그 정리
+                        cleanSeg = cleanSeg.replace(/^(<p>\s*<\/p>|<br\s*\/?>|\s)+/i, '').replace(/(<p>\s*<\/p>|<br\s*\/?>|\s)+$/i, '');
 
                         return (
                           <React.Fragment key={i}>
