@@ -24,6 +24,7 @@ const App = () => {
   // --- View State ---
   const [view, setView] = useState<'home' | 'all-projects' | 'portfolio' | 'project-detail' | 'resume'>('home');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [prevView, setPrevView] = useState<string>('home');
 
   // --- Content State (Zustand Store) ---
   const {
@@ -75,9 +76,10 @@ const App = () => {
 
   const handleProjectClick = useCallback((project: Project) => {
     setSelectedProject(project);
+    setPrevView(view);
     setView('project-detail');
     window.scrollTo({ top: 0, behavior: 'instant' as any });
-  }, []);
+  }, [view]);
 
   const handleSaveProjectContent = useCallback((content: string) => {
     if (!selectedProject) return;
@@ -184,7 +186,7 @@ const App = () => {
             <ProjectDetail 
               key="project-detail"
               project={selectedProject} 
-              onBack={() => setView('home')} 
+              onBack={() => changeView(prevView)} 
               isEditing={isEditing}
               onSaveContent={handleSaveProjectContent}
             />
