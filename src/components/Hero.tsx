@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { Upload, Settings, ChevronRight, Link as LinkIcon, Trash2, X, Plus } from 'lucide-react';
 import { EditableText } from './EditableText';
+import { HeroLineChart } from './HeroLineChart';
 import { processImageHighQuality, getExternalEmbedUrl } from '../utils';
 import { HeroVideoSettingsModal } from './HeroVideoSettingsModal';
 
@@ -182,17 +183,12 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
           </h1>
         </div>
         
-        <div className="flex flex-col items-end justify-start pointer-events-auto text-right md:mt-16">
-          <div className="max-w-[280px]">
-            <EditableText
-              value={content.description || "사용자의 경험을 논리적으로 설계하고..."}
-              onSave={(v) => setContent({...content, description: v})}
+        <div className="flex flex-col items-end justify-start pointer-events-auto md:mt-16">
+          <div className="w-full max-w-[336px]">
+            <HeroLineChart
+              points={content.chartPoints || []}
               isEditing={isEditing}
-              multiline
-              className="text-[#112D4E] font-medium leading-relaxed"
-              style={content.descStyle || {fontSize:'0.95rem'}}
-              styleData={content.descStyle || {fontSize:'0.95rem'}}
-              onStyleSave={(s) => setContent({...content, descStyle: s})}
+              onChange={(pts) => setContent({ ...content, chartPoints: pts })}
             />
           </div>
         </div>
@@ -202,7 +198,10 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
           {[1, 2, 3].map(num => (
             <div key={num} className="flex px-5 py-3 md:px-7 md:py-5 bg-white/70 backdrop-blur-md rounded-[1.5rem] border border-[#DBE2EF]/80 shadow-md items-center gap-4 hover:shadow-lg transition-all transform hover:-translate-y-1 relative group/pitem">
               <div className="flex items-center gap-4">
-                <span className="text-4xl md:text-5xl font-black text-[#112D4E] tracking-tighter leading-none">
+                <span
+                  className="text-4xl md:text-5xl font-black tracking-tighter leading-none"
+                  style={{ color: ['#0B1D2E', '#112D4E', '#1E4D80'][num - 1] }}
+                >
                   <EditableText value={content[`point${num}Value`] || "10"} onSave={(v) => setContent({...content, [`point${num}Value`]: v})} isEditing={isEditing} />
                 </span>
                 <div className="text-[11px] md:text-xs font-black text-[#3F72AF] leading-snug tracking-widest uppercase">

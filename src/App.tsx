@@ -29,6 +29,7 @@ const App = () => {
   const {
     isEditing, setIsEditing, isLoading, fetchError,
     heroContent, aboutContent, portfolioData, skillTabs, tools, resumeData, userImage,
+    aiSkills, toolCards,
     updateContent, fetchAll
   } = useAppStore();
 
@@ -150,6 +151,10 @@ const App = () => {
                 onProjectClick={handleProjectClick}
                 userImage={userImage}
                 onImageUpload={(v) => updateContent('stat_board_user_image', v)}
+                aiSkills={aiSkills}
+                setAiSkills={(v: any) => updateContent('ai_skills', v)}
+                toolCards={toolCards}
+                setToolCards={(v: any) => updateContent('tool_cards', v)}
               />
             </motion.div>
           )}

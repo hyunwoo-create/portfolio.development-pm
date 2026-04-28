@@ -182,7 +182,11 @@ export const StatBoard = ({
   setTools,
   onProjectClick, 
   userImage, 
-  onImageUpload 
+  onImageUpload,
+  aiSkills,
+  setAiSkills,
+  toolCards,
+  setToolCards,
 }: any) => {
   const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [mobileCategory, setMobileCategory] = useState<string>('projects');
@@ -198,6 +202,42 @@ export const StatBoard = ({
     } catch (err) {
       console.error(err);
       alert('이미지 최적화 중 오류가 발생했습니다.');
+    }
+  };
+
+  const addAiSkill = () => {
+    const newSkill = { id: Date.now().toString(), title: '새 AI 활용 능력', description: '설명을 입력하세요.', videoUrl: '' };
+    setAiSkills([...(aiSkills || []), newSkill]);
+  };
+
+  const removeAiSkill = (id: string) => {
+    setAiSkills((aiSkills || []).filter((a: any) => a.id !== id));
+    setHoveredItem(null);
+  };
+
+  const updateAiSkill = (id: string, field: string, value: string) => {
+    const updated = (aiSkills || []).map((a: any) => a.id === id ? { ...a, [field]: value } : a);
+    setAiSkills(updated);
+    if (hoveredItem?.type === 'aiSkill' && hoveredItem.data.id === id) {
+      setHoveredItem({ type: 'aiSkill', data: updated.find((a: any) => a.id === id) });
+    }
+  };
+
+  const addToolCard = () => {
+    const newCard = { id: Date.now().toString(), name: '새 도구', iconUrl: '', description: '설명을 입력하세요.', imageUrl: '' };
+    setToolCards([...(toolCards || []), newCard]);
+  };
+
+  const removeToolCard = (id: string) => {
+    setToolCards((toolCards || []).filter((t: any) => t.id !== id));
+    setHoveredItem(null);
+  };
+
+  const updateToolCard = (id: string, field: string, value: string) => {
+    const updated = (toolCards || []).map((t: any) => t.id === id ? { ...t, [field]: value } : t);
+    setToolCards(updated);
+    if (hoveredItem?.type === 'toolCard' && hoveredItem.data.id === id) {
+      setHoveredItem({ type: 'toolCard', data: updated.find((t: any) => t.id === id) });
     }
   };
 
@@ -387,9 +427,99 @@ export const StatBoard = ({
     </div>
   );
 
+  const renderAiDetail = (a: any) => (
+    <div className="flex flex-col h-full animate-fade-in relative z-10 w-full">
+      <div className="flex justify-between items-start mb-6">
+        <div className="text-[10px] font-bold text-[#3F72AF] tracking-widest uppercase bg-[#3F72AF]/10 px-3 py-1 rounded-full">
+          AI SKILL
+        </div>
+        {isEditing && (
+          <button onClick={() => removeAiSkill(a.id)} className="text-red-400 hover:text-red-600 bg-red-50 p-1.5 rounded-lg transition-colors"><X className="w-4 h-4"/></button>
+        )}
+      </div>
+      <h3 className="text-3xl font-black text-[#112D4E] mb-4 leading-tight">
+        <EditableText value={a.title} isEditing={isEditing} onSave={(v: string) => updateAiSkill(a.id, 'title', v)} />
+      </h3>
+      <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed">
+        <EditableText value={a.description || '설명을 입력하세요.'} isEditing={isEditing} multiline onSave={(v: string) => updateAiSkill(a.id, 'description', v)} />
+      </div>
+      {isEditing && (
+        <div className="mb-4">
+          <label className="text-[10px] font-bold text-[#3F72AF] mb-1 block uppercase tracking-wider">영상 URL (YouTube 등)</label>
+          <input
+            type="text"
+            value={a.videoUrl || ''}
+            onChange={(e) => updateAiSkill(a.id, 'videoUrl', e.target.value)}
+            placeholder="https://youtube.com/..."
+            className="w-full border border-[#DBE2EF] rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#3F72AF]"
+          />
+        </div>
+      )}
+      {a.videoUrl && (
+        <div className="mt-auto w-full aspect-video rounded-2xl overflow-hidden border border-[#DBE2EF] shadow-sm">
+          <iframe
+            src={getExternalEmbedUrl(a.videoUrl)}
+            className="w-full h-full"
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      )}
+    </div>
+  );
+
+  const renderToolCardDetail = (t: any) => (
+    <div className="flex flex-col h-full animate-fade-in relative z-10 w-full">
+      <div className="flex justify-between items-start mb-6">
+        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-[#DBE2EF] p-3 relative group">
+          {t.iconUrl
+            ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm" alt={t.name}/>
+            : <Wrench className="w-8 h-8 text-[#3F72AF]"/>}
+          {isEditing && (
+            <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity p-2">
+              <input
+                className="text-[8px] bg-white text-[#112D4E] p-1 rounded w-full focus:outline-none"
+                placeholder="Icon URL"
+                value={t.iconUrl || ''}
+                onChange={(e) => updateToolCard(t.id, 'iconUrl', e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+        {isEditing && (
+          <button onClick={() => removeToolCard(t.id)} className="text-red-400 hover:text-red-600 bg-red-50 p-1.5 rounded-lg transition-colors"><X className="w-4 h-4"/></button>
+        )}
+      </div>
+      <h3 className="text-3xl font-black text-[#112D4E] mb-4">
+        <EditableText value={t.name} isEditing={isEditing} onSave={(v: string) => updateToolCard(t.id, 'name', v)} />
+      </h3>
+      <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed">
+        <EditableText value={t.description || '설명을 입력하세요.'} isEditing={isEditing} multiline onSave={(v: string) => updateToolCard(t.id, 'description', v)} />
+      </div>
+      {isEditing && (
+        <div className="mb-4">
+          <label className="text-[10px] font-bold text-[#3F72AF] mb-1 block uppercase tracking-wider">이미지 URL</label>
+          <input
+            type="text"
+            value={t.imageUrl || ''}
+            onChange={(e) => updateToolCard(t.id, 'imageUrl', e.target.value)}
+            placeholder="https://..."
+            className="w-full border border-[#DBE2EF] rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#3F72AF]"
+          />
+        </div>
+      )}
+      {t.imageUrl && (
+        <div className="mt-auto w-full rounded-2xl overflow-hidden border border-[#DBE2EF] shadow-sm">
+          <img src={t.imageUrl} alt={t.name} className="w-full h-auto object-cover" />
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <section id="stat-board" className="pt-12 pb-24 px-6 max-w-[1400px] mx-auto relative z-20 bg-[#F9F7F7]">
-      <div className="w-full flex justify-center mb-16 pointer-events-none">
+    <section id="stat-board" className="pt-7 pb-14 px-6 max-w-[1400px] mx-auto relative z-20 bg-[#F9F7F7]">
+      <div className="w-full flex justify-center mb-10 pointer-events-none">
         <div className="flex flex-col items-center animate-pulse opacity-90">
           <span className="text-[11px] md:text-sm font-black tracking-widest text-[#3F72AF] mb-2 uppercase drop-shadow-sm">SCROLL</span>
           <div className="w-[2px] h-16 md:h-24 bg-gradient-to-b from-[#3F72AF] via-[#3F72AF] to-transparent shadow-sm"></div>
@@ -399,86 +529,82 @@ export const StatBoard = ({
       {/* DESKTOP 3-COLUMN */}
       <div className="hidden lg:grid gap-8 items-start relative select-none w-full" style={{ gridTemplateColumns: '1.2fr 380px 1.5fr' }}>
         
-        {/* LEFT COL: Navigation Lists */}
-        <div className="flex flex-col justify-between pr-4 h-[80vh] py-2 w-full overflow-hidden">
-          
-          {/* Projects List */}
-          <div className="flex flex-col h-full justify-between">
-            <div>
+        {/* LEFT COL: AI 활용 능력 + 사용 TOOL */}
+        <div className="flex flex-col justify-between pr-4 h-[48vh] py-2 w-full overflow-hidden">
+          <div className="flex flex-col h-full gap-6">
+
+            {/* ── AI 활용 능력 ── */}
+            <div className="flex flex-col">
               <div className="flex items-center justify-between mb-2 pl-2">
-                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">Portfolio</h2>
+                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">AI 활용 능력</h2>
                 {isEditing && (
-                  <button onClick={() => {
-                    const newProj = { id: Date.now().toString(), title: "새 프로젝트", category: "NEW", description: "설명", image: "", color: "from-blue-500 to-cyan-400", tags: ["태그"], details: [], chartPoints: null, content: "" };
-                    setProjects([...projects, newProj]);
-                  }} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
+                  <button onClick={addAiSkill} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
                 )}
               </div>
               <div className="flex flex-col gap-1.5">
-                {projects.map((p: any) => (
-                  <div key={p.id} onMouseEnter={() => setHoveredItem({type: 'project', data: p})}
-                       className={`p-3 lg:p-4 rounded-xl cursor-pointer transition-all duration-300 border ${hoveredItem?.data?.id === p.id ? 'bg-[#0a1e36] border-[#0a1e36] shadow-xl translate-x-3 scale-[1.02]' : 'bg-white border-[#DBE2EF] hover:bg-[#DBE2EF] hover:translate-x-1 shadow-sm'}`}>
-                    <div className={`text-[9px] font-bold uppercase tracking-widest mb-1 ${hoveredItem?.data.id === p.id ? 'text-[#3F72AF]' : 'text-[#8fabc8]'}`}>{p.category}</div>
-                    <div className={`font-black text-xs leading-tight ${hoveredItem?.data.id === p.id ? 'text-white' : 'text-[#112D4E]'}`}>{p.title}</div>
+                {aiSkills?.map((a: any) => (
+                  <div
+                    key={a.id}
+                    onClick={() => setHoveredItem({ type: 'aiSkill', data: a })}
+                    className={`p-3 lg:p-4 rounded-xl cursor-pointer transition-all duration-300 border group ${
+                      hoveredItem?.data?.id === a.id
+                        ? 'bg-[#0a1e36] border-[#0a1e36] shadow-xl translate-x-3 scale-[1.02]'
+                        : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] hover:translate-x-1 shadow-sm'
+                    }`}
+                  >
+                    <div className={`font-black text-xs leading-tight transition-colors ${
+                      hoveredItem?.data?.id === a.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
+                    }`}>
+                      {a.title}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Skills List */}
-            <div className="mt-4">
+            {/* ── 사용 TOOL ── */}
+            <div className="flex flex-col mt-auto">
               <div className="flex items-center justify-between mb-2 pl-2">
-                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">Core Competencies</h2>
+                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">사용 TOOL</h2>
                 {isEditing && (
-                  <button onClick={addSkill} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
+                  <button onClick={addToolCard} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
                 )}
               </div>
-              <div className="flex flex-col gap-1.5">
-                {skillTabs?.map((tab: any) => tab.skills.map((s:any, idx:number) => (
-                  <div key={`${tab.id}-${idx}`} onMouseEnter={() => setHoveredItem({type: 'skill', data: s})}
-                       className={`flex items-center gap-3 p-2 rounded-xl cursor-pointer transition-all duration-300 border ${hoveredItem?.data.name === s.name ? 'bg-[#0a1e36] border-[#0a1e36] shadow-md translate-x-2' : 'bg-white border-[#DBE2EF] hover:bg-[#DBE2EF] hover:translate-x-1'}`}>
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${hoveredItem?.data.name === s.name ? 'bg-[#112D4E] text-[#F9F7F7]' : 'bg-[#DBE2EF]/50 text-[#1A59A7]'}`}>
-                      {resolveIcon(s.icon)}
-                    </div>
-                    <div className="flex-1">
-                      <div className={`font-black text-[11px] ${hoveredItem?.data.name === s.name ? 'text-white' : 'text-[#112D4E]'}`}>{s.name}</div>
-                      <div className="w-full h-1 bg-[#112D4E]/10 rounded-full mt-1.5 overflow-hidden">
-                        <div className="h-full bg-current opacity-90 rounded-full" style={{width: `${s.level}%`}}/>
-                      </div>
-                    </div>
-                  </div>
-                )))}
-              </div>
-            </div>
-
-            {/* Tools List */}
-            <div className="mt-4">
-              <div className="flex items-center justify-between mb-2 pl-2">
-                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">Arsenal</h2>
-                {isEditing && (
-                  <button onClick={addTool} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {tools?.map((t: any) => (
-                  <div key={t.id} onMouseEnter={() => setHoveredItem({type: 'tool', data: t})}
-                       className={`px-3 py-1.5 rounded-lg cursor-pointer transition-all border font-bold text-[10px] shadow-sm ${hoveredItem?.data.id === t.id ? 'bg-[#0a1e36] text-white border-[#0a1e36] shadow-md scale-105' : 'bg-white text-[#1A59A7] border-[#DBE2EF] hover:bg-[#DBE2EF]'}`}>
-                    {t.name}
+              <div className="grid grid-cols-2 gap-1.5">
+                {toolCards?.map((t: any) => (
+                  <div
+                    key={t.id}
+                    onClick={() => setHoveredItem({ type: 'toolCard', data: t })}
+                    className={`p-3 rounded-xl cursor-pointer transition-all duration-300 border flex items-center gap-2 group ${
+                      hoveredItem?.data?.id === t.id
+                        ? 'bg-[#0a1e36] border-[#0a1e36] shadow-md'
+                        : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] shadow-sm'
+                    }`}
+                  >
+                    {t.iconUrl
+                      ? <img src={t.iconUrl} className="w-5 h-5 object-contain shrink-0" alt={t.name}/>
+                      : <Wrench className={`w-4 h-4 shrink-0 transition-colors ${
+                          hoveredItem?.data?.id === t.id ? 'text-white' : 'text-[#3F72AF] group-hover:text-white'
+                        }`}/>}
+                    <span className={`font-black text-[10px] leading-tight transition-colors ${
+                      hoveredItem?.data?.id === t.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
+                    }`}>
+                      {t.name}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
+
           </div>
         </div>
         
         {/* CENTER COL: User Avatar */}
-        <div className="h-[80vh] sticky top-24 flex flex-col items-center justify-center pb-8 pt-4">
+        <div className="h-[48vh] sticky top-24 flex flex-col items-center justify-center pb-4 pt-2">
           <div className="w-full h-full relative group flex items-center justify-center">
             <img src={userImage || "https://picsum.photos/400/800"} alt="Avatar" className="w-[120%] h-[120%] max-w-[none] object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)] group-hover:scale-[1.05] transition-transform duration-1000" />
             
-            <div className="absolute bottom-10 left-0 right-0 z-20 px-8 text-center pointer-events-none">
-              <div className="inline-block px-4 py-2 bg-[#112D4E]/80 backdrop-blur-md rounded-full text-[10px] font-black text-white tracking-[0.3em] uppercase mb-3 shadow-lg">Candidate</div>
-            </div>
+
             
             {isEditing && (
               <div className="absolute inset-0 bg-black/60 rounded-[3rem] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-8 z-30 pointer-events-auto">
@@ -545,14 +671,16 @@ export const StatBoard = ({
         </div>
         
         {/* RIGHT COL: Hover Details */}
-        <div className="h-[80vh] sticky top-24 pt-4">
+        <div className="h-[48vh] sticky top-24 pt-4">
           <div className="h-full bg-white/70 backdrop-blur-2xl rounded-[3rem] p-10 lg:p-12 border-2 border-white shadow-2xl overflow-hidden flex flex-col w-full relative">
             <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#3F72AF]/5 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[#112D4E]/5 rounded-full blur-3xl pointer-events-none"></div>
             
             {hoveredItem ? (
-              hoveredItem.type === 'project' ? renderProjectDetail(hoveredItem.data) :
-              hoveredItem.type === 'skill' ? renderSkillDetail(hoveredItem.data) :
+              hoveredItem.type === 'project'  ? renderProjectDetail(hoveredItem.data) :
+              hoveredItem.type === 'skill'    ? renderSkillDetail(hoveredItem.data)   :
+              hoveredItem.type === 'aiSkill'  ? renderAiDetail(hoveredItem.data)      :
+              hoveredItem.type === 'toolCard' ? renderToolCardDetail(hoveredItem.data) :
               renderToolDetail(hoveredItem.data)
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-[#8fabc8] font-bold text-center">
@@ -600,48 +728,34 @@ export const StatBoard = ({
         </div>
 
         <div className="flex flex-col w-full">
-          <StatBoardMobileAccordion title="Portfolio" isActive={mobileCategory === 'projects'} onClick={() => setMobileCategory(mobileCategory === 'projects' ? '' : 'projects')}>
-            <div className="flex flex-col gap-2 pt-2">
-               {isEditing && (
-                 <button onClick={() => {
-                   const newProj = { id: Date.now().toString(), title: "새 프로젝트", category: "NEW", description: "설명", image: "", color: "from-blue-500 to-cyan-400", tags: [], details: [], content: "" };
-                   setProjects([...projects, newProj]);
-                 }} className="flex items-center justify-center gap-2 mb-4 w-full py-3 border-2 border-dashed border-[#3F72AF]/30 rounded-xl text-[#3F72AF] font-bold hover:bg-[#3F72AF]/5"><Plus className="w-4 h-4"/> 새 프로젝트 추가</button>
-               )}
-               {projects?.map((p: any) => (
-                 <div key={p.id} className="border-b border-[#3F72AF]/10 pb-8 last:border-0 last:pb-0 w-full overflow-hidden">
-                    {renderProjectDetail(p)}
-                 </div>
-               ))}
-            </div>
-          </StatBoardMobileAccordion>
-          
-          <StatBoardMobileAccordion title="Core Competencies" isActive={mobileCategory === 'skills'} onClick={() => setMobileCategory(mobileCategory === 'skills' ? '' : 'skills')}>
-            <div className="flex flex-col gap-12 pt-6 pb-4 w-full">
-               {isEditing && (
-                 <button onClick={addSkill} className="flex items-center justify-center gap-2 mb-4 w-full py-3 border-2 border-dashed border-[#1A59A7]/30 rounded-xl text-[#1A59A7] font-bold hover:bg-[#1A59A7]/5"><Plus className="w-4 h-4"/> 새 스킬 추가</button>
-               )}
-               {skillTabs?.map((tab: any) => tab.skills.map((s:any, idx:number) => (
-                <div key={`${tab.id}-${idx}`} className="w-full">
-                  {renderSkillDetail(s)}
+          <StatBoardMobileAccordion title="AI 활용 능력" isActive={mobileCategory === 'aiSkills'} onClick={() => setMobileCategory(mobileCategory === 'aiSkills' ? '' : 'aiSkills')}>
+            <div className="flex flex-col gap-4 pt-2">
+              {isEditing && (
+                <button onClick={addAiSkill} className="flex items-center justify-center gap-2 mb-2 w-full py-3 border-2 border-dashed border-[#3F72AF]/30 rounded-xl text-[#3F72AF] font-bold hover:bg-[#3F72AF]/5"><Plus className="w-4 h-4"/>AI 능력 추가</button>
+              )}
+              {aiSkills?.map((a: any) => (
+                <div key={a.id} className="border-b border-[#3F72AF]/10 pb-6 last:border-0">
+                  {renderAiDetail(a)}
                 </div>
-              )))}
+              ))}
             </div>
           </StatBoardMobileAccordion>
-          
-          <StatBoardMobileAccordion title="Arsenal (Tools)" isActive={mobileCategory === 'tools'} onClick={() => setMobileCategory(mobileCategory === 'tools' ? '' : 'tools')}>
-            <div className="flex flex-col pt-4 pb-4 w-full">
-               {isEditing && (
-                 <button onClick={addTool} className="flex items-center justify-center gap-2 mb-8 w-full py-3 border-2 border-dashed border-[#1A59A7]/30 rounded-xl text-[#1A59A7] font-bold hover:bg-[#1A59A7]/5"><Plus className="w-4 h-4"/> 새 도구 추가</button>
-               )}
-               <div className="grid grid-cols-2 gap-4">
-                  {tools?.map((t:any) => (
-                    <div key={t.id} className="bg-white rounded-[1.5rem] p-5 shadow flex flex-col items-center text-center border border-[#DBE2EF]">
-                      <div className="w-12 h-12 mb-4">{t.iconUrl ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm"/> : <Wrench className="w-full h-full text-[#3F72AF]"/>}</div>
-                      <div className="font-bold text-[#112D4E] text-xs leading-tight">{t.name}</div>
-                    </div>
-                  ))}
-               </div>
+
+          <StatBoardMobileAccordion title="사용 TOOL" isActive={mobileCategory === 'toolCards'} onClick={() => setMobileCategory(mobileCategory === 'toolCards' ? '' : 'toolCards')}>
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              {isEditing && (
+                <button onClick={addToolCard} className="col-span-2 flex items-center justify-center gap-2 mb-2 w-full py-3 border-2 border-dashed border-[#1A59A7]/30 rounded-xl text-[#1A59A7] font-bold hover:bg-[#1A59A7]/5"><Plus className="w-4 h-4"/>TOOL 추가</button>
+              )}
+              {toolCards?.map((t: any) => (
+                <div key={t.id} className="bg-white rounded-[1.5rem] p-5 shadow flex flex-col items-center text-center border border-[#DBE2EF]">
+                  <div className="w-12 h-12 mb-3">
+                    {t.iconUrl
+                      ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm" alt={t.name}/>
+                      : <Wrench className="w-full h-full text-[#3F72AF]"/>}
+                  </div>
+                  <div className="font-bold text-[#112D4E] text-xs leading-tight">{t.name}</div>
+                </div>
+              ))}
             </div>
           </StatBoardMobileAccordion>
         </div>

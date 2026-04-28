@@ -3,8 +3,27 @@ import { ResumeData, Project, SkillTab, ToolItem, Skill } from '../types';
 export const HERO_CONTENT_DEFAULT = {
   titleLine1: "기획의도를 알고",
   titleLine2: "목차를 쓸줄 아는 기획자",
-  description: "사용자의 경험을 논리적으로 설계하고, 명확한 문서화를 통해 팀의 비전을 구체화합니다. 데이터와 심리학을 기반으로 한 깊이 있는 기획을 지향합니다."
+  description: "사용자의 경험을 논리적으로 설계하고, 명확한 문서화를 통해 팀의 비전을 구체화합니다. 데이터와 심리학을 기반으로 한 깊이 있는 기획을 지향합니다.",
+  chartPoints: [
+    { value: 2, label: '시작' },
+    { value: 7, label: '첫 런칭' },
+    { value: 3, label: '' },
+    { value: -3, label: '위기' },
+    { value: 8, label: '도약' },
+  ],
 };
+
+export const AI_SKILLS_DEFAULT = [
+  { id: 'ai1', title: 'ChatGPT 업무 활용', description: 'GPT-4를 활용한 기획서 초안 작성, 데이터 분석 요약, 사용자 인터뷰 인사이트 도출 등 PM 실무에 직접 적용합니다.', videoUrl: '' },
+  { id: 'ai2', title: 'AI 기반 리서치 자동화', description: '크롤링 및 AI 요약 파이프라인으로 시장 조사 시간을 80% 단축한 경험이 있습니다.', videoUrl: '' },
+];
+
+export const TOOL_CARDS_DEFAULT = [
+  { id: 'tc1', name: 'Figma', iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg', description: 'UI/UX 프로토타이핑 및 디자인 협업 도구로 활용합니다.', imageUrl: '' },
+  { id: 'tc2', name: 'Notion', iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png', description: '기획 문서, 스프린트 관리, 팀 위키 작성에 사용합니다.', imageUrl: '' },
+  { id: 'tc3', name: 'Jira', iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jira/jira-original.svg', description: '애자일 스프린트 계획 및 이슈 트래킹에 활용합니다.', imageUrl: '' },
+  { id: 'tc4', name: 'Slack', iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg', description: '팀 커뮤니케이션 및 알림 자동화에 사용합니다.', imageUrl: '' },
+];
 
 export const ABOUT_CONTENT_DEFAULT = {
   titleLeft: "Q. 누구를 채용해야 할까요?",

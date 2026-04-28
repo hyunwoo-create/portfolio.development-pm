@@ -5,7 +5,9 @@ import {
   RESUME_DATA, 
   PORTFOLIO_PROJECTS, 
   INITIAL_SKILL_TABS, 
-  INITIAL_TOOLS 
+  INITIAL_TOOLS,
+  AI_SKILLS_DEFAULT,
+  TOOL_CARDS_DEFAULT,
 } from '../data/constants';
 
 // Supabase API config
@@ -152,6 +154,8 @@ interface AppState {
   tools: any[];
   resumeData: any;
   userImage: string;
+  aiSkills: any[];
+  toolCards: any[];
 
   // Setters that update local state AND trigger debounced Supabase save
   updateContent: (key: string, value: any) => void;
@@ -173,6 +177,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   tools: INITIAL_TOOLS,
   resumeData: RESUME_DATA,
   userImage: '',
+  aiSkills: AI_SKILLS_DEFAULT,
+  toolCards: TOOL_CARDS_DEFAULT,
 
   updateContent: (key: string, valueOrUpdater: any) => {
     const stateKey =
@@ -182,7 +188,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       key === 'skill_tabs'            ? 'skillTabs'    :
       key === 'tools'                 ? 'tools'        :
       key === 'resume_data'           ? 'resumeData'   :
-      key === 'stat_board_user_image' ? 'userImage'    : null;
+      key === 'stat_board_user_image' ? 'userImage'    :
+      key === 'ai_skills'             ? 'aiSkills'     :
+      key === 'tool_cards'            ? 'toolCards'    : null;
 
     let finalValue = valueOrUpdater;
     if (typeof valueOrUpdater === 'function' && stateKey) {
@@ -231,6 +239,8 @@ export const useAppStore = create<AppState>((set, get) => ({
           tools:         data['tools']                  !== undefined ? data['tools']                  : state.tools,
           resumeData:    data['resume_data']            !== undefined ? data['resume_data']            : state.resumeData,
           userImage:     data['stat_board_user_image']  !== undefined ? data['stat_board_user_image']  : state.userImage,
+          aiSkills:      data['ai_skills']              !== undefined ? data['ai_skills']              : state.aiSkills,
+          toolCards:     data['tool_cards']             !== undefined ? data['tool_cards']             : state.toolCards,
           isLoading: false,
         }));
       } else {
