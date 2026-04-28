@@ -14,7 +14,7 @@ interface HeroLineChartProps {
 
 const LINE_COLOR = '#E05C6A';
 
-const W = 280, H = 160;
+const W = 364, H = 160;
 const PAD_X = 24, PAD_TOP = 32, PAD_BOTTOM = 24;
 const CHART_W = W - PAD_X * 2;
 const CHART_H = H - PAD_TOP - PAD_BOTTOM;
@@ -57,7 +57,7 @@ export const HeroLineChart = ({ points, isEditing, onChange }: HeroLineChartProp
         />
         <text
           x={PAD_X - 6} y={zeroY + 3.5}
-          fontSize="7" fill="rgba(17,45,78,0.4)"
+          fontSize="9" fill="rgba(17,45,78,0.4)"
           textAnchor="end"
         >
           0
@@ -91,8 +91,8 @@ export const HeroLineChart = ({ points, isEditing, onChange }: HeroLineChartProp
               {p.label && (
                 <text
                   x={cx}
-                  y={above ? cy - 9 : cy + 14}
-                  fontSize="7.5"
+                  y={above ? cy - 15 : cy + 20}
+                  fontSize="13"
                   fill="rgba(17,45,78,0.65)"
                   textAnchor="middle"
                   fontWeight="600"
