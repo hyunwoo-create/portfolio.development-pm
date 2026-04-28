@@ -531,12 +531,12 @@ export const StatBoard = ({
         
         {/* LEFT COL: AI 활용 능력 + 사용 TOOL */}
         <div className="flex flex-col justify-between pr-4 h-[48vh] py-2 w-full overflow-hidden">
-          <div className="flex flex-col h-full gap-6">
+          <div className="flex flex-col h-full">
 
             {/* ── AI 활용 능력 ── */}
-            <div className="flex flex-col">
+            <div className="flex flex-col h-1/2 overflow-hidden">
               <div className="flex items-center justify-between mb-2 pl-2">
-                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">AI 활용 능력</h2>
+                <h2 className="text-[14px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">AI 활용 능력</h2>
                 {isEditing && (
                   <button onClick={addAiSkill} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
                 )}
@@ -552,7 +552,7 @@ export const StatBoard = ({
                         : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] hover:translate-x-1 shadow-sm'
                     }`}
                   >
-                    <div className={`font-black text-xs leading-tight transition-colors ${
+                    <div className={`font-black text-[16px] leading-tight transition-colors ${
                       hoveredItem?.data?.id === a.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
                     }`}>
                       {a.title}
@@ -563,9 +563,9 @@ export const StatBoard = ({
             </div>
 
             {/* ── 사용 TOOL ── */}
-            <div className="flex flex-col mt-auto">
+            <div className="flex flex-col h-1/2 overflow-hidden">
               <div className="flex items-center justify-between mb-2 pl-2">
-                <h2 className="text-[10px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">사용 TOOL</h2>
+                <h2 className="text-[14px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">사용 TOOL</h2>
                 {isEditing && (
                   <button onClick={addToolCard} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
                 )}
@@ -586,7 +586,7 @@ export const StatBoard = ({
                       : <Wrench className={`w-4 h-4 shrink-0 transition-colors ${
                           hoveredItem?.data?.id === t.id ? 'text-white' : 'text-[#3F72AF] group-hover:text-white'
                         }`}/>}
-                    <span className={`font-black text-[10px] leading-tight transition-colors ${
+                    <span className={`font-black text-[14px] leading-tight transition-colors ${
                       hoveredItem?.data?.id === t.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
                     }`}>
                       {t.name}
