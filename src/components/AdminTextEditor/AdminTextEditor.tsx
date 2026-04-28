@@ -37,6 +37,8 @@ export interface AdminTextEditorProps {
   className?: string;
   /** 읽기 모드 시 적용할 추가 className */
   readonlyClassName?: string;
+  /** 읽기 모드 시 markdown-body에 적용할 인라인 스타일 (fontSize, fontWeight, color 등) */
+  readonlyBodyStyle?: React.CSSProperties;
 }
 
 export const AdminTextEditor = ({
@@ -52,6 +54,7 @@ export const AdminTextEditor = ({
   minBodyHeight = '160px',
   className = '',
   readonlyClassName = '',
+  readonlyBodyStyle,
 }: AdminTextEditorProps) => {
 
   const onBodyChangeRef = React.useRef(onBodyChange);
@@ -109,7 +112,7 @@ export const AdminTextEditor = ({
         {!hideTitle && titleValue && (
           <h3 className="text-xl font-bold text-[#112D4E] mb-2">{titleValue}</h3>
         )}
-        <div className="markdown-body">
+        <div className="markdown-body" style={readonlyBodyStyle}>
           {/* HTML이 포함된 경우 직접 렌더링, 아니면 마크다운으로 처리 (하위 호환성) */}
           {bodyValue?.startsWith('<') ? (
             <div dangerouslySetInnerHTML={{ __html: bodyValue }} />

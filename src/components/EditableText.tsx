@@ -1,7 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkBreaks from 'remark-breaks';
+import React, { useState, useRef, useCallback } from 'react';
 import { AdminTextEditor } from './AdminTextEditor';
 
 interface TextStyleEditorProps {
@@ -167,14 +164,16 @@ export const EditableText = ({
     
     if (multiline) {
       // Delegate to AdminTextEditor's read-only mode for consistent rendering
+      // Pass `style` as `readonlyBodyStyle` so fontSize/fontWeight/color reach the markdown-body
       return (
-        <div style={style} className="w-full">
+        <div className="w-full">
           <AdminTextEditor
             isAdmin={false}
             bodyValue={value || ''}
             onBodyChange={() => {}}
             hideTitle={true}
             readonlyClassName={className}
+            readonlyBodyStyle={style}
           />
         </div>
       );

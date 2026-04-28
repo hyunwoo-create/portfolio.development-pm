@@ -34,17 +34,6 @@ export interface ToolItem {
  description: string;
 }
 
-export interface GamePlay {
- id: string;
- name: string;
- hours: number;
-}
-
-export interface GameHistory {
- online: GamePlay[];
- mobile: GamePlay[];
- package: GamePlay[];
-}
 
 export interface IntroCard {
  id: string;

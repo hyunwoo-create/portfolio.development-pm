@@ -18,18 +18,17 @@ import { StatBoard } from './components/StatBoard';
 import { PortfolioGallery } from './components/PortfolioGallery';
 import { ProjectDetail } from './components/ProjectDetail';
 import { Resume } from './components/Resume';
-import { Footer, BackToTop, ImageModal } from './components/Common';
+import { Footer, BackToTop } from './components/Common';
 
 const App = () => {
   // --- View State ---
   const [view, setView] = useState<'home' | 'all-projects' | 'portfolio' | 'project-detail' | 'resume'>('home');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   // --- Content State (Zustand Store) ---
   const {
-    isEditing, setIsEditing, isLoading,
-    heroContent, aboutContent, portfolioData, skillTabs, tools, gameHistory, resumeData, userImage,
+    isEditing, setIsEditing, isLoading, fetchError,
+    heroContent, aboutContent, portfolioData, skillTabs, tools, resumeData, userImage,
     updateContent, fetchAll
   } = useAppStore();
 
@@ -95,6 +94,21 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#F9F7F7] text-[#112D4E] font-sans selection:bg-[#3F72AF]/20 selection:text-[#112D4E]">
+      {/* Network fallback banner — only shown when server was unreachable at startup */}
+      {fetchError && !isLoading && (
+        <div className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-center gap-2 bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          서버에서 데이터를 가져오지 못했습니다. 기본 데이터로 표시 중입니다.&nbsp;
+          <button
+            onClick={() => fetchAll()}
+            className="underline font-semibold hover:text-amber-900 transition-colors"
+          >
+            다시 시도
+          </button>
+        </div>
+      )}
       <Navbar 
         setView={changeView} 
         currentView={view} 
@@ -184,7 +198,6 @@ const App = () => {
 
       <Footer />
       <BackToTop />
-      <ImageModal isOpen={isImageModalOpen} onClose={() => setIsImageModalOpen(false)} />
     </div>
   );
 };

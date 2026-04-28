@@ -1,4 +1,4 @@
-import { GameHistory, ResumeData, Project, SkillTab, ToolItem, Skill } from '../types';
+import { ResumeData, Project, SkillTab, ToolItem, Skill } from '../types';
 
 export const HERO_CONTENT_DEFAULT = {
   titleLine1: "기획의도를 알고",
@@ -26,17 +26,6 @@ export const ABOUT_CONTENT_DEFAULT = {
   descText3: "데이터 수집 및 분석 자동화(크롤링) 경험을 바탕으로, 높은 수준의 기술적 이해도를 지니고 있어 개발팀과 매끄럽게 소통합니다.",
 };
 
-export const GAME_HISTORY: GameHistory = {
-  online: [
-    { id: '1', name: 'League of Legends', hours: 500 },
-  ],
-  mobile: [
-    { id: '2', name: 'Genshin Impact', hours: 200 },
-  ],
-  package: [
-    { id: '3', name: 'Elden Ring', hours: 150 },
-  ],
-};
 
 export const RESUME_DATA: ResumeData = {
   name: '양현우',
