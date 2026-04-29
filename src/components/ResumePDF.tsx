@@ -128,11 +128,11 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
 
           {/* ── Hero Section ── (Hero.tsx 구조 그대로) */}
           {heroContent && (
-            <section className="relative w-full flex items-center justify-center overflow-hidden bg-[#F9F7F7] pt-20" style={{ height: '1100px' }}>
+            <section className="relative w-full flex items-center justify-center overflow-hidden bg-[#F9F7F7] pt-20" style={{ height: '1000px' }}>
               {/* Center Profile Image — Hero.tsx: absolute bottom, center */}
               {heroContent.heroImage && (
                 <div className="absolute bottom-12 left-1/2 w-full flex items-end justify-center pointer-events-none z-10"
-                  style={{ transform: 'translateX(-50%)', maxWidth: '40rem', height: '820px' }}>
+                  style={{ transform: 'translateX(-50%)', maxWidth: '36rem', height: '720px' }}>
                   <div className="relative w-full h-full flex items-end justify-center">
                     <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
                       <img
@@ -147,17 +147,17 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
 
               {/* Grid Overlay — Hero.tsx: grid grid-cols-2 grid-rows-[auto_1fr_auto] */}
               <div className="relative z-20 w-full mx-auto grid grid-cols-2 gap-8 px-12 py-12"
-                style={{ maxWidth: '80rem', height: '1060px', gridTemplateRows: 'auto 1fr auto' }}>
+                style={{ maxWidth: '80rem', height: '960px', gridTemplateRows: 'auto 1fr auto' }}>
 
                 {/* Col1 Row1: Title */}
-                <div className="flex flex-col items-start justify-start pr-12 mt-8">
+                <div className="flex flex-col items-start justify-start pr-12 mt-4">
                   <h1 className="font-black leading-[1.1] text-[#112D4E] tracking-tight mb-6">
-                    <div className="block leading-[1.2] whitespace-pre-wrap" style={{ fontSize: '30px', letterSpacing: '-0.02em', fontWeight: '900', wordBreak: 'keep-all' }}>
+                    <div className="block leading-[1.2] whitespace-pre-wrap" style={{ fontSize: '28px', letterSpacing: '-0.02em', fontWeight: '900', wordBreak: 'keep-all' }}>
                       {heroContent.titleLine1 && heroContent.titleLine1.startsWith('<')
                         ? <span dangerouslySetInnerHTML={{ __html: heroContent.titleLine1 }} />
                         : (heroContent.titleLine1 || '기획의도를 알고')}
                     </div>
-                    <div className="block text-[#3F72AF] mt-4 leading-[1.2] whitespace-pre-wrap" style={{ fontSize: '42px', letterSpacing: '-0.04em', fontWeight: '900', wordBreak: 'keep-all' }}>
+                    <div className="block text-[#3F72AF] mt-3 leading-[1.2] whitespace-pre-wrap" style={{ fontSize: '38px', letterSpacing: '-0.04em', fontWeight: '900', wordBreak: 'keep-all' }}>
                       {heroContent.titleLine2 && heroContent.titleLine2.startsWith('<')
                         ? <span dangerouslySetInnerHTML={{ __html: heroContent.titleLine2 }} />
                         : (heroContent.titleLine2 || '결과로 증명하는 PM')}
@@ -166,8 +166,8 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                 </div>
 
                 {/* Col2 Row1: Line Chart */}
-                <div className="flex flex-col items-end justify-start mt-16">
-                  <div className="w-full" style={{ maxWidth: '437px' }}>
+                <div className="flex flex-col items-end justify-start mt-12">
+                  <div className="w-full" style={{ maxWidth: '380px' }}>
                     {renderHeroChart(heroContent.chartPoints || [])}
                   </div>
                 </div>
@@ -179,9 +179,9 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                     const pVal = heroContent[`point${num}Value`] || '10';
                     const pLbl = heroContent[`point${num}Label`] || 'YEARS\nEXPERIENCE';
                     return (
-                      <div key={num} className="flex px-5 py-3 bg-white/70 rounded-[1.5rem] border border-[#DBE2EF]/80 shadow-md items-center gap-4">
-                        <div className="flex items-center gap-4">
-                          <span className="text-4xl font-black tracking-tighter leading-none" style={{ color: ['#0B1D2E', '#112D4E', '#1E4D80'][num - 1] }}>
+                      <div key={num} className="flex px-4 py-2.5 bg-white/70 rounded-[1.25rem] border border-[#DBE2EF]/80 shadow-md items-center gap-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl font-black tracking-tighter leading-none" style={{ color: ['#0B1D2E', '#112D4E', '#1E4D80'][num - 1] }}>
                             {typeof pVal === 'string' && pVal.startsWith('<')
                               ? <span dangerouslySetInnerHTML={{ __html: pVal }} />
                               : pVal}
