@@ -158,6 +158,9 @@ interface AppState {
   toolCards: any[];
   portfolioDescription: string;
   portfolioCategories: string[];
+  statBoardDefaultBtnText: string;
+  statBoardDefaultDetailTitle: string;
+  statBoardDefaultDetailDesc: string;
 
   // Setters that update local state AND trigger debounced Supabase save
   updateContent: (key: string, value: any) => void;
@@ -183,6 +186,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   toolCards: TOOL_CARDS_DEFAULT,
   portfolioDescription: '게임 기획부터 런칭까지의 메인 프로젝트와 AI/툴링을 활용한 기타 작업물 아카이브입니다.',
   portfolioCategories: ['게임 분석', 'AI 활용'],
+  statBoardDefaultBtnText: '📌 기본 안내 보기',
+  statBoardDefaultDetailTitle: '기본 안내',
+  statBoardDefaultDetailDesc: '좌측 항목을 클릭하면\n상세 정보가 표시됩니다.',
 
   updateContent: (key: string, valueOrUpdater: any) => {
     const stateKey =
@@ -196,7 +202,10 @@ export const useAppStore = create<AppState>((set, get) => ({
       key === 'ai_skills'             ? 'aiSkills'     :
       key === 'tool_cards'            ? 'toolCards'    :
       key === 'portfolio_description' ? 'portfolioDescription' :
-      key === 'portfolio_categories'  ? 'portfolioCategories' : null;
+      key === 'portfolio_categories'  ? 'portfolioCategories' :
+      key === 'stat_board_default_btn_text' ? 'statBoardDefaultBtnText' :
+      key === 'stat_board_default_title'    ? 'statBoardDefaultDetailTitle' :
+      key === 'stat_board_default_desc'     ? 'statBoardDefaultDetailDesc' : null;
 
     let finalValue = valueOrUpdater;
     if (typeof valueOrUpdater === 'function' && stateKey) {
@@ -249,6 +258,9 @@ export const useAppStore = create<AppState>((set, get) => ({
           toolCards:     data['tool_cards']             !== undefined ? data['tool_cards']             : state.toolCards,
           portfolioDescription: data['portfolio_description'] !== undefined ? data['portfolio_description'] : state.portfolioDescription,
           portfolioCategories: data['portfolio_categories'] !== undefined ? data['portfolio_categories'] : state.portfolioCategories,
+          statBoardDefaultBtnText: data['stat_board_default_btn_text'] !== undefined ? data['stat_board_default_btn_text'] : state.statBoardDefaultBtnText,
+          statBoardDefaultDetailTitle: data['stat_board_default_title'] !== undefined ? data['stat_board_default_title'] : state.statBoardDefaultDetailTitle,
+          statBoardDefaultDetailDesc: data['stat_board_default_desc'] !== undefined ? data['stat_board_default_desc'] : state.statBoardDefaultDetailDesc,
           isLoading: false,
         }));
       } else {

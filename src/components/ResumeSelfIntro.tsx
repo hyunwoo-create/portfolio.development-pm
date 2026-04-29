@@ -364,7 +364,7 @@ export const SelfIntroInResume = ({
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-2 mb-6 flex-wrap print:hidden sticky top-0 z-20 py-2 bg-[#F9F7F7]/95 backdrop-blur-sm -mx-2 px-2 border-b border-transparent hover:border-[#3F72AF]/10 transition-all">
+      <div className="flex justify-center items-center gap-2 mb-6 flex-wrap print:hidden sticky top-0 z-20 py-2 bg-[#F9F7F7]/95 backdrop-blur-sm -mx-2 px-2 border-b border-transparent hover:border-[#3F72AF]/10 transition-all">
         {selfIntroTabs.map((tab) => (
           <div key={tab.id} className="relative flex items-center">
             {isEditing && editingIntroTabId === tab.id ? (

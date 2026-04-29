@@ -73,7 +73,7 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
       <div className="absolute bottom-12 md:bottom-16 left-1/2 -translate-x-1/2 w-full max-w-[27rem] md:max-w-[40rem] h-[65vh] md:h-[75vh] flex items-end justify-center pointer-events-none z-10">
         <div className="relative w-full h-full flex items-end justify-center">
           {content.heroImage ? (
-            <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
+            <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center overflow-hidden rounded-t-[2.5rem]">
               <img 
                 src={content.heroImage} 
                 alt="Profile" 
@@ -200,7 +200,7 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
               <div className="flex items-center gap-4">
                 <span
                   className="text-4xl md:text-5xl font-black tracking-tighter leading-none"
-                  style={{ color: ['#0B1D2E', '#112D4E', '#1E4D80'][num - 1] }}
+                  style={{ color: ['#0B1D2E', '#224775', '#265082'][num - 1] }}
                 >
                   <EditableText value={content[`point${num}Value`] || "10"} onSave={(v) => setContent({...content, [`point${num}Value`]: v})} isEditing={isEditing} />
                 </span>
@@ -213,13 +213,13 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
         </div>
 
         <div className="hidden md:flex flex-col items-end justify-center pointer-events-auto z-20 gap-4 translate-y-8 md:translate-y-10">
-          <button onClick={() => onNavClick('resume-section')} className="px-8 py-[18px] bg-white/95 backdrop-blur-md rounded-2xl border-2 border-red-100 shadow-xl flex items-center justify-between gap-6 hover:shadow-2xl hover:bg-red-50 hover:border-red-200 transition-all transform hover:-translate-y-1 w-[240px] group">
-            <span className="text-[15px] font-black text-red-600 tracking-tight">이력서 바로가기</span>
-            <ChevronRight className="w-5 h-5 text-red-500 group-hover:translate-x-1 transition-transform" />
+          <button onClick={() => onNavClick('resume-section')} className="px-8 py-[18px] bg-gradient-to-b from-white to-[#F9F7F7] rounded-2xl border border-[#DBE2EF] shadow-[inset_0px_2px_0px_rgba(255,255,255,1),inset_0px_-4px_0px_rgba(219,226,239,0.5),0px_8px_16px_rgba(17,45,78,0.08)] flex items-center justify-between gap-6 hover:shadow-[inset_0px_2px_0px_rgba(255,255,255,1),inset_0px_-2px_0px_rgba(219,226,239,0.5),0px_4px_8px_rgba(17,45,78,0.08)] transition-all transform hover:translate-y-[2px] active:shadow-[inset_0px_2px_0px_rgba(255,255,255,1),inset_0px_0px_0px_rgba(219,226,239,0.5),0px_2px_4px_rgba(17,45,78,0.08)] active:translate-y-[4px] w-[240px] group">
+            <span className="text-[16px] font-black text-[#112D4E] tracking-tight drop-shadow-sm">이력서 바로가기</span>
+            <ChevronRight className="w-5 h-5 text-[#112D4E]/60 group-hover:translate-x-1 transition-transform" />
           </button>
-          <button onClick={() => onNavClick('portfolio-view')} className="px-8 py-[18px] bg-red-600 backdrop-blur-md rounded-2xl border-2 border-red-600 shadow-xl flex items-center justify-between gap-6 hover:shadow-2xl hover:bg-red-700 hover:border-red-700 transition-all transform hover:-translate-y-1 w-[240px] group">
-            <span className="text-[15px] font-black text-white tracking-tight">포트폴리오 바로가기</span>
-            <ChevronRight className="w-5 h-5 text-white/90 group-hover:translate-x-1 transition-transform" />
+          <button onClick={() => onNavClick('portfolio-view')} className="px-8 py-[18px] bg-gradient-to-b from-[#2A528A] to-[#112D4E] rounded-2xl border border-[#0B1D2E] shadow-[inset_0px_2px_0px_rgba(255,255,255,0.15),inset_0px_-4px_0px_rgba(11,29,46,0.6),0px_8px_16px_rgba(17,45,78,0.2)] flex items-center justify-between gap-6 hover:shadow-[inset_0px_2px_0px_rgba(255,255,255,0.15),inset_0px_-2px_0px_rgba(11,29,46,0.6),0px_4px_8px_rgba(17,45,78,0.2)] transition-all transform hover:translate-y-[2px] active:shadow-[inset_0px_2px_0px_rgba(255,255,255,0.15),inset_0px_0px_0px_rgba(11,29,46,0.6),0px_2px_4px_rgba(17,45,78,0.2)] active:translate-y-[4px] w-[240px] group">
+            <span className="text-[16px] font-black text-white tracking-tight drop-shadow-sm">포트폴리오 바로가기</span>
+            <ChevronRight className="w-5 h-5 text-white/70 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>

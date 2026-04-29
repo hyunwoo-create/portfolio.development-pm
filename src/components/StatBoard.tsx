@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { EditableText } from './EditableText';
 import { getExternalEmbedUrl, processImageHighQuality } from '../utils';
+import { useAppStore } from '../store';
 
 
 const StatBoardMobileAccordion = ({ title, isActive, onClick, children }: any) => (
@@ -46,6 +47,13 @@ export const StatBoard = ({
   const [mobileCategory, setMobileCategory] = useState<string>('aiSkills');
   const [showAvatarLink, setShowAvatarLink] = useState(false);
   const [avatarLinkValue, setAvatarLinkValue] = useState('');
+  
+  const { 
+    statBoardDefaultBtnText, 
+    statBoardDefaultDetailTitle, 
+    statBoardDefaultDetailDesc,
+    updateContent 
+  } = useAppStore();
   
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -139,6 +147,31 @@ export const StatBoard = ({
     </div>
   );
 
+  const renderDefaultDetail = () => (
+    <div className="flex flex-col h-full animate-fade-in relative z-10 w-full">
+      <div className="flex justify-between items-start mb-6">
+        <div className="text-[10px] font-bold text-[#3F72AF] tracking-widest uppercase bg-[#3F72AF]/10 px-3 py-1 rounded-full">
+          INFO
+        </div>
+      </div>
+      <h3 className="text-3xl font-black text-[#112D4E] mb-4 leading-tight">
+        <EditableText 
+          value={statBoardDefaultDetailTitle} 
+          isEditing={isEditing} 
+          onSave={(v) => updateContent('stat_board_default_title', v)} 
+        />
+      </h3>
+      <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed">
+        <EditableText 
+          multiline 
+          value={statBoardDefaultDetailDesc} 
+          isEditing={isEditing} 
+          onSave={(v) => updateContent('stat_board_default_desc', v)} 
+        />
+      </div>
+    </div>
+  );
+
   const renderToolCardDetail = (t: any) => (
     <div className="flex flex-col h-full animate-fade-in relative z-10 w-full">
       <div className="flex justify-between items-start mb-6">
@@ -200,18 +233,18 @@ export const StatBoard = ({
       <div className="hidden lg:grid gap-8 items-start relative select-none w-full" style={{ gridTemplateColumns: '1.2fr 380px 1.5fr' }}>
         
         {/* LEFT COL: AI 활용 능력 + 사용 TOOL */}
-        <div className="flex flex-col justify-between pr-4 h-[48vh] py-2 w-full overflow-hidden">
-          <div className="flex flex-col h-full">
+        <div className="flex flex-col pr-4 h-[48vh] py-2 w-full overflow-y-auto custom-scrollbar">
+          <div className="flex flex-col gap-8 w-full pb-4 min-h-full">
 
             {/* ── AI 활용 능력 ── */}
-            <div className="flex flex-col h-1/2 overflow-hidden">
-              <div className="flex items-center justify-between mb-2 pl-2">
+            <div className="flex flex-col shrink-0">
+              <div className="flex items-center justify-between mb-3 pl-2">
                 <h2 className="text-[14px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">AI 활용 능력</h2>
                 {isEditing && (
                   <button onClick={addAiSkill} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
                 )}
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 {aiSkills?.map((a: any) => (
                   <div
                     key={a.id}
@@ -222,7 +255,7 @@ export const StatBoard = ({
                         : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] hover:translate-x-1 shadow-sm'
                     }`}
                   >
-                    <div className={`font-black text-[16px] leading-tight transition-colors ${
+                    <div className={`font-black text-[15px] leading-tight transition-colors ${
                       hoveredItem?.data?.id === a.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
                     }`}>
                       {a.title}
@@ -233,22 +266,22 @@ export const StatBoard = ({
             </div>
 
             {/* ── 사용 TOOL ── */}
-            <div className="flex flex-col h-1/2 overflow-hidden">
-              <div className="flex items-center justify-between mb-2 pl-2">
+            <div className="flex flex-col shrink-0">
+              <div className="flex items-center justify-between mb-3 pl-2">
                 <h2 className="text-[14px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">사용 TOOL</h2>
                 {isEditing && (
                   <button onClick={addToolCard} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-1.5">
+              <div className="grid grid-cols-2 gap-2">
                 {toolCards?.map((t: any) => (
                   <div
                     key={t.id}
                     onClick={() => setHoveredItem({ type: 'toolCard', data: t })}
                     className={`p-3 rounded-xl cursor-pointer transition-all duration-300 border flex items-center gap-2 group ${
                       hoveredItem?.data?.id === t.id
-                        ? 'bg-[#0a1e36] border-[#0a1e36] shadow-md'
-                        : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] shadow-sm'
+                        ? 'bg-[#0a1e36] border-[#0a1e36] shadow-md scale-[1.02]'
+                        : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] shadow-sm hover:scale-[1.02]'
                     }`}
                   >
                     {t.iconUrl
@@ -256,7 +289,7 @@ export const StatBoard = ({
                       : <Wrench className={`w-4 h-4 shrink-0 transition-colors ${
                           hoveredItem?.data?.id === t.id ? 'text-white' : 'text-[#3F72AF] group-hover:text-white'
                         }`}/>}
-                    <span className={`font-black text-[14px] leading-tight transition-colors ${
+                    <span className={`font-black text-[13px] leading-tight transition-colors ${
                       hoveredItem?.data?.id === t.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
                     }`}>
                       {t.name}
@@ -264,6 +297,28 @@ export const StatBoard = ({
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* ── 하단 버튼 (기본 화면) ── */}
+            <div className="flex flex-col shrink-0 mt-auto pt-4">
+              <button
+                onClick={() => setHoveredItem(null)}
+                className={`w-full p-4 rounded-xl font-black text-[15px] transition-all duration-300 border flex items-center justify-between group ${
+                  hoveredItem === null
+                    ? 'bg-[#112D4E] border-[#112D4E] text-white shadow-xl translate-x-3 scale-[1.02]'
+                    : 'bg-white border-[#DBE2EF] text-[#112D4E] hover:bg-[#112D4E] hover:border-[#112D4E] hover:text-white hover:translate-x-1 shadow-sm'
+                }`}
+              >
+                <span onClick={(e) => isEditing && e.stopPropagation()} className="cursor-text text-left flex-1 whitespace-pre-wrap">
+                  <EditableText 
+                    multiline
+                    value={statBoardDefaultBtnText} 
+                    isEditing={isEditing} 
+                    onSave={(v: string) => updateContent('stat_board_default_btn_text', v)} 
+                  />
+                </span>
+                <ChevronRight className={`w-5 h-5 transition-all ml-2 ${hoveredItem === null ? 'opacity-100 text-white' : 'opacity-50 text-[#3F72AF] group-hover:opacity-100 group-hover:text-white group-hover:translate-x-1'}`} />
+              </button>
             </div>
 
           </div>
@@ -350,10 +405,7 @@ export const StatBoard = ({
               hoveredItem.type === 'aiSkill'  ? renderAiDetail(hoveredItem.data) :
               renderToolCardDetail(hoveredItem.data)
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-[#8fabc8] font-bold text-center">
-                <Wrench className="w-12 h-12 mb-4 opacity-30"/>
-                <p className="text-sm">좌측 항목을 클릭하면<br/>상세 정보가 표시됩니다.</p>
-              </div>
+              renderDefaultDetail()
             )}
           </div>
         </div>
