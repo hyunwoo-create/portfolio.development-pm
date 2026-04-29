@@ -31,6 +31,7 @@ import { handlePdfExport } from '../utils/pdf-generator';
 import { ResumeData, SelfIntroTab } from '../types';
 import { ProjectsSection } from './ResumeProjects';
 import { SelfIntroInResume } from './ResumeSelfIntro';
+import { useAppStore } from '../store';
 
 interface ResumeProps {
   isEditing: boolean;
@@ -46,6 +47,7 @@ export const Resume = ({ isEditing, data, setData, onNavClick }: ResumeProps) =>
   const [rsLinkValue, setRsLinkValue] = useState('');
   const [activeLinkEditor, setActiveLinkEditor] = useState<{ type: string, idx?: number } | null>(null);
   const [linkInput, setLinkInput] = useState('');
+  const { portfolioData, heroContent, aboutContent, aiSkills, toolCards, userImage } = useAppStore();
 
   const handleResumeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -120,7 +122,7 @@ export const Resume = ({ isEditing, data, setData, onNavClick }: ResumeProps) =>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => handlePdfExport(data)}
+              onClick={() => handlePdfExport({ data, portfolioData, heroContent, aboutContent, aiSkills, toolCards, userImage })}
               className="px-6 py-3 bg-[#112D4E] text-white rounded-xl text-sm font-black flex items-center gap-2 hover:bg-[#0f1a2a] transition-all shadow-lg shadow-[#112D4E]/20"
             >
               <ScrollText className="w-4 h-4 text-white" /> 고품질 PDF 추출 (추천)

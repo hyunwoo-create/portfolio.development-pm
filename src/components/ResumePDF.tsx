@@ -13,104 +13,480 @@ import {
   Mail,
   Smartphone,
   User,
-  ScrollText
+  ScrollText,
+  Wrench,
+  Star,
+  Award
 } from 'lucide-react';
-import { ResumeData } from '../types';
+import { ResumeData, Project } from '../types';
 
 interface ResumePDFProps {
   data: ResumeData;
+  portfolioData?: Project[];
+  heroContent?: any;
+  aboutContent?: any;
+  aiSkills?: any;
+  toolCards?: any;
+  userImage?: string;
 }
 
 // Helper to render icons as SVG strings if needed, but since we are using lucide-react, 
 // they should render fine as long as styles are copied.
 // NOTE: We don't use Framer Motion here as per safety rules.
 
-export const ResumePDF = ({ data }: ResumePDFProps) => {
+const renderHeroChart = (points: any[]) => {
+  if (!points || points.length === 0) return null;
+  const W = 364, H = 160;
+  const PAD_X = 24, PAD_TOP = 32, PAD_BOTTOM = 24;
+  const CHART_W = W - PAD_X * 2;
+  const CHART_H = H - PAD_TOP - PAD_BOTTOM;
+  const toSvgY = (val: number) => PAD_TOP + (CHART_H / 2) * (1 - val / 10);
+  const toSvgX = (i: number, len: number) => {
+    if (len <= 1) return W / 2;
+    return PAD_X + (i / (len - 1)) * CHART_W;
+  };
+  const zeroY = toSvgY(0);
+  const pathD = points.length > 1
+    ? points.map((p: any, i: number) =>
+        `${i === 0 ? 'M' : 'L'}${toSvgX(i, points.length).toFixed(1)},${toSvgY(p.value).toFixed(1)}`
+      ).join(' ')
+    : '';
   return (
-    <div className="p-[20mm] bg-[#F9F7F7] text-[#112D4E] font-sans leading-relaxed" style={{ width: '210mm' }}>
-      <div className="grid grid-cols-3 gap-12">
+    <svg viewBox="0 0 364 160" className="w-[437px]" style={{ overflow: 'visible' }}>
+      <line x1={PAD_X} y1={zeroY} x2={W - PAD_X} y2={zeroY} stroke="rgba(17,45,78,0.15)" strokeWidth="1" />
+      <text x={PAD_X - 6} y={zeroY + 3.5} fontSize="9" fill="rgba(17,45,78,0.4)" textAnchor="end">0</text>
+      {pathD && <path d={pathD} fill="none" stroke="#E05C6A" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />}
+      {points.map((p: any, i: number) => {
+        const cx = toSvgX(i, points.length);
+        const cy = toSvgY(p.value);
+        const above = p.value >= 0;
+        return (
+          <g key={i}>
+            <circle cx={cx} cy={cy} r="3.5" fill="white" stroke="#E05C6A" strokeWidth="1.5" />
+            {p.label && (
+              <text x={cx} y={above ? cy - 15 : cy + 20} fontSize="13" fill="rgba(17,45,78,0.65)" textAnchor="middle" fontWeight="600">{p.label}</text>
+            )}
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSkills, toolCards, userImage }: ResumePDFProps) => {
+  return (
+    <div className="p-[40px] bg-[#F9F7F7] text-[#112D4E] font-sans leading-relaxed mx-auto origin-top-left" style={{ width: '1000px' }}>
+      
+      {/* ══════════════════════════════════════════════
+          소개 페이지 — Hero + About + StatBoard
+          실제 컴포넌트 HTML 구조를 그대로 재현
+      ══════════════════════════════════════════════ */}
+      {(heroContent || aboutContent) && (
+        <div className="break-after-page mb-16 bg-[#F9F7F7]">
+
+          {/* ── Hero Section ── (Hero.tsx 구조 그대로) */}
+          {heroContent && (
+            <section className="relative w-full flex items-center justify-center overflow-hidden bg-[#F9F7F7] pt-20" style={{ height: '1100px' }}>
+              {/* Center Profile Image — Hero.tsx: absolute bottom, center */}
+              {heroContent.heroImage && (
+                <div className="absolute bottom-12 left-1/2 w-full flex items-end justify-center pointer-events-none z-10"
+                  style={{ transform: 'translateX(-50%)', maxWidth: '40rem', height: '820px' }}>
+                  <div className="relative w-full h-full flex items-end justify-center">
+                    <div className="relative w-full max-w-full h-full max-h-full flex items-end justify-center drop-shadow-2xl overflow-hidden rounded-t-[2.5rem] bg-gradient-to-t from-[#DBE2EF]/20 to-transparent">
+                      <img
+                        src={heroContent.heroImage}
+                        alt="Profile"
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Grid Overlay — Hero.tsx: grid grid-cols-2 grid-rows-[auto_1fr_auto] */}
+              <div className="relative z-20 w-full mx-auto grid grid-cols-2 gap-8 px-12 py-12"
+                style={{ maxWidth: '80rem', height: '1060px', gridTemplateRows: 'auto 1fr auto' }}>
+
+                {/* Col1 Row1: Title */}
+                <div className="flex flex-col items-start justify-start pr-12 mt-8">
+                  <h1 className="font-black leading-[1.1] text-[#112D4E] tracking-tight mb-6">
+                    <div className="block leading-[1.1]" style={heroContent.tile1Style || { fontSize: 'clamp(2.5rem,4.5vw,4rem)', letterSpacing: '-0.02em', fontWeight: '900' }}>
+                      {heroContent.titleLine1 && heroContent.titleLine1.startsWith('<')
+                        ? <span dangerouslySetInnerHTML={{ __html: heroContent.titleLine1 }} />
+                        : (heroContent.titleLine1 || '기획의도를 알고')}
+                    </div>
+                    <div className="block text-[#3F72AF] mt-2 leading-[1.1]" style={heroContent.tile2Style || { fontSize: 'clamp(3rem,5.5vw,5rem)', letterSpacing: '-0.05em', fontWeight: '900' }}>
+                      {heroContent.titleLine2 && heroContent.titleLine2.startsWith('<')
+                        ? <span dangerouslySetInnerHTML={{ __html: heroContent.titleLine2 }} />
+                        : (heroContent.titleLine2 || '결과로 증명하는 PM')}
+                    </div>
+                  </h1>
+                </div>
+
+                {/* Col2 Row1: Line Chart */}
+                <div className="flex flex-col items-end justify-start mt-16">
+                  <div className="w-full" style={{ maxWidth: '437px' }}>
+                    {renderHeroChart(heroContent.chartPoints || [])}
+                  </div>
+                </div>
+
+                {/* Col1 Row2: POINT Cards */}
+                <div className="flex flex-col items-start justify-center gap-6" style={{ transform: 'translateY(2.5rem)' }}>
+                  <div className="bg-[#DBE2EF] text-[#112D4E] font-black text-[11px] tracking-widest px-5 py-1.5 rounded-full mb-1 shadow-sm">POINT</div>
+                  {[1, 2, 3].map(num => {
+                    const pVal = heroContent[`point${num}Value`] || '10';
+                    const pLbl = heroContent[`point${num}Label`] || 'YEARS\nEXPERIENCE';
+                    return (
+                      <div key={num} className="flex px-5 py-3 bg-white/70 rounded-[1.5rem] border border-[#DBE2EF]/80 shadow-md items-center gap-4">
+                        <div className="flex items-center gap-4">
+                          <span className="text-4xl font-black tracking-tighter leading-none" style={{ color: ['#0B1D2E', '#112D4E', '#1E4D80'][num - 1] }}>
+                            {typeof pVal === 'string' && pVal.startsWith('<')
+                              ? <span dangerouslySetInnerHTML={{ __html: pVal }} />
+                              : pVal}
+                          </span>
+                          <div className="text-[11px] font-black text-[#3F72AF] leading-snug tracking-widest uppercase whitespace-pre-wrap">
+                            {typeof pLbl === 'string' && pLbl.startsWith('<')
+                              ? <span dangerouslySetInnerHTML={{ __html: pLbl }} />
+                              : pLbl}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Col2 Row2: (Nav buttons 생략 — 인터랙티브 요소) */}
+                <div />
+              </div>
+            </section>
+          )}
+
+          {/* ── About + StatBoard 통합 한 페이지 ── */}
+          {(aboutContent || aiSkills?.length > 0 || toolCards?.length > 0 || userImage) && (
+            <section className="px-8 pt-6 pb-4 bg-[#F9F7F7] break-before-page" style={{ maxWidth: '100%' }}>
+
+              {/* Q&A 헤더 */}
+              {aboutContent && (
+                <div className="flex justify-between items-end mb-5 border-b border-[#3F72AF]/20 pb-3 gap-4">
+                  <h2 className="text-3xl font-black text-[#112D4E] tracking-tight whitespace-pre-wrap">
+                    {aboutContent.titleLeft || 'Q. 누구를 채용해야 할까요?'}
+                  </h2>
+                  <h2 className="text-2xl font-black text-[#3F72AF] tracking-tight text-right whitespace-pre-wrap">
+                    {aboutContent.titleRight || 'A. 저 입니다. 지원자 양 현우'}
+                  </h2>
+                </div>
+              )}
+
+              {/* 3컬럼 그리드 — 이미지와 동일한 구조 */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1.3fr 200px',
+                gridTemplateRows: '1fr',
+                gap: '20px',
+                alignItems: 'stretch'
+              }}>
+
+                {/* ── 좌 컬럼: 차트 → AI 능력 → 사용 TOOL ── */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+
+                  {/* 막대형 그래프 카드 */}
+                  {aboutContent && (
+                    <div className="bg-white rounded-[1.5rem] shadow-lg border border-[#DBE2EF]" style={{ padding: '16px' }}>
+                      <div style={{ textAlign: 'center', marginBottom: '14px' }}>
+                        <h3 className="text-sm font-black text-[#112D4E]">
+                          {aboutContent.chartTitle || '막대형 그래프 채용 지원자격 top3'}
+                        </h3>
+                      </div>
+                      <div style={{ position: 'relative' }}>
+                        {/* 눈금선 */}
+                        <div style={{ position: 'absolute', inset: 0, left: '4rem', display: 'flex', justifyContent: 'space-between', pointerEvents: 'none', zIndex: 0, marginTop: '8px' }}>
+                          <div style={{ position: 'relative', marginLeft: '16px' }}>
+                            <div style={{ position: 'absolute', inset: '0 0 0 0', borderLeft: '1px dashed rgba(63,114,175,0.2)' }} />
+                            <span style={{ position: 'absolute', top: '-20px', transform: 'translateX(-50%)', fontSize: '10px', color: 'rgba(63,114,175,0.5)', background: 'white', padding: '0 4px' }}>0</span>
+                          </div>
+                          <div style={{ position: 'relative', marginRight: '48px' }}>
+                            <div style={{ position: 'absolute', inset: '0 0 0 0', borderLeft: '1px dashed rgba(63,114,175,0.2)' }} />
+                            <span style={{ position: 'absolute', top: '-20px', transform: 'translateX(-50%)', fontSize: '11px', fontWeight: 900, color: '#1A59A7', background: 'white', padding: '2px 6px', borderRadius: '4px', border: '1px solid #DBE2EF' }}>
+                              {aboutContent.chartTotal || 100}
+                            </span>
+                          </div>
+                        </div>
+                        {/* 막대 */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', position: 'relative', zIndex: 1 }}>
+                          {[1, 2, 3].map((num) => {
+                            const totalParam = parseInt(aboutContent.chartTotal) || 100;
+                            const v = parseInt(aboutContent[`skill${num}Value`]) || (num === 1 ? 80 : num === 2 ? 60 : 40);
+                            const p = Math.min((v / totalParam) * 100, 100);
+                            return (
+                              <div key={num} style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingRight: '16px' }}>
+                                <div style={{ width: '56px', fontSize: '13px', fontWeight: 700, color: '#112D4E', textAlign: 'right', whiteSpace: 'pre-wrap' }}>
+                                  {aboutContent[`skill${num}Name`] || `역량 ${String.fromCharCode(64 + num)}`}
+                                </div>
+                                <div style={{ flex: 1, height: '28px', position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                  <div style={{ height: '100%', background: '#3F72AF', borderRadius: '0 4px 4px 0', width: `${p}%`, minWidth: '6px', maxWidth: '100%', position: 'relative' }}>
+                                    {p > 15 && <span style={{ position: 'absolute', right: '8px', color: 'white', fontSize: '10px', fontWeight: 700, whiteSpace: 'nowrap' }}>{Math.round(p)}%</span>}
+                                  </div>
+                                  <span style={{ marginLeft: '10px', fontSize: '13px', fontWeight: 900, color: '#112D4E', minWidth: '24px' }}>{v}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* AI 활용 능력 */}
+                  {aiSkills?.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <h2 style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '0.1em', color: '#8fabc8', textTransform: 'uppercase', paddingLeft: '4px', marginBottom: '2px' }}>AI 활용 능력</h2>
+                      {aiSkills.map((a: any) => (
+                        <div key={a.id} style={{ padding: '10px 14px', borderRadius: '12px', background: 'white', border: '1px solid #DBE2EF', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                          <div style={{ fontWeight: 900, fontSize: '14px', color: '#112D4E', lineHeight: 1.3 }}>{a.title}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* 사용 TOOL */}
+                  {toolCards?.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <h2 style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '0.1em', color: '#8fabc8', textTransform: 'uppercase', paddingLeft: '4px', marginBottom: '2px' }}>사용 TOOL</h2>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                        {toolCards.map((t: any) => (
+                          <div key={t.id} style={{ padding: '8px 12px', borderRadius: '12px', background: 'white', border: '1px solid #DBE2EF', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {t.iconUrl
+                              ? <img src={t.iconUrl} style={{ width: '18px', height: '18px', objectFit: 'contain', flexShrink: 0 }} alt={t.name} />
+                              : <Wrench className="w-4 h-4 shrink-0 text-[#3F72AF]" />}
+                            <span style={{ fontWeight: 900, fontSize: '12px', color: '#112D4E' }}>{t.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* ── 중앙 컬럼: 역량 설명 텍스트 ── */}
+                {aboutContent && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingLeft: '16px' }}>
+                    {[1, 2, 3].map((num) => {
+                      const title = aboutContent[`descTitle${num}`] || (
+                        num === 1 ? '역량 A에 해당하는 내용 및 역량' :
+                        num === 2 ? '역량 B에 해당하는 내용 및 역량' :
+                                   '역량 C에 해당하는 내용 및 역량'
+                      );
+                      const body = aboutContent[`descText${num}`] || (
+                        num === 1 ? '채용 공고에서 요구하는 최우선 역량을 완벽하게 충족하며, 실무에서 즉시 성과를 창출할 수 있는 기획력과 문제해결 능력을 보유하고 있습니다.' :
+                        num === 2 ? '다양한 직군과의 협업 경험을 통해 커뮤니케이션 비용을 줄이고, 복잡한 프로젝트를 리드하여 성공적인 런칭을 이끌어냅니다.' :
+                                   '데이터 수집 및 분석 자동화(크롤링) 경험을 바탕으로, 높은 수준의 기술적 이해도를 지니고 있어 개발팀과 매끄럽게 소통합니다.'
+                      );
+                      return (
+                        <div key={num} style={{ position: 'relative' }}>
+                          <div style={{ position: 'absolute', top: '6px', left: '-20px', display: 'flex', alignItems: 'center', opacity: 0.25, color: '#3F72AF' }}>
+                            <div style={{ width: '16px', borderTop: '2px dashed #3F72AF' }} />
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                          </div>
+                          <h4 style={{ fontSize: '15px', fontWeight: 900, color: '#112D4E', marginBottom: '6px', lineHeight: 1.3 }}>
+                            {title}
+                          </h4>
+                          <div style={{ fontSize: '13px', color: '#3F72AF', lineHeight: 1.7, fontWeight: 500 }}>
+                            {body && body.startsWith('<')
+                              ? <div dangerouslySetInnerHTML={{ __html: body }} />
+                              : <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{body}</ReactMarkdown>
+                            }
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* ── 우 컬럼: 아바타 (전체 높이 span) ── */}
+                {userImage && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img
+                      src={userImage}
+                      alt="Avatar"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 16px 24px rgba(0,0,0,0.18))' }}
+                    />
+                  </div>
+                )}
+
+              </div>
+            </section>
+          )}
+
+        </div>
+      )}
+
+
+
+      {/* Resume Grid */}
+      <div className="grid grid-cols-[280px_1fr] gap-12">
         {/* Sidebar */}
-        <div className="col-span-1 space-y-12">
+        <div className="flex flex-col gap-12">
           {/* Profile Section */}
-          <div className="text-left">
-            <div className="w-[180px] h-[180px] rounded-3xl overflow-hidden mb-8 border border-[#3F72AF]/12 shadow-sm">
+          <div className="text-left flex flex-col gap-6">
+            <div className="w-[180px] h-[180px] rounded-3xl overflow-hidden shadow-sm border border-[#3F72AF]/12 bg-white">
               <img src={data.resumeImage || "https://picsum.photos/seed/profile/300/300"} alt="Profile" className="w-full h-full object-cover" />
             </div>
-            <h1 className="text-3xl font-black mb-1 text-[#112D4E] tracking-tight">{data.name}</h1>
-            <p className="text-[#3F72AF] font-bold text-base mb-6 uppercase tracking-wider">{data.role}</p>
+            <div className="flex flex-col gap-1.5 mb-2">
+              <h1 className="text-3xl font-black text-[#112D4E] tracking-tight">{data.name}</h1>
+              <p className="text-[13px] text-[#3F72AF] font-black uppercase tracking-wider">{data.role}</p>
+            </div>
             
-            <div className="space-y-4 text-[12px] text-[#112D4E]/80">
+            <div className="flex flex-col gap-3 text-[11px] text-[#112D4E]/80 font-medium">
               <div className="flex items-center gap-3">
-                <Calendar className="w-4 h-4 text-[#3F72AF]" />
-                <span className="font-bold">{data.birthDate || "2000.01.01"}</span>
-              </div>
-              {/* Phone Field Added for PDF */}
-              <div className="flex items-center gap-3">
-                <Smartphone className="w-4 h-4 text-[#3F72AF]" />
-                <span className="font-bold">{data.phone || "010-0000-0000"}</span>
+                <Calendar className="w-4 h-4 text-[#3F72AF] shrink-0" />
+                <span>{data.birthDate || "2000.01.01"}</span>
               </div>
               <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-[#3F72AF]" />
-                <span className="font-bold">{data.address || "서울특별시"}</span>
+                <Smartphone className="w-4 h-4 text-[#3F72AF] shrink-0" />
+                <span>{data.phone || "010-0000-0000"}</span>
               </div>
-              {/* Email Field Added for PDF */}
               <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#3F72AF]" />
-                <span className="font-bold">{data.email || "email@example.com"}</span>
+                <MapPin className="w-4 h-4 text-[#3F72AF] shrink-0" />
+                <span>{data.address || "서울특별시"}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-[#3F72AF] shrink-0" />
+                <span>{data.email || "email@example.com"}</span>
               </div>
               {data.github && (
-                <div className="flex items-center gap-3 text-wrap break-all">
+                <div className="flex items-center gap-3">
                   <Github className="w-4 h-4 text-[#3F72AF] shrink-0" />
-                  <span className="font-bold">{data.github}</span>
+                  <span className="break-words">{data.github}</span>
                 </div>
               )}
               <div className="flex items-center gap-3">
-                <ShieldCheck className="w-4 h-4 text-[#3F72AF]" />
-                <span className="font-bold">{data.militaryService || "군필"}</span>
+                <ShieldCheck className="w-4 h-4 text-[#3F72AF] shrink-0" />
+                <span>{data.militaryService || "군필"}</span>
               </div>
             </div>
           </div>
 
+          {/* Tools */}
+          {((data.usedTools && data.usedTools.length > 0) || (data.usedToolsBottom && data.usedToolsBottom.length > 0)) && (
+            <div className="py-10 border-t border-[#DBE2EF]/60 relative pdf-no-break">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] flex items-center gap-3 uppercase">
+                  <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
+                    <Wrench className="w-5 h-5" />
+                  </div>
+                  사용 TOOL
+                </h3>
+              </div>
+              <div className="flex flex-col gap-4 pl-1">
+                {/* 상단 툴 */}
+                {data.usedTools && data.usedTools.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {data.usedTools.map((tool: any, idx: number) => {
+                      const toolObj = typeof tool === 'string' ? { name: tool, image: '' } : tool;
+                      return (
+                        <span key={`top-${idx}`} className="px-3 py-1.5 bg-[#F9F7F7] border border-[#DBE2EF] text-[#112D4E] rounded-lg text-[11px] font-bold shadow-sm flex items-center gap-1.5">
+                          {toolObj.image && <img src={toolObj.image} alt="" className="w-6 h-6 object-contain shrink-0" />}
+                          {toolObj.name}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+                
+                {/* 구분선 */}
+                {data.usedTools && data.usedTools.length > 0 && data.usedToolsBottom && data.usedToolsBottom.length > 0 && (
+                  <div className="h-px bg-gradient-to-r from-[#DBE2EF] to-transparent w-full my-1"></div>
+                )}
+                
+                {/* 하단 툴 */}
+                {data.usedToolsBottom && data.usedToolsBottom.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {data.usedToolsBottom.map((tool: any, idx: number) => {
+                      const toolObj = typeof tool === 'string' ? { name: tool, image: '' } : tool;
+                      return (
+                        <span key={`bot-${idx}`} className="px-3 py-1.5 bg-[#F9F7F7] border border-[#DBE2EF] text-[#112D4E] rounded-lg text-[11px] font-bold shadow-sm flex items-center gap-1.5">
+                          {toolObj.image && <img src={toolObj.image} alt="" className="w-6 h-6 object-contain shrink-0" />}
+                          {toolObj.name}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Activities */}
+          {data.keyActivities && data.keyActivities.length > 0 && (
+            <div className="py-10 border-t border-[#DBE2EF]/60 relative pdf-no-break">
+              <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] mb-8 flex items-center gap-3 uppercase">
+                <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
+                  <Star className="w-5 h-5" />
+                </div>
+                주요 활동
+              </h3>
+              <div className="space-y-6 pl-1">
+                {data.keyActivities.map((act: any, idx: number) => (
+                  <div key={idx} className="relative group/act">
+                    <div className="text-[14px] font-bold text-[#112D4E] mb-1.5 leading-tight">{act.title}</div>
+                    <div className="text-[12px] text-[#3F72AF] font-medium leading-[1.6]">
+                      {act.description}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Education */}
-          <div className="space-y-6 pt-10 border-t border-[#DBE2EF]/60">
-            <h3 className="font-black text-[#112D4E] text-[11px] tracking-[0.2em] uppercase flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-[#3F72AF]" />
-              Education
+          <div className="py-10 border-t border-b border-[#DBE2EF]/60 relative pdf-no-break">
+            <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] mb-8 flex items-center gap-3 uppercase">
+              <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
+                <GraduationCap className="w-5 h-5" />
+              </div>
+              학력 및 교육
             </h3>
-            <div className="space-y-6">
+            <div className="space-y-7">
               {(data.education || []).map((edu: any, idx: number) => (
-                <div key={idx}>
-                  <p className="text-[14px] font-black text-[#112D4E] mb-1">{edu.title}</p>
-                  <p className="text-[11px] text-[#3F72AF] font-bold mb-2">{edu.period}</p>
-                  <ul className="space-y-1">
-                    {(edu.details || []).map((d: string, i: number) => (
-                      <li key={i} className="text-[11px] text-[#112D4E]/70 font-bold flex items-start gap-1.5">
-                        <span className="mt-1.5 w-1 h-1 rounded-full bg-[#3F72AF]/40 shrink-0" />
-                        {d}
-                      </li>
+                <div key={idx} className="relative group/edu">
+                  <div className="text-[14px] font-bold text-[#112D4E] mb-2 leading-tight">{edu.title}</div>
+                  <div className="space-y-1.5 mt-2">
+                    {(edu.details || []).map((detail: string, i: number) => (
+                      <div key={i} className="group/item relative flex items-start gap-1.5 text-[12px] text-[#3F72AF] font-medium">
+                        <span className="font-bold shrink-0 mt-[1px]">•</span>
+                        <span className="flex-1">{detail}</span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Experience Sidebar - Badge Removed */}
-          <div className="space-y-6 pt-10 border-t border-[#DBE2EF]/60">
-            <div className="flex items-center justify-between">
-              <h3 className="font-black text-[#112D4E] text-[11px] tracking-[0.2em] uppercase flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-[#3F72AF]" />
-                Experience
+          {/* Experience Sidebar */}
+          <div className="py-10 border-b border-[#DBE2EF]/60 relative pdf-no-break">
+            <div className="flex flex-col mb-8">
+              <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] flex items-center gap-3 uppercase">
+                <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
+                  <Briefcase className="w-5 h-5" />
+                </div>
+                경력 사항
               </h3>
             </div>
-            <div className="space-y-8">
+            <div className="relative before:absolute before:inset-y-2 before:left-[4.5px] before:w-[1.5px] before:bg-[#DBE2EF] space-y-8">
               {(data.leftExperience || []).map((exp: any, idx: number) => (
-                <div key={idx} className="relative pl-4 border-l-2 border-[#3F72AF]/20">
-                  <div className="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-white border border-[#3F72AF]" />
-                  <p className="text-[13px] font-black text-[#112D4E] mb-1">{exp.title}</p>
-                  <p className="text-[11px] text-[#3F72AF] font-bold mb-2 uppercase">{exp.period}</p>
-                  <div className="text-[11px] text-[#112D4E]/60 font-bold leading-relaxed">
-                    {Array.isArray(exp.details) ? exp.details.join('\n') : exp.details}
+                <div key={idx} className="relative group/exp pl-6">
+                  <div className="absolute left-0 top-1.5 w-[11px] h-[11px] rounded-full border-[1.5px] border-[#3F72AF] bg-[#F9F7F7] z-10" />
+                  <div className="text-[14px] font-bold text-[#112D4E] mb-2 leading-tight">{exp.title}</div>
+                  <div className="space-y-1.5">
+                    <div className="text-[12px] text-[#3F72AF] font-medium leading-[1.6] flex flex-col gap-1">
+                      {(exp.details || []).map((d: string, i: number) => (
+                        <div key={i} className="group/detail relative flex items-start gap-1.5">
+                          <span className="font-bold shrink-0 mt-[1px]">•</span>
+                          <span className="flex-1 whitespace-pre-wrap">{d}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-[12px] font-bold text-[#112D4E] whitespace-pre-wrap leading-[1.6] pt-1">{exp.period}</div>
                   </div>
                 </div>
               ))}
@@ -118,16 +494,26 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
           </div>
 
           {/* Certificates (AWARDS) */}
-          <div className="space-y-6 pt-10 border-t border-[#DBE2EF]/60">
-            <h3 className="font-black text-[#112D4E] text-[11px] tracking-[0.2em] uppercase flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#3F72AF]" />
-              Certificates
+          <div className="py-10 relative pdf-no-break">
+            <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] mb-8 flex items-center gap-3 uppercase">
+              <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
+                <Award className="w-5 h-5" />
+              </div>
+              자격 및 수상
             </h3>
-            <div className="space-y-6">
+            <div className="space-y-7 pl-1">
               {(data.awards || []).map((cert: any, idx: number) => (
-                <div key={idx}>
-                  <p className="text-[13px] font-black text-[#112D4E] mb-1">{cert.title}</p>
-                  <p className="text-[11px] text-[#3F72AF] font-bold">{cert.organization} · {cert.year}</p>
+                <div key={idx} className="relative group/cert">
+                  <div className="flex flex-col gap-1.5">
+                    <div className="text-[14px] text-[#112D4E] font-bold leading-tight">
+                      {cert.title}
+                    </div>
+                    <div className="flex items-center gap-2 text-[12px] font-medium text-[#7A8A9E]">
+                      <span>{cert.organization}</span>
+                      <span className="w-1 h-1 rounded-full bg-[#DBE2EF]" />
+                      <span>{cert.year ? `${cert.year}` : '연도'}</span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -135,16 +521,13 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
         </div>
 
         {/* Main Content */}
-        <div className="col-span-2 space-y-16">
+        <div className="space-y-16">
           {/* Summary - Renamed to 한 줄 소개 */}
-          <section className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#112D4E]/10 flex items-center justify-center text-[#112D4E]">
-                <User className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-black text-[#112D4E]">한 줄 소개</h3>
-            </div>
-            <div className="text-[15px] font-bold text-[#112D4E] leading-loose markdown-body">
+          <section className="pdf-no-break">
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+              <User className="text-[#112D4E] w-6 h-6" /> 한 줄 소개
+            </h3>
+            <div className="text-[#112D4E] leading-relaxed font-medium">
               {data.summary?.startsWith('<') ? (
                 <div dangerouslySetInnerHTML={{ __html: data.summary }} />
               ) : (
@@ -157,7 +540,7 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
 
           {/* Projects */}
           <section className="space-y-10">
-            <h3 className="text-xl font-black flex items-center gap-3 text-[#112D4E]">
+            <h3 className="text-xl font-black flex items-center gap-3 text-[#112D4E] tracking-tight">
               <div className="w-9 h-9 rounded-xl bg-[#112D4E]/10 flex items-center justify-center text-[#112D4E]">
                 <Briefcase className="w-5 h-5" />
               </div>
@@ -165,51 +548,54 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
             </h3>
             <div className="space-y-12">
               {(data.experience || []).map((exp: any, idx: number) => {
-                const isReleased = exp.isReleased;
+                const isReleased = exp.isReleased !== false && (exp.title?.includes('출시') || exp.metrics);
                 return (
-                  <div key={idx} className="relative pl-8 border-l-2 border-[#3F72AF] page-break-inside-avoid">
+                  <div key={idx} className="relative pl-10 border-l-2 border-[#3F72AF] page-break-inside-avoid">
                     {/* Timeline Dot */}
-                    <div className={`absolute -left-[7px] top-1.5 w-3 h-3 rounded-full border-2 bg-white z-10 ${
-                      isReleased ? 'border-orange-500' : 'border-[#3F72AF]'
+                    <div className={`absolute -left-[7px] top-1.5 w-3 h-3 rounded-full border-2 border-[#3F72AF] bg-white z-10 ${
+                      isReleased ? 'shadow-[0_0_15px_rgba(249,115,22,0.3)] border-orange-500' : ''
                     }`} />
                     
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-4">
                           {exp.icon && (
-                            <img src={exp.icon} alt="" className="w-10 h-10 rounded-xl object-cover shrink-0 shadow-sm border border-[#DBE2EF]" />
+                            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm border border-[#DBE2EF]/50 shrink-0">
+                              <img src={exp.icon} alt="" className="w-full h-full object-cover" />
+                            </div>
                           )}
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-3">
-                              <h4 className="font-black text-[20px] text-[#112D4E] tracking-tight">{exp.title}</h4>
+                              <h4 className="font-black text-[21px] text-[#112D4E] tracking-tight shrink-0">{exp.title}</h4>
                               {isReleased && (
-                                <div className="px-2 py-0.5 bg-orange-50 text-orange-600 text-[9px] font-black rounded border border-orange-100 uppercase tracking-widest flex items-center gap-1">
-                                  {exp.platformIcon && <img src={exp.platformIcon} alt="" className="w-3 h-3 object-contain" />}
-                                  {exp.releasedText || 'Released'}
+                                <div className="px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border flex items-center gap-1.5 bg-orange-50 text-orange-600 border-orange-200 shadow-[0_2px_10px_rgba(249,115,22,0.1)] whitespace-nowrap shrink-0">
+                                  {exp.platformIcon && <img src={exp.platformIcon} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />}
+                                  <span>{exp.releasedText || 'Released'}</span>
                                 </div>
                               )}
                             </div>
-                            {/* Subtitle Added for PDF */}
                             {exp.subtitle && (
-                              <p className="text-[12px] text-[#3F72AF] font-bold leading-tight -mt-0.5">{exp.subtitle}</p>
+                              <div className="pl-1 text-[13px] text-[#3F72AF] font-bold leading-tight -mt-1 mb-1">
+                                {exp.subtitle}
+                              </div>
                             )}
                           </div>
                         </div>
-                        <span className="text-[11px] font-black text-[#3F72AF] font-mono italic">{exp.period}</span>
+                        <span className="text-[13px] font-bold font-mono text-[#3F72AF]/80 whitespace-nowrap shrink-0">{exp.period}</span>
                       </div>
 
                       {exp.metrics && exp.metrics.length > 0 && (
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex gap-3 flex-wrap mb-2">
                           {exp.metrics.map((m: any, mi: number) => (
-                            <div key={mi} className="bg-[#F9F7F7] border border-[#DBE2EF] rounded-xl px-4 py-2 flex flex-col min-w-[90px]">
-                              <span className="text-[9px] font-black text-[#3F72AF]/60 uppercase tracking-tighter">{m.label}</span>
-                              <span className="text-[13px] font-black text-[#112D4E]">{m.value}</span>
+                            <div key={mi} className="bg-[#F9F7F7] border border-[#DBE2EF] rounded-2xl px-4 py-3 flex flex-col gap-0.5 min-w-[120px] shadow-sm">
+                              <span className="text-[10px] font-extrabold text-[#3F72AF]/60 uppercase tracking-tighter">{m.label}</span>
+                              <span className="text-[14.5px] font-black text-[#112D4E]">{m.value}</span>
                             </div>
                           ))}
                         </div>
                       )}
 
-                      <div className="text-[14px] text-[#1A374D] font-bold leading-relaxed markdown-body">
+                      <div className="text-[14.5px] text-[#1A374D] font-medium leading-[1.8] tracking-tight markdown-body">
                         {(() => {
                           const content = Array.isArray(exp.details) ? exp.details.join('\n') : exp.details;
                           if (content?.startsWith('<')) {
@@ -230,75 +616,75 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
           </section>
 
           {/* Self Intro */}
-          <section className="space-y-10 pt-10 border-t border-[#DBE2EF]/60">
-            <h3 className="text-xl font-black text-[#112D4E] flex items-center gap-3">
+          <section className="space-y-12 pt-10 border-t border-[#DBE2EF]/60">
+            <h3 className="text-xl font-black text-[#112D4E] flex items-center gap-3 mb-8">
                <div className="w-9 h-9 rounded-xl bg-[#112D4E]/10 flex items-center justify-center text-[#112D4E]">
                 <ScrollText className="w-5 h-5" />
               </div>
               자기소개
             </h3>
-            <div className="space-y-12">
+            <div className="space-y-16">
               {(data.selfIntroTabs || []).map((intro: any, idx: number) => {
-                // 웹 UI와 동일하게 정확히 '(시각화)' 텍스트로 분할
                 const segments = (intro.content || '').split('(시각화)');
                 
                 return (
                   <div key={idx} className="page-break-inside-avoid">
-                    <h4 className="text-[16px] font-black text-[#3F72AF] mb-4 flex items-center gap-2">
-                      <span className="w-2 h-4 bg-[#3F72AF] rounded-sm" />
-                      {intro.title}
-                    </h4>
-                    <div className="text-[14px] text-[#112D4E] font-medium leading-loose markdown-body pl-4">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-1.5 h-6 bg-[#3F72AF] rounded-full" />
+                      <h4 className="text-xl font-black text-[#112D4E] tracking-tight flex-1">{intro.title}</h4>
+                    </div>
+                    
+                    <div className="bg-white/40 rounded-[2rem] p-8 border border-[#DBE2EF]/50 shadow-sm">
                       {segments.map((seg: string, i: number) => {
                         const hasCards = !!(intro.vizBlocks && intro.vizBlocks[i] && intro.vizBlocks[i].length > 0);
                         const legacyCards = i === 0 && !hasCards && intro.cards && intro.cards.length > 0 ? intro.cards : null;
                         const cardsToRender = hasCards ? intro.vizBlocks[i] : legacyCards;
 
-                        // 단순 문자열 분할로 인해 발생한 깨진 <p>, </p> 태그 정리
                         let cleanSeg = seg.trim();
-                        // 끝에 남은 열린 <p> 태그 제거
                         cleanSeg = cleanSeg.replace(/<p>\s*$/i, '');
-                        // 시작에 남은 닫힌 </p> 태그 제거
                         cleanSeg = cleanSeg.replace(/^\s*<\/p>/i, '');
-                        // 빈 p태그나 불필요한 줄바꿈 태그 정리
                         cleanSeg = cleanSeg.replace(/^(<p>\s*<\/p>|<br\s*\/?>|\s)+/i, '').replace(/(<p>\s*<\/p>|<br\s*\/?>|\s)+$/i, '');
 
                         return (
                           <React.Fragment key={i}>
                             {cleanSeg.trim().length > 0 && (
-                              cleanSeg.startsWith('<') ? (
-                                <div dangerouslySetInnerHTML={{ __html: cleanSeg }} />
-                              ) : (
-                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                                  {cleanSeg}
-                                </ReactMarkdown>
-                              )
+                              <div className="text-[15px] leading-[1.8] font-semibold text-[#1A374D] markdown-body mb-6">
+                                {cleanSeg.startsWith('<') ? (
+                                  <div dangerouslySetInnerHTML={{ __html: cleanSeg }} />
+                                ) : (
+                                  <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                                    {cleanSeg}
+                                  </ReactMarkdown>
+                                )}
+                              </div>
                             )}
                             {i < segments.length - 1 && cardsToRender && (
-                              <div className="my-6 flex items-stretch gap-2 flex-nowrap w-full overflow-hidden page-break-inside-avoid">
-                                {cardsToRender.map((card: any, cIdx: number) => (
-                                  <React.Fragment key={card.id || cIdx}>
-                                    <div
-                                      className="flex-1 flex flex-col items-center text-center bg-[#EEF4FF] border border-[#C8D9F5] rounded-xl p-4"
-                                      style={{ minWidth: 0 }}
-                                    >
-                                      <p className="text-[14px] font-black text-[#112D4E] mb-1.5 leading-tight w-full text-center">
-                                        {card.title}
-                                      </p>
-                                      <div className="w-8 h-[2px] bg-[#3F72AF]/30 rounded-full mb-3" />
-                                      <p className="text-[12px] font-medium text-[#3D5A80] leading-[1.6] whitespace-pre-wrap w-full text-center">
-                                        {card.description}
-                                      </p>
-                                    </div>
-                                    {cIdx < cardsToRender.length - 1 && (
-                                      <div className="flex items-center justify-center flex-shrink-0 px-1">
-                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                          <path d="M3.5 8H12.5M12.5 8L9 4.5M12.5 8L9 11.5" stroke="#3F72AF" strokeOpacity={0.65} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
+                              <div className="my-6 overflow-hidden">
+                                <div className="flex items-stretch min-w-0 flex-nowrap">
+                                  {cardsToRender.map((card: any, cIdx: number) => (
+                                    <React.Fragment key={card.id || cIdx}>
+                                      <div
+                                        className="bg-[#EEF4FF] border border-[#C8D9F5] rounded-2xl p-4 flex flex-col items-center text-center"
+                                        style={{ flex: '1 1 0', minWidth: 0 }}
+                                      >
+                                        <p className="text-[14px] font-black text-[#112D4E] mb-1.5 leading-tight w-full text-center">
+                                          {card.title}
+                                        </p>
+                                        <div className="w-8 h-[2px] bg-[#3F72AF]/30 rounded-full mb-3" />
+                                        <p className="text-[12px] font-medium text-[#3D5A80] leading-[1.6] whitespace-pre-wrap w-full text-center">
+                                          {card.description}
+                                        </p>
                                       </div>
-                                    )}
-                                  </React.Fragment>
-                                ))}
+                                      {cIdx < cardsToRender.length - 1 && (
+                                        <div className="flex items-center justify-center flex-shrink-0 self-center px-1">
+                                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M3.5 8H12.5M12.5 8L9 4.5M12.5 8L9 11.5" stroke="#3F72AF" strokeOpacity={0.65} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                          </svg>
+                                        </div>
+                                      )}
+                                    </React.Fragment>
+                                  ))}
+                                </div>
                               </div>
                             )}
                           </React.Fragment>
@@ -312,6 +698,74 @@ export const ResumePDF = ({ data }: ResumePDFProps) => {
           </section>
         </div>
       </div>
+
+      {/* Portfolio Detail Pages */}
+      {portfolioData && portfolioData.length > 0 && (
+        <div className="portfolio-print-section mt-16">
+          {portfolioData.map((project, idx) => (
+            <div key={project.id} className="break-before-page pt-12">
+              {/* Project Cover / Header */}
+              <div className="bg-white rounded-[2.5rem] overflow-hidden mb-12 border border-[#DBE2EF]/50 shadow-sm relative">
+                <div className="aspect-[21/9] relative">
+                  <img 
+                    src={project.image} 
+                    alt={project.title} 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#F9F7F7] via-transparent to-transparent"></div>
+                  <div className="absolute bottom-8 left-8 right-8">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="bg-white/80 px-3 py-1 rounded-full text-[10px] font-bold text-[#1A59A7] uppercase tracking-wider">
+                        {project.category}
+                      </span>
+                      <div className="flex gap-2">
+                        {project.tags.map(tag => (
+                          <span key={tag} className="text-[10px] font-bold text-[#112D4E] bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-sm">#{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black text-[#1A59A7] tracking-tight drop-shadow-sm">{project.title}</h1>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Project Content / Markdown */}
+              <div className="bg-white rounded-[2rem] p-12 markdown-body border border-[#DBE2EF]/50 shadow-sm text-[15px] text-[#112D4E] leading-loose">
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm, remarkBreaks]}
+                  urlTransform={(url) => url}
+                  components={{
+                    a: ({node, ...props}) => {
+                      const href = props.href ? decodeURIComponent(props.href) : '';
+                      if (href.includes('style:')) {
+                        const stylePart = href.split('style:')[1];
+                        const styleParts = stylePart.split(';');
+                        const customStyle: any = {};
+                        styleParts.forEach(part => {
+                          const [key, val] = part.split(':');
+                          if (key && val) {
+                            const camelKey = key.trim().replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                            customStyle[camelKey] = val.trim();
+                          }
+                        });
+                        return (
+                          <span style={customStyle}>{props.children}</span>
+                        );
+                      }
+                      return <a {...props} className="text-[#3F72AF] underline font-bold" target="_blank" rel="noopener noreferrer" />;
+                    },
+                    p: ({node, ...props}) => <p className="mb-4 last:mb-0" {...props} />,
+                    br: () => <br />
+                  }}
+                >
+                  {project.content}
+                </ReactMarkdown>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
