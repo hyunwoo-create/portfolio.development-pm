@@ -13,7 +13,7 @@ interface PortfolioGalleryProps {
 }
 
 export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProjects, setView }: PortfolioGalleryProps) => {
-  const categories = ['메인 프로젝트', '게임 분석', 'AI 활용', '기타 작업물 (AI & 툴링)'];
+  const categories = ['메인 프로젝트', '게임 분석', 'AI 활용'];
   const [activeCategory, setActiveCategory] = useState<string>('메인 프로젝트');
 
   const activeProjects = projects.filter(p => p.category === activeCategory);
