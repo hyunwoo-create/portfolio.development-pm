@@ -160,7 +160,7 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
               </div>
 
               <div className="p-6 md:p-8 flex-1 flex flex-col">
-                <div className="text-emerald-500 font-bold text-[11px] md:text-xs mb-2">
+                <div className="text-[#C08D50] font-bold text-[11px] md:text-xs mb-2 tracking-widest uppercase">
                   <EditableText
                     value={project.details?.[0] || '서브 카테고리'}
                     onSave={(v) => {

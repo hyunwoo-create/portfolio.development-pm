@@ -148,20 +148,15 @@ export const StatBoard = ({
   );
 
   const renderDefaultDetail = () => (
-    <div className="flex flex-col h-full animate-fade-in relative z-10 w-full">
-      <div className="flex justify-between items-start mb-6">
-        <div className="text-[10px] font-bold text-[#3F72AF] tracking-widest uppercase bg-[#3F72AF]/10 px-3 py-1 rounded-full">
-          INFO
-        </div>
-      </div>
-      <h3 className="text-3xl font-black text-[#112D4E] mb-4 leading-tight">
+    <div className="flex flex-col h-full animate-fade-in relative z-10 w-full items-center justify-center text-center">
+      <h3 className="text-3xl font-black text-[#112D4E] mb-4 leading-tight w-full text-center">
         <EditableText 
           value={statBoardDefaultDetailTitle} 
           isEditing={isEditing} 
           onSave={(v) => updateContent('stat_board_default_title', v)} 
         />
       </h3>
-      <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed">
+      <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed w-full text-center">
         <EditableText 
           multiline 
           value={statBoardDefaultDetailDesc} 
@@ -300,13 +295,13 @@ export const StatBoard = ({
             </div>
 
             {/* ── 하단 버튼 (기본 화면) ── */}
-            <div className="flex flex-col shrink-0 mt-auto pt-4">
+            <div className="flex flex-col shrink-0 pt-2">
               <button
                 onClick={() => setHoveredItem(null)}
-                className={`w-full p-4 rounded-xl font-black text-[15px] transition-all duration-300 border flex items-center justify-between group ${
+                className={`w-full py-6 px-4 rounded-xl font-black text-[16px] transition-all duration-300 border flex items-center justify-between group ${
                   hoveredItem === null
-                    ? 'bg-[#112D4E] border-[#112D4E] text-white shadow-xl translate-x-3 scale-[1.02]'
-                    : 'bg-white border-[#DBE2EF] text-[#112D4E] hover:bg-[#112D4E] hover:border-[#112D4E] hover:text-white hover:translate-x-1 shadow-sm'
+                    ? 'bg-[#112D4E] border-[#112D4E] text-white shadow-xl scale-[1.02]'
+                    : 'bg-white border-[#DBE2EF] text-[#112D4E] hover:bg-[#112D4E] hover:border-[#112D4E] hover:text-white shadow-sm'
                 }`}
               >
                 <span onClick={(e) => isEditing && e.stopPropagation()} className="cursor-text text-left flex-1 whitespace-pre-wrap">

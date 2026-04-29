@@ -200,7 +200,7 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
               <div className="flex items-center gap-4">
                 <span
                   className="text-4xl md:text-5xl font-black tracking-tighter leading-none"
-                  style={{ color: ['#0B1D2E', '#224775', '#265082'][num - 1] }}
+                  style={{ color: ['#0B1D2E', '#183556', '#265082'][num - 1] }}
                 >
                   <EditableText value={content[`point${num}Value`] || "10"} onSave={(v) => setContent({...content, [`point${num}Value`]: v})} isEditing={isEditing} />
                 </span>
