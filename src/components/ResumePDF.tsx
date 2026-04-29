@@ -437,34 +437,46 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
           </div>
 
           {/* Tools */}
-          {((data.usedTools && data.usedTools.length > 0) || (data.usedToolsBottom && data.usedToolsBottom.length > 0)) && (
-            <div className="py-10 border-t border-[#DBE2EF]/60 relative pdf-no-break">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] flex items-center gap-3 uppercase">
-                  <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
-                    <Wrench className="w-5 h-5" />
-                  </div>
-                  사용 TOOL
-                </h3>
+          {(() => {
+            const hasTools = ['toolsDocs', 'toolsCollab', 'toolsDesign', 'toolsDev', 'toolsAi', 'usedTools', 'usedToolsBottom'].some(k => data[k] && data[k].length > 0);
+            if (!hasTools) return null;
+            return (
+              <div className="py-10 border-t border-[#DBE2EF]/60 relative pdf-no-break">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] flex items-center gap-3 uppercase">
+                    <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
+                      <Wrench className="w-5 h-5" />
+                    </div>
+                    사용 TOOL
+                  </h3>
+                </div>
+                <div className="flex flex-col gap-6 pl-1">
+                  {(() => {
+                    const cats = [
+                      { id: 'toolsDocs', fallback: 'usedTools', label: '문서' },
+                      { id: 'toolsCollab', fallback: 'usedToolsBottom', label: '협업' },
+                      { id: 'toolsDesign', fallback: null, label: '디자인' },
+                      { id: 'toolsDev', fallback: null, label: '개발' },
+                      { id: 'toolsAi', fallback: null, label: 'AI' }
+                    ].map(c => {
+                      const listKey = (data[c.id] && data[c.id].length > 0) ? c.id : (c.fallback && data[c.fallback] && data[c.fallback].length > 0 ? c.fallback : c.id);
+                      return { ...c, listKey, items: data[listKey] || [] };
+                    }).filter(c => c.items.length > 0);
+
+                    return cats.map((cat, index) => (
+                      <div key={cat.id} className="flex flex-col gap-2.5">
+                        <div className="text-[13.5px] font-black text-[#3F72AF] tracking-widest uppercase">{cat.label}</div>
+                        <div className="flex flex-wrap gap-2">
+                          {cat.items.map((tool: any, idx: number) => renderToolBadge(tool, cat.id, idx))}
+                        </div>
+                        {index < cats.length - 1 && <div className="h-px bg-[#DBE2EF]/50 w-full mt-2" />}
+                      </div>
+                    ));
+                  })()}
+                </div>
               </div>
-              <div className="flex flex-col gap-4 pl-1">
-                {/* 상단 툴 */}
-                {data.usedTools && data.usedTools.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {data.usedTools.map((tool: any, idx: number) => renderToolBadge(tool, 'top', idx))}
-                  </div>
-                )}
-                {data.usedTools?.length > 0 && data.usedToolsBottom?.length > 0 && (
-                  <div className="h-px bg-gradient-to-r from-[#DBE2EF] to-transparent w-full my-1" />
-                )}
-                {data.usedToolsBottom && data.usedToolsBottom.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {data.usedToolsBottom.map((tool: any, idx: number) => renderToolBadge(tool, 'bot', idx))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Activities */}
           {data.keyActivities && data.keyActivities.length > 0 && (

@@ -4,7 +4,7 @@ import { EditableText } from './EditableText';
 import { processImageHighQuality } from '../utils';
 
 export const ToolsSection = ({ data, setData, isEditing, onNavClick }: any) => {
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, listKey: 'usedTools' | 'usedToolsBottom', idx: number) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, listKey: string, idx: number) => {
     const file = e.target.files?.[0];
     if (!file) return;
     processImageHighQuality(file, 100).then(dataUrl => {
@@ -18,7 +18,7 @@ export const ToolsSection = ({ data, setData, isEditing, onNavClick }: any) => {
     }).catch(console.error);
   };
 
-  const renderTool = (tool: any, idx: number, listKey: 'usedTools' | 'usedToolsBottom') => {
+  const renderTool = (tool: any, idx: number, listKey: string) => {
     const toolObj = typeof tool === 'string' ? { name: tool, image: '' } : tool;
     
     return (
@@ -82,39 +82,39 @@ export const ToolsSection = ({ data, setData, isEditing, onNavClick }: any) => {
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-4 pl-1">
-        {/* 상단 툴 */}
-        <div className="flex flex-wrap gap-2">
-          {(data.usedTools || []).map((tool: any, idx: number) => renderTool(tool, idx, 'usedTools'))}
-          {isEditing && (
-            <button type="button" onClick={() => { 
-              setData((prev: any) => {
-                const n = [...(prev.usedTools || []), { name: "새 툴", image: "" }]; 
-                return { ...prev, usedTools: n };
-              });
-            }} className="px-3 py-1.5 border border-dashed border-[#3F72AF]/40 text-[#3F72AF] rounded-lg text-[11px] font-bold hover:bg-[#3F72AF]/5 transition-colors flex items-center gap-1">
-              <Plus className="w-3 h-3" /> 추가
-            </button>
-          )}
-        </div>
+      <div className="flex flex-col gap-6 pl-1">
+        {(() => {
+          const cats = [
+            { id: 'toolsDocs', fallback: 'usedTools', label: '문서' },
+            { id: 'toolsCollab', fallback: 'usedToolsBottom', label: '협업' },
+            { id: 'toolsDesign', fallback: null, label: '디자인' },
+            { id: 'toolsDev', fallback: null, label: '개발' },
+            { id: 'toolsAi', fallback: null, label: 'AI' }
+          ].map(c => {
+            const listKey = (data[c.id] && data[c.id].length > 0) ? c.id : (c.fallback && data[c.fallback] && data[c.fallback].length > 0 ? c.fallback : c.id);
+            return { ...c, listKey, items: data[listKey] || [] };
+          }).filter(c => isEditing || c.items.length > 0);
 
-        {/* 구분선 */}
-        <div className="h-px bg-gradient-to-r from-[#DBE2EF] to-transparent w-full my-1"></div>
-
-        {/* 하단 툴 */}
-        <div className="flex flex-wrap gap-2">
-          {(data.usedToolsBottom || []).map((tool: any, idx: number) => renderTool(tool, idx, 'usedToolsBottom'))}
-          {isEditing && (
-            <button type="button" onClick={() => { 
-              setData((prev: any) => {
-                const n = [...(prev.usedToolsBottom || []), { name: "새 툴", image: "" }]; 
-                return { ...prev, usedToolsBottom: n };
-              });
-            }} className="px-3 py-1.5 border border-dashed border-[#3F72AF]/40 text-[#3F72AF] rounded-lg text-[11px] font-bold hover:bg-[#3F72AF]/5 transition-colors flex items-center gap-1">
-              <Plus className="w-3 h-3" /> 추가
-            </button>
-          )}
-        </div>
+          return cats.map((cat, index) => (
+            <div key={cat.id} className="flex flex-col gap-2.5">
+              <div className="text-[13.5px] font-black text-[#3F72AF] tracking-widest uppercase">{cat.label}</div>
+              <div className="flex flex-wrap gap-2">
+                {cat.items.map((tool: any, idx: number) => renderTool(tool, idx, cat.listKey as any))}
+                {isEditing && (
+                  <button type="button" onClick={() => { 
+                    setData((prev: any) => {
+                      const n = [...(prev[cat.listKey] || []), { name: "새 툴", image: "" }]; 
+                      return { ...prev, [cat.listKey]: n };
+                    });
+                  }} className="px-3 py-1.5 border border-dashed border-[#3F72AF]/40 text-[#3F72AF] rounded-lg text-[11px] font-bold hover:bg-[#3F72AF]/5 transition-colors flex items-center gap-1">
+                    <Plus className="w-3 h-3" /> 추가
+                  </button>
+                )}
+              </div>
+              {index < cats.length - 1 && <div className="h-px bg-[#DBE2EF]/50 w-full mt-3" />}
+            </div>
+          ));
+        })()}
       </div>
     </div>
   );
