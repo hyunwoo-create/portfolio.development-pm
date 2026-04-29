@@ -30,9 +30,29 @@ interface ResumePDFProps {
   userImage?: string;
 }
 
-// Helper to render icons as SVG strings if needed, but since we are using lucide-react, 
-// they should render fine as long as styles are copied.
-// NOTE: We don't use Framer Motion here as per safety rules.
+// HTML 또는 Markdown 콘텐츠를 렌더링하는 공통 헬퍼
+const renderContent = (content: string | undefined, className?: string) => {
+  if (!content) return null;
+  if (content.startsWith('<')) {
+    return <div className={className} dangerouslySetInnerHTML={{ __html: content }} />;
+  }
+  return (
+    <div className={className}>
+      <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{content}</ReactMarkdown>
+    </div>
+  );
+};
+
+// usedTools 배지 렌더링 헬퍼
+const renderToolBadge = (tool: any, keyPrefix: string, idx: number) => {
+  const toolObj = typeof tool === 'string' ? { name: tool, image: '' } : tool;
+  return (
+    <span key={`${keyPrefix}-${idx}`} className="px-3 py-1.5 bg-[#F9F7F7] border border-[#DBE2EF] text-[#112D4E] rounded-lg text-[11px] font-bold shadow-sm flex items-center gap-1.5">
+      {toolObj.image && <img src={toolObj.image} alt="" className="w-6 h-6 object-contain shrink-0" />}
+      {toolObj.name}
+    </span>
+  );
+};
 
 const renderHeroChart = (points: any[]) => {
   if (!points || points.length === 0) return null;
@@ -312,10 +332,7 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                             {title}
                           </h4>
                           <div style={{ fontSize: '13px', color: '#3F72AF', lineHeight: 1.7, fontWeight: 500 }}>
-                            {body && body.startsWith('<')
-                              ? <div dangerouslySetInnerHTML={{ __html: body }} />
-                              : <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{body}</ReactMarkdown>
-                            }
+                            {renderContent(body)}
                           </div>
                         </div>
                       );
@@ -402,35 +419,15 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                 {/* 상단 툴 */}
                 {data.usedTools && data.usedTools.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {data.usedTools.map((tool: any, idx: number) => {
-                      const toolObj = typeof tool === 'string' ? { name: tool, image: '' } : tool;
-                      return (
-                        <span key={`top-${idx}`} className="px-3 py-1.5 bg-[#F9F7F7] border border-[#DBE2EF] text-[#112D4E] rounded-lg text-[11px] font-bold shadow-sm flex items-center gap-1.5">
-                          {toolObj.image && <img src={toolObj.image} alt="" className="w-6 h-6 object-contain shrink-0" />}
-                          {toolObj.name}
-                        </span>
-                      );
-                    })}
+                    {data.usedTools.map((tool: any, idx: number) => renderToolBadge(tool, 'top', idx))}
                   </div>
                 )}
-                
-                {/* 구분선 */}
-                {data.usedTools && data.usedTools.length > 0 && data.usedToolsBottom && data.usedToolsBottom.length > 0 && (
-                  <div className="h-px bg-gradient-to-r from-[#DBE2EF] to-transparent w-full my-1"></div>
+                {data.usedTools?.length > 0 && data.usedToolsBottom?.length > 0 && (
+                  <div className="h-px bg-gradient-to-r from-[#DBE2EF] to-transparent w-full my-1" />
                 )}
-                
-                {/* 하단 툴 */}
                 {data.usedToolsBottom && data.usedToolsBottom.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {data.usedToolsBottom.map((tool: any, idx: number) => {
-                      const toolObj = typeof tool === 'string' ? { name: tool, image: '' } : tool;
-                      return (
-                        <span key={`bot-${idx}`} className="px-3 py-1.5 bg-[#F9F7F7] border border-[#DBE2EF] text-[#112D4E] rounded-lg text-[11px] font-bold shadow-sm flex items-center gap-1.5">
-                          {toolObj.image && <img src={toolObj.image} alt="" className="w-6 h-6 object-contain shrink-0" />}
-                          {toolObj.name}
-                        </span>
-                      );
-                    })}
+                    {data.usedToolsBottom.map((tool: any, idx: number) => renderToolBadge(tool, 'bot', idx))}
                   </div>
                 )}
               </div>
@@ -550,13 +547,7 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
               <User className="text-[#112D4E] w-6 h-6" /> 한 줄 소개
             </h3>
             <div className="text-[#112D4E] leading-relaxed font-medium">
-              {data.summary?.startsWith('<') ? (
-                <div dangerouslySetInnerHTML={{ __html: data.summary }} />
-              ) : (
-                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                  {data.summary || ""}
-                </ReactMarkdown>
-              )}
+              {renderContent(data.summary || '')}
             </div>
           </section>
 
@@ -618,17 +609,7 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                       )}
 
                       <div className="text-[14.5px] text-[#1A374D] font-medium leading-[1.8] tracking-tight markdown-body">
-                        {(() => {
-                          const content = Array.isArray(exp.details) ? exp.details.join('\n') : exp.details;
-                          if (content?.startsWith('<')) {
-                            return <div dangerouslySetInnerHTML={{ __html: content }} />;
-                          }
-                          return (
-                            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                              {content}
-                            </ReactMarkdown>
-                          );
-                        })()}
+                        {renderContent(Array.isArray(exp.details) ? exp.details.join('\n') : exp.details)}
                       </div>
                     </div>
                   </div>
@@ -671,13 +652,7 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                           <React.Fragment key={i}>
                             {cleanSeg.trim().length > 0 && (
                               <div className="text-[15px] leading-[1.8] font-semibold text-[#1A374D] markdown-body mb-6">
-                                {cleanSeg.startsWith('<') ? (
-                                  <div dangerouslySetInnerHTML={{ __html: cleanSeg }} />
-                                ) : (
-                                  <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                                    {cleanSeg}
-                                  </ReactMarkdown>
-                                )}
+                                {renderContent(cleanSeg)}
                               </div>
                             )}
                             {i < segments.length - 1 && cardsToRender && (
