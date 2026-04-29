@@ -156,6 +156,8 @@ interface AppState {
   userImage: string;
   aiSkills: any[];
   toolCards: any[];
+  portfolioDescription: string;
+  portfolioCategories: string[];
 
   // Setters that update local state AND trigger debounced Supabase save
   updateContent: (key: string, value: any) => void;
@@ -179,6 +181,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   userImage: '',
   aiSkills: AI_SKILLS_DEFAULT,
   toolCards: TOOL_CARDS_DEFAULT,
+  portfolioDescription: '게임 기획부터 런칭까지의 메인 프로젝트와 AI/툴링을 활용한 기타 작업물 아카이브입니다.',
+  portfolioCategories: ['게임 분석', 'AI 활용'],
 
   updateContent: (key: string, valueOrUpdater: any) => {
     const stateKey =
@@ -190,7 +194,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       key === 'resume_data'           ? 'resumeData'   :
       key === 'stat_board_user_image' ? 'userImage'    :
       key === 'ai_skills'             ? 'aiSkills'     :
-      key === 'tool_cards'            ? 'toolCards'    : null;
+      key === 'tool_cards'            ? 'toolCards'    :
+      key === 'portfolio_description' ? 'portfolioDescription' :
+      key === 'portfolio_categories'  ? 'portfolioCategories' : null;
 
     let finalValue = valueOrUpdater;
     if (typeof valueOrUpdater === 'function' && stateKey) {
@@ -241,6 +247,8 @@ export const useAppStore = create<AppState>((set, get) => ({
           userImage:     data['stat_board_user_image']  !== undefined ? data['stat_board_user_image']  : state.userImage,
           aiSkills:      data['ai_skills']              !== undefined ? data['ai_skills']              : state.aiSkills,
           toolCards:     data['tool_cards']             !== undefined ? data['tool_cards']             : state.toolCards,
+          portfolioDescription: data['portfolio_description'] !== undefined ? data['portfolio_description'] : state.portfolioDescription,
+          portfolioCategories: data['portfolio_categories'] !== undefined ? data['portfolio_categories'] : state.portfolioCategories,
           isLoading: false,
         }));
       } else {

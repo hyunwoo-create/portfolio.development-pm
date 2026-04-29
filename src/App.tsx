@@ -30,7 +30,7 @@ const App = () => {
   const {
     isEditing, setIsEditing, isLoading, fetchError,
     heroContent, aboutContent, portfolioData, resumeData, userImage,
-    aiSkills, toolCards,
+    aiSkills, toolCards, portfolioDescription, portfolioCategories,
     updateContent, fetchAll
   } = useAppStore();
 
@@ -94,6 +94,14 @@ const App = () => {
     updateContent('portfolio_data', newProjects);
     setSelectedProject({ ...selectedProject, content });
   }, [selectedProject, portfolioData, updateContent]);
+
+  const handleUpdateProject = useCallback((updatedProject: Project) => {
+    const newProjects = portfolioData.map((p: Project) => 
+      p.id === updatedProject.id ? updatedProject : p
+    );
+    updateContent('portfolio_data', newProjects);
+    setSelectedProject(updatedProject);
+  }, [portfolioData, updateContent]);
 
   // Sync scroll to top on view change
   useEffect(() => {
@@ -168,6 +176,10 @@ const App = () => {
               isEditing={isEditing}
               projects={portfolioData}
               setProjects={(v) => updateContent('portfolio_data', v)}
+              description={portfolioDescription}
+              setDescription={(v) => updateContent('portfolio_description', v)}
+              categories={portfolioCategories}
+              setCategories={(v) => updateContent('portfolio_categories', v)}
               setView={changeView}
             />
           )}
@@ -178,6 +190,10 @@ const App = () => {
               isEditing={isEditing} 
               projects={portfolioData} 
               setProjects={(v) => updateContent('portfolio_data', v)} 
+              description={portfolioDescription}
+              setDescription={(v) => updateContent('portfolio_description', v)}
+              categories={portfolioCategories}
+              setCategories={(v) => updateContent('portfolio_categories', v)}
               setView={setView}
             />
           )}
@@ -189,6 +205,7 @@ const App = () => {
               onBack={() => changeView(prevView)} 
               isEditing={isEditing}
               onSaveContent={handleSaveProjectContent}
+              onUpdateProject={handleUpdateProject}
             />
           )}
 

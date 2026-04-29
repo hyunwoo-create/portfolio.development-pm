@@ -11,8 +11,10 @@ export interface Project {
   downloadUrl?: string;
   downloadFileName?: string;
   details?: string[];
-  chartPoints?: { x: number, y: number, label: string, detail: string }[];
   linkUrls?: Record<string, string>;
+  releaseTags?: { id: string; label: string; url: string; icon: string }[];
+  videoUrl?: string;
+  pdfDocuments?: { id: string; name: string; url: string }[];
 }
 
 export interface Skill {
