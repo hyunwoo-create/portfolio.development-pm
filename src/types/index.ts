@@ -12,6 +12,7 @@ export interface Project {
   downloadFileName?: string;
   details?: string[];
   chartPoints?: { x: number, y: number, label: string, detail: string }[];
+  linkUrls?: Record<string, string>;
 }
 
 export interface Skill {

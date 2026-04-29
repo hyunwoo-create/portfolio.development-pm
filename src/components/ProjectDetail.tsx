@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Project } from '../types';
@@ -36,17 +36,33 @@ export const ProjectDetail = ({ project, onBack, isEditing, onSaveContent }: Pro
         />
         <div className={`absolute inset-0 bg-gradient-to-t from-[#F9F7F7] via-transparent to-transparent`}></div>
         <div className="absolute bottom-8 left-8 right-8">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="glass px-3 py-1 rounded-full text-[10px] font-bold text-[#1A59A7] uppercase tracking-wider">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <span className="glass px-3 py-1 rounded-full text-[12px] font-black text-[#1A59A7] uppercase tracking-wider shadow-sm">
               {project.category}
             </span>
-            <div className="flex gap-2">
-              {project.tags.map(tag => (
-                <span key={tag} className="text-[10px] font-bold text-[#112D4E]">#{tag}</span>
-              ))}
+            <div className="flex flex-wrap gap-2">
+              {project.tags?.map(tag => {
+                const tagLower = tag.toLowerCase();
+                const isLinkTag = tagLower.includes('google play') || tagLower.includes('구글플레이') || tagLower.includes('구글 플레이') || tagLower.includes('steam') || tagLower.includes('스팀');
+                const tagUrl = project.linkUrls?.[tag] || '';
+
+                if (isLinkTag && tagUrl) {
+                  return (
+                    <a key={tag} href={tagUrl} target="_blank" rel="noreferrer" className="text-[11px] font-black text-white bg-[#112D4E] border border-white/20 px-3 py-1.5 rounded-full shadow-lg hover:bg-[#3F72AF] transition-all hover:-translate-y-0.5 flex items-center gap-1">
+                      {tag} <ArrowUpRight className="w-3 h-3" />
+                    </a>
+                  );
+                }
+
+                return (
+                  <span key={tag} className="text-[12px] font-black text-[#112D4E] bg-white/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/50 shadow-sm">
+                    #{tag}
+                  </span>
+                );
+              })}
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-[#1A59A7]">{project.title}</h1>
+          <h1 className="text-4xl md:text-6xl font-black text-[#112D4E] drop-shadow-lg tracking-tight mb-2 leading-tight">{project.title}</h1>
         </div>
       </div>
     </div>
