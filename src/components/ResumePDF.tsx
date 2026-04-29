@@ -203,114 +203,85 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
             </section>
           )}
 
-          {/* ── About + StatBoard 통합 한 페이지 ── */}
-          {(aboutContent || aiSkills?.length > 0 || toolCards?.length > 0 || userImage) && (
-            <section className="px-8 pt-6 pb-4 bg-[#F9F7F7] break-before-page" style={{ maxWidth: '100%' }}>
-
+          {/* ── About Section (Page 2) ── */}
+          {aboutContent && (
+            <section className="px-12 pt-16 pb-12 bg-[#F9F7F7] break-before-page" style={{ width: '1000px', height: '1100px' }}>
               {/* Q&A 헤더 */}
-              {aboutContent && (
-                <div className="flex justify-between items-end mb-5 border-b border-[#3F72AF]/20 pb-3 gap-4">
-                  <h2 className="text-3xl font-black text-[#112D4E] tracking-tight whitespace-pre-wrap">
-                    {aboutContent.titleLeft || 'Q. 누구를 채용해야 할까요?'}
-                  </h2>
-                  <h2 className="text-2xl font-black text-[#3F72AF] tracking-tight text-right whitespace-pre-wrap">
-                    {aboutContent.titleRight || 'A. 저 입니다. 지원자 양 현우'}
-                  </h2>
-                </div>
-              )}
+              <div className="flex justify-between items-end mb-16 border-b border-[#3F72AF]/20 pb-6 gap-4">
+                <h2 className="text-3xl font-black text-[#112D4E] tracking-tight whitespace-pre-wrap">
+                  {aboutContent.titleLeft || 'Q. 누구를 채용해야 할까요?'}
+                </h2>
+                <h2 className="text-2xl font-black text-[#3F72AF] tracking-tight text-right whitespace-pre-wrap">
+                  {aboutContent.titleRight || 'A. 저 입니다. 지원자 양 현우'}
+                </h2>
+              </div>
 
-              {/* 3컬럼 그리드 — 이미지와 동일한 구조 */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1.3fr 200px',
-                gridTemplateRows: '1fr',
-                gap: '20px',
-                alignItems: 'stretch'
-              }}>
-
-                {/* ── 좌 컬럼: 차트 → AI 능력 → 사용 TOOL ── */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-
+              {/* 2컬럼 그리드 (About.tsx 참조) */}
+              <div className="grid grid-cols-12 gap-12 items-stretch">
+                
+                {/* 좌 컬럼: 차트 + 동영상 */}
+                <div className="col-span-5 flex flex-col gap-8">
                   {/* 막대형 그래프 카드 */}
-                  {aboutContent && (
-                    <div className="bg-white rounded-[1.5rem] shadow-lg border border-[#DBE2EF]" style={{ padding: '16px' }}>
-                      <div style={{ textAlign: 'center', marginBottom: '14px' }}>
-                        <h3 className="text-sm font-black text-[#112D4E]">
-                          {aboutContent.chartTitle || '막대형 그래프 채용 지원자격 top3'}
-                        </h3>
-                      </div>
-                      <div style={{ position: 'relative' }}>
-                        {/* 눈금선 */}
-                        <div style={{ position: 'absolute', inset: 0, left: '4rem', display: 'flex', justifyContent: 'space-between', pointerEvents: 'none', zIndex: 0, marginTop: '8px' }}>
-                          <div style={{ position: 'relative', marginLeft: '16px' }}>
-                            <div style={{ position: 'absolute', inset: '0 0 0 0', borderLeft: '1px dashed rgba(63,114,175,0.2)' }} />
-                            <span style={{ position: 'absolute', top: '-20px', transform: 'translateX(-50%)', fontSize: '10px', color: 'rgba(63,114,175,0.5)', background: 'white', padding: '0 4px' }}>0</span>
-                          </div>
-                          <div style={{ position: 'relative', marginRight: '48px' }}>
-                            <div style={{ position: 'absolute', inset: '0 0 0 0', borderLeft: '1px dashed rgba(63,114,175,0.2)' }} />
-                            <span style={{ position: 'absolute', top: '-20px', transform: 'translateX(-50%)', fontSize: '11px', fontWeight: 900, color: '#1A59A7', background: 'white', padding: '2px 6px', borderRadius: '4px', border: '1px solid #DBE2EF' }}>
-                              {aboutContent.chartTotal || 100}
-                            </span>
-                          </div>
+                  <div className="bg-white rounded-[2rem] shadow-lg shadow-[#112D4E]/5 border border-[#DBE2EF] p-8">
+                    <div className="flex flex-col items-center justify-center mb-10">
+                      <h3 className="text-lg font-black text-[#112D4E] text-center">
+                        {aboutContent.chartTitle || '막대형 그래프 채용 지원자격 top3'}
+                      </h3>
+                    </div>
+                    <div className="space-y-8 relative">
+                      {/* 눈금선 */}
+                      <div className="absolute inset-0 left-20 flex justify-between pointer-events-none z-0 mt-2">
+                        <div className="h-full ml-4 relative flex items-start">
+                          <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20" />
+                          <span className="absolute -top-6 -translate-x-1/2 text-[10px] font-bold text-[#3F72AF] opacity-50 bg-white px-1">0</span>
                         </div>
-                        {/* 막대 */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', position: 'relative', zIndex: 1 }}>
-                          {[1, 2, 3].map((num) => {
-                            const totalParam = parseInt(aboutContent.chartTotal) || 100;
-                            const v = parseInt(aboutContent[`skill${num}Value`]) || (num === 1 ? 80 : num === 2 ? 60 : 40);
-                            const p = Math.min((v / totalParam) * 100, 100);
-                            return (
-                              <div key={num} style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingRight: '16px' }}>
-                                <div style={{ width: '56px', fontSize: '13px', fontWeight: 700, color: '#112D4E', textAlign: 'right', whiteSpace: 'pre-wrap' }}>
-                                  {aboutContent[`skill${num}Name`] || `역량 ${String.fromCharCode(64 + num)}`}
+                        <div className="h-full mr-12 relative flex items-start">
+                          <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20" />
+                          <span className="absolute -top-6 -translate-x-1/2 text-xs font-black text-[#1A59A7] bg-white px-1.5 py-0.5 shadow-sm rounded z-10 border border-[#DBE2EF]">
+                            {aboutContent.chartTotal || 100}
+                          </span>
+                        </div>
+                      </div>
+                      {/* 막대 */}
+                      {[1, 2, 3].map((num) => {
+                        const totalParam = parseInt(aboutContent.chartTotal) || 100;
+                        const v = parseInt(aboutContent[`skill${num}Value`]) || (num === 1 ? 80 : num === 2 ? 60 : 40);
+                        const p = Math.min((v / totalParam) * 100, 100);
+                        return (
+                          <div key={num} className="flex items-center gap-4 relative z-10 pr-4">
+                            <div className="w-14 text-sm font-bold text-[#112D4E] text-right whitespace-pre-wrap">
+                              {aboutContent[`skill${num}Name`] || `역량 ${String.fromCharCode(64 + num)}`}
+                            </div>
+                            <div className="flex-1 flex flex-col w-full">
+                              <div className="h-8 relative flex items-center w-full">
+                                <div className="h-full bg-[#3F72AF] rounded-r-md shadow-sm flex items-center justify-end px-2" style={{ width: `${p}%`, minWidth: '1.5rem', maxWidth: '100%' }}>
+                                  {p > 15 && <span className="text-white text-[10px] font-bold whitespace-nowrap px-1">{Math.round(p)}%</span>}
                                 </div>
-                                <div style={{ flex: 1, height: '28px', position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                  <div style={{ height: '100%', background: '#3F72AF', borderRadius: '0 4px 4px 0', width: `${p}%`, minWidth: '6px', maxWidth: '100%', position: 'relative' }}>
-                                    {p > 15 && <span style={{ position: 'absolute', right: '8px', color: 'white', fontSize: '10px', fontWeight: 700, whiteSpace: 'nowrap' }}>{Math.round(p)}%</span>}
-                                  </div>
-                                  <span style={{ marginLeft: '10px', fontSize: '13px', fontWeight: 900, color: '#112D4E', minWidth: '24px' }}>{v}</span>
-                                </div>
+                                <span className="ml-3 text-sm font-black text-[#112D4E] min-w-[2rem]">{v}</span>
                               </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* AI 활용 능력 */}
-                  {aiSkills?.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <h2 style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '0.1em', color: '#8fabc8', textTransform: 'uppercase', paddingLeft: '4px', marginBottom: '2px' }}>AI 활용 능력</h2>
-                      {aiSkills.map((a: any) => (
-                        <div key={a.id} style={{ padding: '10px 14px', borderRadius: '12px', background: 'white', border: '1px solid #DBE2EF', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                          <div style={{ fontWeight: 900, fontSize: '14px', color: '#112D4E', lineHeight: 1.3 }}>{a.title}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* 사용 TOOL */}
-                  {toolCards?.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <h2 style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '0.1em', color: '#8fabc8', textTransform: 'uppercase', paddingLeft: '4px', marginBottom: '2px' }}>사용 TOOL</h2>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                        {toolCards.map((t: any) => (
-                          <div key={t.id} style={{ padding: '8px 12px', borderRadius: '12px', background: 'white', border: '1px solid #DBE2EF', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            {t.iconUrl
-                              ? <img src={t.iconUrl} style={{ width: '18px', height: '18px', objectFit: 'contain', flexShrink: 0 }} alt={t.name} />
-                              : <Wrench className="w-4 h-4 shrink-0 text-[#3F72AF]" />}
-                            <span style={{ fontWeight: 900, fontSize: '12px', color: '#112D4E' }}>{t.name}</span>
+                            </div>
                           </div>
-                        ))}
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 크롤러 동영상 */}
+                  <div className="bg-white rounded-[2rem] shadow-lg shadow-[#112D4E]/5 border border-[#DBE2EF] p-8 flex flex-col items-center">
+                    <h3 className="text-lg font-black text-[#112D4E] text-center mb-6">
+                      {aboutContent.videoTitle || "크롤러 동영상"}
+                    </h3>
+                    <div className="w-full aspect-video bg-[#DBE2EF]/30 rounded-2xl overflow-hidden flex items-center justify-center border border-[#DBE2EF]">
+                      <div className="text-center text-[#3F72AF]">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-2 opacity-60"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
-                {/* ── 중앙 컬럼: 역량 설명 텍스트 ── */}
-                {aboutContent && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingLeft: '16px' }}>
+                {/* 우 컬럼: 역량 설명 텍스트 */}
+                <div className="col-span-7 flex flex-col justify-between py-6">
+                  <div className="flex flex-col space-y-16 pl-16 flex-1 justify-around">
                     {[1, 2, 3].map((num) => {
                       const title = aboutContent[`descTitle${num}`] || (
                         num === 1 ? '역량 A에 해당하는 내용 및 역량' :
@@ -323,33 +294,81 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                                    '데이터 수집 및 분석 자동화(크롤링) 경험을 바탕으로, 높은 수준의 기술적 이해도를 지니고 있어 개발팀과 매끄럽게 소통합니다.'
                       );
                       return (
-                        <div key={num} style={{ position: 'relative' }}>
-                          <div style={{ position: 'absolute', top: '6px', left: '-20px', display: 'flex', alignItems: 'center', opacity: 0.25, color: '#3F72AF' }}>
-                            <div style={{ width: '16px', borderTop: '2px dashed #3F72AF' }} />
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                        <div key={num} className="relative">
+                          <div className="absolute top-1/2 -left-16 w-12 -translate-y-1/2 flex items-center opacity-30 text-[#3F72AF]">
+                            <div className="flex-1 border-t-2 border-dashed border-[#3F72AF]"></div>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="-ml-2"><path d="m9 18 6-6-6-6"/></svg>
                           </div>
-                          <h4 style={{ fontSize: '15px', fontWeight: 900, color: '#112D4E', marginBottom: '6px', lineHeight: 1.3 }}>
+                          <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight">
                             {title}
                           </h4>
-                          <div style={{ fontSize: '13px', color: '#3F72AF', lineHeight: 1.7, fontWeight: 500 }}>
+                          <div className="text-[#3F72AF] text-[15px] leading-relaxed font-medium">
                             {renderContent(body)}
                           </div>
                         </div>
                       );
                     })}
                   </div>
-                )}
+                </div>
+              </div>
+            </section>
+          )}
 
-                {/* ── 우 컬럼: 아바타 (전체 높이 span) ── */}
-                {userImage && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {/* ── StatBoard Section (Page 3) ── */}
+          {(aiSkills?.length > 0 || toolCards?.length > 0 || userImage) && (
+            <section className="px-12 pt-16 pb-12 bg-[#F9F7F7] break-before-page" style={{ width: '1000px', height: '1100px' }}>
+              <div className="grid grid-cols-12 gap-8 h-full items-start relative">
+                
+                {/* 좌측: AI 능력 및 사용 TOOL */}
+                <div className="col-span-3 flex flex-col gap-12 pt-12 z-10">
+                  {/* AI 활용 능력 */}
+                  {aiSkills?.length > 0 && (
+                    <div className="flex flex-col gap-3">
+                      <h2 className="text-sm font-black tracking-[0.1em] text-[#8fabc8] uppercase mb-1">AI 활용 능력</h2>
+                      {aiSkills.map((a: any) => (
+                        <div key={a.id} className="p-4 rounded-xl bg-white border border-[#DBE2EF] shadow-sm">
+                          <div className="font-black text-[15px] text-[#112D4E] leading-tight">{a.title}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* 사용 TOOL */}
+                  {toolCards?.length > 0 && (
+                    <div className="flex flex-col gap-3">
+                      <h2 className="text-sm font-black tracking-[0.1em] text-[#8fabc8] uppercase mb-1">사용 TOOL</h2>
+                      <div className="grid grid-cols-2 gap-2">
+                        {toolCards.map((t: any) => (
+                          <div key={t.id} className="p-3 rounded-xl bg-white border border-[#DBE2EF] shadow-sm flex items-center gap-2">
+                            {t.iconUrl
+                              ? <img src={t.iconUrl} className="w-5 h-5 object-contain shrink-0" alt={t.name} />
+                              : <Wrench className="w-4 h-4 shrink-0 text-[#3F72AF]" />}
+                            <span className="font-black text-[13px] text-[#112D4E]">{t.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 중앙: 아바타 (전체 높이) */}
+                <div className="col-span-4 h-[900px] relative flex items-center justify-center z-20">
+                  {userImage && (
                     <img
                       src={userImage}
                       alt="Avatar"
-                      style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 16px 24px rgba(0,0,0,0.18))' }}
+                      className="w-[120%] max-w-none h-full object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)]"
                     />
+                  )}
+                </div>
+
+                {/* 우측: 상세 정보 안내 박스 */}
+                <div className="col-span-5 pt-12 z-10">
+                  <div className="h-[500px] bg-white/70 backdrop-blur-2xl rounded-[3rem] p-12 border-2 border-white shadow-2xl overflow-hidden flex flex-col items-center justify-center text-center">
+                    <Wrench className="w-12 h-12 mb-4 opacity-30 text-[#8fabc8]"/>
+                    <p className="text-sm font-bold text-[#8fabc8]">좌측 항목을 클릭하면<br/>상세 정보가 표시됩니다.</p>
                   </div>
-                )}
+                </div>
 
               </div>
             </section>
