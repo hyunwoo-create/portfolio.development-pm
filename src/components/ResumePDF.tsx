@@ -76,7 +76,29 @@ const renderHeroChart = (points: any[]) => {
 export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSkills, toolCards, userImage }: ResumePDFProps) => {
   return (
     <div className="p-[40px] bg-[#F9F7F7] text-[#112D4E] font-sans leading-relaxed mx-auto origin-top-left" style={{ width: '1000px' }}>
-      
+
+      {/* ── 최상단 포트폴리오 URL 배너 ── */}
+      <div style={{
+        margin: '-40px -40px 32px -40px',
+        background: '#112D4E',
+        padding: '10px 40px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <span style={{ color: '#DBE2EF', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em' }}>
+          PORTFOLIO
+        </span>
+        <a
+          href="https://hyunwoo-create.github.io/portfolio/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#7FB3E8', fontSize: '12px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}
+        >
+          https://hyunwoo-create.github.io/portfolio/
+        </a>
+      </div>
+
       {/* ══════════════════════════════════════════════
           소개 페이지 — Hero + About + StatBoard
           실제 컴포넌트 HTML 구조를 그대로 재현
