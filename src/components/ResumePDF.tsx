@@ -18,11 +18,10 @@ import {
   Star,
   Award
 } from 'lucide-react';
-import { ResumeData, Project } from '../types';
+import { ResumeData } from '../types';
 
 interface ResumePDFProps {
   data: ResumeData;
-  portfolioData?: Project[];
   heroContent?: any;
   aboutContent?: any;
   aiSkills?: any;
@@ -93,31 +92,37 @@ const renderHeroChart = (points: any[]) => {
   );
 };
 
-export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSkills, toolCards, userImage }: ResumePDFProps) => {
-  return (
-    <div className="p-[40px] bg-[#F9F7F7] text-[#112D4E] font-sans leading-relaxed mx-auto origin-top-left" style={{ width: '1000px' }}>
+export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards, userImage }: ResumePDFProps) => {
 
-      {/* ── 최상단 포트폴리오 URL 배너 ── */}
-      <div style={{
-        margin: '-40px -40px 32px -40px',
-        background: '#112D4E',
-        padding: '10px 40px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <span style={{ color: '#DBE2EF', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em' }}>
-          PORTFOLIO
-        </span>
-        <a
-          href="https://hyunwoo-create.github.io/portfolio/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: '#7FB3E8', fontSize: '12px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}
-        >
-          https://hyunwoo-create.github.io/portfolio/
-        </a>
-      </div>
+  return (
+    <table className="bg-[#F9F7F7] text-[#112D4E] font-sans leading-relaxed mx-auto" style={{ width: '1000px', borderCollapse: 'collapse', borderSpacing: 0 }}>
+      <thead style={{ display: 'table-header-group' }}>
+        <tr>
+          <td style={{ padding: 0 }}>
+            <div style={{
+              background: '#112D4E',
+              padding: '8px 40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              printColorAdjust: 'exact',
+              WebkitPrintColorAdjust: 'exact',
+            }}>
+              <span style={{ color: '#DBE2EF', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}>PORTFOLIO</span>
+              <a href="https://hyunwoo-create.github.io/portfolio/" target="_blank" rel="noopener noreferrer" style={{ color: '#7FB3E8', fontSize: '11px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                https://hyunwoo-create.github.io/portfolio/
+              </a>
+            </div>
+            <div style={{ height: '32px', background: '#F9F7F7' }} />
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style={{ padding: '0 40px 40px 40px' }}>
+
+      {/* ── 최상단 포트폴리오 URL 배너 (페이지 1) ── */}
+      
 
       {/* ══════════════════════════════════════════════
           소개 페이지 — Hero + About + StatBoard
@@ -205,7 +210,9 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
 
           {/* ── About Section (Page 2) ── */}
           {aboutContent && (
-            <section className="px-12 pt-16 pb-12 bg-[#F9F7F7] break-before-page" style={{ width: '1000px', height: '1100px' }}>
+            <div className="break-before-page">
+              
+              <section className="px-12 pt-12 pb-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px' }}>
               {/* Q&A 헤더 */}
               <div className="flex justify-between items-end mb-16 border-b border-[#3F72AF]/20 pb-6 gap-4">
                 <h2 className="text-3xl font-black text-[#112D4E] tracking-tight whitespace-pre-wrap">
@@ -311,13 +318,16 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                   </div>
                 </div>
               </div>
-            </section>
+              </section>
+            </div>
           )}
 
           {/* ── StatBoard Section (Page 3) ── */}
           {(aiSkills?.length > 0 || toolCards?.length > 0 || userImage) && (
-            <section className="px-12 pt-16 pb-12 bg-[#F9F7F7] break-before-page" style={{ width: '1000px', height: '1100px' }}>
-              <div className="grid grid-cols-12 gap-8 h-full items-start relative">
+            <div className="break-before-page">
+              
+              <section className="px-12 pt-12 pb-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px' }}>
+                <div className="grid grid-cols-12 gap-8 h-full items-start relative">
                 
                 {/* 좌측: AI 능력 및 사용 TOOL */}
                 <div className="col-span-3 flex flex-col gap-12 pt-12 z-10">
@@ -372,6 +382,7 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
 
               </div>
             </section>
+          </div>
           )}
 
         </div>
@@ -380,7 +391,9 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
 
 
       {/* Resume Grid */}
-      <div className="grid grid-cols-[280px_1fr] gap-12">
+      <div className="break-before-page">
+        
+        <div className="grid grid-cols-[280px_1fr] gap-12">
         {/* Sidebar */}
         <div className="flex flex-col gap-12">
           {/* Profile Section */}
@@ -650,7 +663,7 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                 const segments = (intro.content || '').split('(시각화)');
                 
                 return (
-                  <div key={idx} className="page-break-inside-avoid">
+                  <div key={idx} className="page-break-inside-avoid" style={{ zoom: 0.88 }}>
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-1.5 h-6 bg-[#3F72AF] rounded-full" />
                       <h4 className="text-xl font-black text-[#112D4E] tracking-tight flex-1">{intro.title}</h4>
@@ -714,74 +727,4 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
           </section>
         </div>
       </div>
-
-      {/* Portfolio Detail Pages */}
-      {portfolioData && portfolioData.length > 0 && (
-        <div className="portfolio-print-section mt-16">
-          {portfolioData.map((project, idx) => (
-            <div key={project.id} className="break-before-page pt-12">
-              {/* Project Cover / Header */}
-              <div className="bg-white rounded-[2.5rem] overflow-hidden mb-12 border border-[#DBE2EF]/50 shadow-sm relative">
-                <div className="aspect-[21/9] relative">
-                  <img 
-                    src={project.image} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#F9F7F7] via-transparent to-transparent"></div>
-                  <div className="absolute bottom-8 left-8 right-8">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="bg-white/80 px-3 py-1 rounded-full text-[10px] font-bold text-[#1A59A7] uppercase tracking-wider">
-                        {project.category}
-                      </span>
-                      <div className="flex gap-2">
-                        {project.tags.map(tag => (
-                          <span key={tag} className="text-[10px] font-bold text-[#112D4E] bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-sm">#{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <h1 className="text-4xl md:text-5xl font-black text-[#1A59A7] tracking-tight drop-shadow-sm">{project.title}</h1>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Project Content / Markdown */}
-              <div className="bg-white rounded-[2rem] p-12 markdown-body border border-[#DBE2EF]/50 shadow-sm text-[15px] text-[#112D4E] leading-loose">
-                <ReactMarkdown 
-                  remarkPlugins={[remarkGfm, remarkBreaks]}
-                  urlTransform={(url) => url}
-                  components={{
-                    a: ({node, ...props}) => {
-                      const href = props.href ? decodeURIComponent(props.href) : '';
-                      if (href.includes('style:')) {
-                        const stylePart = href.split('style:')[1];
-                        const styleParts = stylePart.split(';');
-                        const customStyle: any = {};
-                        styleParts.forEach(part => {
-                          const [key, val] = part.split(':');
-                          if (key && val) {
-                            const camelKey = key.trim().replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-                            customStyle[camelKey] = val.trim();
-                          }
-                        });
-                        return (
-                          <span style={customStyle}>{props.children}</span>
-                        );
-                      }
-                      return <a {...props} className="text-[#3F72AF] underline font-bold" target="_blank" rel="noopener noreferrer" />;
-                    },
-                    p: ({node, ...props}) => <p className="mb-4 last:mb-0" {...props} />,
-                    br: () => <br />
-                  }}
-                >
-                  {project.content}
-                </ReactMarkdown>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
+      </div></td></tr></tbody></table>);};

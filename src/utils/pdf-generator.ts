@@ -1,11 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import React from 'react';
 import { ResumePDF } from '../components/ResumePDF';
-import { ResumeData, Project } from '../types';
+import { ResumeData } from '../types';
 
 export interface PdfExportPayload {
   data: ResumeData;
-  portfolioData?: Project[];
   heroContent?: any;
   aboutContent?: any;
   aiSkills?: any;
@@ -94,11 +93,31 @@ export const handlePdfExport = (payload: PdfExportPayload) => {
             ${htmlContent}
           </div>
           <script>
-            // 5. 폰트 및 이미지 로드를 기다린 후 인쇄 다이얼로그 호출
+            // 5. 폰트 및 모든 이미지가 로드된 것을 감지한 후 인쇄 다이얼로그 호출
             window.onload = function() {
-              setTimeout(function() {
-                window.print();
-              }, 1500);
+              const images = Array.from(document.images);
+              if (images.length === 0) {
+                setTimeout(window.print, 500); // 폰트 로딩 대기용 최소 시간
+                return;
+              }
+              
+              let loadedCount = 0;
+              const onImageLoadOrError = () => {
+                loadedCount++;
+                if (loadedCount === images.length) {
+                  // 이미지가 모두 로드되어도 렌더링 안정화를 위해 500ms만 대기
+                  setTimeout(window.print, 500); 
+                }
+              };
+
+              images.forEach(img => {
+                if (img.complete) {
+                  onImageLoadOrError();
+                } else {
+                  img.onload = onImageLoadOrError;
+                  img.onerror = onImageLoadOrError;
+                }
+              });
             };
             // 6. 인쇄 대화상자 종료 시 창 자동 닫기
             window.onafterprint = function() {
