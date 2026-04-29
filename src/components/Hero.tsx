@@ -213,11 +213,11 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
         </div>
 
         <div className="hidden md:flex flex-col items-end justify-center pointer-events-auto z-20 gap-4 translate-y-8 md:translate-y-10">
-          <button onClick={() => onNavClick('resume-section')} className="px-8 py-[18px] bg-white/95 backdrop-blur-md rounded-2xl border-2 border-[#DBE2EF] shadow-xl flex items-center justify-between gap-6 hover:shadow-2xl hover:bg-white transition-all transform hover:-translate-y-1 w-[240px] group">
-            <span className="text-[15px] font-black text-[#112D4E] tracking-tight">이력서 바로가기</span>
-            <ChevronRight className="w-5 h-5 text-[#3F72AF] group-hover:translate-x-1 transition-transform" />
+          <button onClick={() => onNavClick('resume-section')} className="px-8 py-[18px] bg-white/95 backdrop-blur-md rounded-2xl border-2 border-red-100 shadow-xl flex items-center justify-between gap-6 hover:shadow-2xl hover:bg-red-50 hover:border-red-200 transition-all transform hover:-translate-y-1 w-[240px] group">
+            <span className="text-[15px] font-black text-red-600 tracking-tight">이력서 바로가기</span>
+            <ChevronRight className="w-5 h-5 text-red-500 group-hover:translate-x-1 transition-transform" />
           </button>
-          <button onClick={() => onNavClick('portfolio-view')} className="px-8 py-[18px] bg-[#112D4E] backdrop-blur-md rounded-2xl border-2 border-[#112D4E] shadow-xl flex items-center justify-between gap-6 hover:shadow-2xl hover:bg-[#1A59A7] transition-all transform hover:-translate-y-1 w-[240px] group">
+          <button onClick={() => onNavClick('portfolio-view')} className="px-8 py-[18px] bg-red-600 backdrop-blur-md rounded-2xl border-2 border-red-600 shadow-xl flex items-center justify-between gap-6 hover:shadow-2xl hover:bg-red-700 hover:border-red-700 transition-all transform hover:-translate-y-1 w-[240px] group">
             <span className="text-[15px] font-black text-white tracking-tight">포트폴리오 바로가기</span>
             <ChevronRight className="w-5 h-5 text-white/90 group-hover:translate-x-1 transition-transform" />
           </button>
