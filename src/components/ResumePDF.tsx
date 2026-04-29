@@ -152,12 +152,12 @@ export const ResumePDF = ({ data, portfolioData, heroContent, aboutContent, aiSk
                 {/* Col1 Row1: Title */}
                 <div className="flex flex-col items-start justify-start pr-12 mt-8">
                   <h1 className="font-black leading-[1.1] text-[#112D4E] tracking-tight mb-6">
-                    <div className="block leading-[1.1]" style={heroContent.tile1Style || { fontSize: 'clamp(2.5rem,4.5vw,4rem)', letterSpacing: '-0.02em', fontWeight: '900' }}>
+                    <div className="block leading-[1.2] whitespace-pre-wrap" style={{ fontSize: '30px', letterSpacing: '-0.02em', fontWeight: '900', wordBreak: 'keep-all' }}>
                       {heroContent.titleLine1 && heroContent.titleLine1.startsWith('<')
                         ? <span dangerouslySetInnerHTML={{ __html: heroContent.titleLine1 }} />
                         : (heroContent.titleLine1 || '기획의도를 알고')}
                     </div>
-                    <div className="block text-[#3F72AF] mt-2 leading-[1.1]" style={heroContent.tile2Style || { fontSize: 'clamp(3rem,5.5vw,5rem)', letterSpacing: '-0.05em', fontWeight: '900' }}>
+                    <div className="block text-[#3F72AF] mt-4 leading-[1.2] whitespace-pre-wrap" style={{ fontSize: '42px', letterSpacing: '-0.04em', fontWeight: '900', wordBreak: 'keep-all' }}>
                       {heroContent.titleLine2 && heroContent.titleLine2.startsWith('<')
                         ? <span dangerouslySetInnerHTML={{ __html: heroContent.titleLine2 }} />
                         : (heroContent.titleLine2 || '결과로 증명하는 PM')}
