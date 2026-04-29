@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, Sparkles, Gamepad2, X, ArrowUpRight } from 'lucide-react';
+import { ArrowLeft, Sparkles, Gamepad2, X, ArrowUpRight, Plus } from 'lucide-react';
 import { EditableText } from './EditableText';
 import { Project } from '../types';
 
@@ -16,7 +16,21 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
   const portfolioProjects = projects.filter(p => p.category !== '게임 분석');
   const gameProjects = projects.filter(p => p.category === '게임 분석');
 
-  const renderGrid = (list: Project[]) => (
+  const handleAddProject = (category: string) => {
+    const newProject: Project = {
+      id: `project-${Date.now()}`,
+      title: '새 프로젝트',
+      category,
+      description: '프로젝트 설명을 입력하세요.',
+      tags: ['태그1', '태그2'],
+      image: '',
+      color: 'from-blue-500/20 to-purple-500/20',
+      content: ''
+    };
+    setProjects([...projects, newProject]);
+  };
+
+  const renderGrid = (list: Project[], category: string) => (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
       {list.map((project) => (
         <motion.div
@@ -38,7 +52,7 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
               <X className="w-4 h-4" />
             </button>
           )}
-          <div className="aspect-[16/10] overflow-hidden relative">
+          <div className="aspect-[12/5] overflow-hidden relative">
             <img
               src={project.image || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070"}
               alt={project.title}
@@ -59,17 +73,60 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
                 isEditing={isEditing}
               />
             </h4>
-            <p className="text-[#112D4E] text-sm leading-relaxed mb-8 flex-1">
-              <EditableText
-                value={project.description}
-                onSave={(v) => {
-                  const newProjects = projects.map(p => p.id === project.id ? { ...p, description: v } : p);
-                  setProjects(newProjects);
-                }}
-                isEditing={isEditing}
-                multiline
-              />
-            </p>
+            {project.category === '게임 분석' ? (
+              <div className="flex flex-wrap gap-2 mb-8 flex-1 content-start">
+                {project.tags?.map((tag, i) => (
+                  <span key={i} className="px-3 py-1 bg-[#112D4E]/10 text-[#112D4E] rounded-full text-sm font-medium flex items-center gap-1">
+                    <EditableText
+                      value={tag}
+                      onSave={(v) => {
+                        const newTags = [...(project.tags || [])];
+                        newTags[i] = v;
+                        setProjects(projects.map(p => p.id === project.id ? { ...p, tags: newTags } : p));
+                      }}
+                      isEditing={isEditing}
+                    />
+                    {isEditing && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const newTags = (project.tags || []).filter((_, index) => index !== i);
+                          setProjects(projects.map(p => p.id === project.id ? { ...p, tags: newTags } : p));
+                        }}
+                        className="hover:text-red-500 transition-colors ml-1"
+                        title="태그 삭제"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </span>
+                ))}
+                {isEditing && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newTags = [...(project.tags || []), '새 태그'];
+                      setProjects(projects.map(p => p.id === project.id ? { ...p, tags: newTags } : p));
+                    }}
+                    className="px-3 py-1 bg-white/50 text-[#112D4E] rounded-full text-sm font-medium border border-dashed border-[#112D4E]/30 hover:bg-[#112D4E]/10 transition-colors flex items-center gap-1"
+                  >
+                    <Plus className="w-3 h-3" /> 추가
+                  </button>
+                )}
+              </div>
+            ) : (
+              <p className="text-[#112D4E] text-sm leading-relaxed mb-8 flex-1">
+                <EditableText
+                  value={project.description}
+                  onSave={(v) => {
+                    const newProjects = projects.map(p => p.id === project.id ? { ...p, description: v } : p);
+                    setProjects(newProjects);
+                  }}
+                  isEditing={isEditing}
+                  multiline
+                />
+              </p>
+            )}
 
             <button type="button" onClick={() => onProjectClick(project)} className="w-full py-4 glass rounded-2xl text-sm font-bold flex items-center justify-center gap-2 group-hover:bg-[#112D4E] group-hover:text-[#F9F7F7] transition-all">
                 상세보기 <ArrowUpRight className="w-4 h-4" />
@@ -77,6 +134,18 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
           </div>
         </motion.div>
       ))}
+      {isEditing && (
+        <motion.div
+          whileHover={{ y: -10 }}
+          onClick={() => handleAddProject(category)}
+          className="group flex flex-col items-center justify-center glass rounded-[2rem] overflow-hidden transition-all duration-500 min-h-[200px] cursor-pointer border-2 border-dashed border-[#112D4E]/20 hover:bg-white/40"
+        >
+          <div className="p-4 bg-[#112D4E]/5 rounded-full mb-4 shadow-sm group-hover:scale-110 group-hover:bg-[#112D4E]/10 transition-transform">
+             <Plus className="w-8 h-8 text-[#112D4E]" />
+          </div>
+          <span className="font-bold text-[#112D4E]">새 프로젝트 추가</span>
+        </motion.div>
+      )}
     </div>
   );
 
@@ -102,7 +171,7 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
       </div>
 
       {/* 포트폴리오 그리드 */}
-      {portfolioProjects.length > 0 && renderGrid(portfolioProjects)}
+      {(portfolioProjects.length > 0 || isEditing) && renderGrid(portfolioProjects, '포트폴리오')}
 
       {/* 구분선 + 게임 분석 헤더 */}
       <div className="my-20">
@@ -115,8 +184,8 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
       </div>
 
       {/* 게임 분석 그리드 */}
-      {gameProjects.length > 0
-        ? renderGrid(gameProjects)
+      {(gameProjects.length > 0 || isEditing)
+        ? renderGrid(gameProjects, '게임 분석')
         : <p className="text-center text-[#8fabc8] font-medium">등록된 게임 분석 항목이 없습니다.</p>
       }
     </motion.section>

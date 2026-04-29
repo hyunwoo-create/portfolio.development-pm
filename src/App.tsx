@@ -29,7 +29,7 @@ const App = () => {
   // --- Content State (Zustand Store) ---
   const {
     isEditing, setIsEditing, isLoading, fetchError,
-    heroContent, aboutContent, portfolioData, skillTabs, tools, resumeData, userImage,
+    heroContent, aboutContent, portfolioData, resumeData, userImage,
     aiSkills, toolCards,
     updateContent, fetchAll
   } = useAppStore();
@@ -60,12 +60,17 @@ const App = () => {
     if (view !== 'home') {
       setView('home');
       // Give time for layout transition before scrolling
-      setTimeout(() => {
+      const checkAndScroll = (attempts = 0) => {
         const element = document.getElementById(id);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }, 100); // Allow browser a frame to paint
+        } else if (attempts < 15) {
+          setTimeout(() => checkAndScroll(attempts + 1), 100);
         }
-      }, 300);
+      };
+      setTimeout(() => checkAndScroll(0), 100);
     } else {
       const element = document.getElementById(id);
       if (element) {
@@ -146,11 +151,6 @@ const App = () => {
               />
               <StatBoard 
                 isEditing={isEditing}
-                projects={portfolioData}
-                setProjects={(v) => updateContent('portfolio_data', v)}
-                skillTabs={skillTabs}
-                tools={tools}
-                onProjectClick={handleProjectClick}
                 userImage={userImage}
                 onImageUpload={(v) => updateContent('stat_board_user_image', v)}
                 aiSkills={aiSkills}
@@ -198,6 +198,7 @@ const App = () => {
               isEditing={isEditing} 
               data={resumeData} 
               setData={(v) => updateContent('resume_data', v)} 
+              onNavClick={handleNavClick}
             />
           )}
         </AnimatePresence>

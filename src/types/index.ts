@@ -111,6 +111,12 @@ export interface ResumeData {
    organization: string;
    period: string;
  }[];
+ usedTools?: any[];
+ usedToolsBottom?: any[];
+ keyActivities?: {
+   title: string;
+   description: string;
+ }[];
  totalExperience?: string;
 }
 

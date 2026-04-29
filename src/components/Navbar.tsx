@@ -16,7 +16,7 @@ export const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditi
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   const navLinks = [
-    { label: '소개', view: 'home', action: () => { onNavClick('about'); setIsMenuOpen(false); } },
+    { label: '소개', view: 'home', action: () => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsMenuOpen(false); } },
     { label: '이력서', view: 'resume', action: () => { onNavClick('resume-section'); setIsMenuOpen(false); } },
     { label: '포트폴리오', view: 'portfolio', action: () => { setView('portfolio'); setIsMenuOpen(false); } }
   ];

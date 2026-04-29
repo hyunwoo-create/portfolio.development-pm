@@ -20,7 +20,10 @@ import {
   Link as LinkIcon,
   Smartphone,
   ScrollText,
-  ShieldCheck
+  ShieldCheck,
+  Wrench,
+  Star,
+  ArrowRight
 } from 'lucide-react';
 import { EditableText } from './EditableText';
 import { processImageHighQuality, getExternalEmbedUrl } from '../utils';
@@ -33,9 +36,10 @@ interface ResumeProps {
   isEditing: boolean;
   data: ResumeData;
   setData: (d: ResumeData | ((prev: ResumeData) => ResumeData)) => void;
+  onNavClick?: (id: string) => void;
 }
 
-export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
+export const Resume = ({ isEditing, data, setData, onNavClick }: ResumeProps) => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const resumeImageInputRef = useRef<HTMLInputElement>(null);
   const [showRsLink, setShowRsLink] = useState(false);
@@ -247,6 +251,8 @@ export const Resume = ({ isEditing, data, setData }: ResumeProps) => {
             </div>
 
             <div className="space-y-0">
+              <ToolsSection data={data} setData={setData} isEditing={isEditing} onNavClick={onNavClick} />
+              <ActivitiesSection data={data} setData={setData} isEditing={isEditing} />
               <EducationSection data={data} setData={setData} isEditing={isEditing} />
               <ExperienceSection data={data} setData={setData} isEditing={isEditing} />
               <CertificatesSection data={data} setData={setData} isEditing={isEditing} />
@@ -298,6 +304,174 @@ const ContactInfo = ({ icon, value, onSave, isEditing }: any) => {
     </div>
   );
 };
+
+const ToolsSection = ({ data, setData, isEditing, onNavClick }: any) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, listKey: 'usedTools' | 'usedToolsBottom', idx: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    processImageHighQuality(file, 100).then(dataUrl => {
+      setData((prev: any) => {
+        const n = [...(prev[listKey] || [])];
+        const oldItem = n[idx];
+        const name = typeof oldItem === 'string' ? oldItem : oldItem.name;
+        n[idx] = { name, image: dataUrl };
+        return { ...prev, [listKey]: n };
+      });
+    }).catch(console.error);
+  };
+
+  const renderTool = (tool: any, idx: number, listKey: 'usedTools' | 'usedToolsBottom') => {
+    const toolObj = typeof tool === 'string' ? { name: tool, image: '' } : tool;
+    
+    return (
+      <span key={idx} className="relative group/tool inline-flex items-center">
+        <span className="px-3 py-1.5 bg-[#F9F7F7] border border-[#DBE2EF] text-[#112D4E] rounded-lg text-[11px] font-bold shadow-sm flex items-center gap-1.5">
+          {isEditing ? (
+            <label className="cursor-pointer flex items-center justify-center relative w-6 h-6 bg-gray-200/50 rounded hover:bg-gray-300/50 transition-colors shrink-0 overflow-hidden" title="아이콘 업로드">
+              {toolObj.image ? (
+                <img src={toolObj.image} alt="" className="w-full h-full object-contain" />
+              ) : (
+                <Plus className="w-3.5 h-3.5 text-gray-500" />
+              )}
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, listKey, idx)} />
+            </label>
+          ) : (
+            toolObj.image && <img src={toolObj.image} alt="" className="w-6 h-6 object-contain shrink-0" />
+          )}
+          <EditableText value={toolObj.name} onSave={(v) => { 
+            setData((prev: any) => {
+              const n = [...(prev[listKey] || [])]; 
+              n[idx] = { ...toolObj, name: v }; 
+              return { ...prev, [listKey]: n };
+            });
+          }} isEditing={isEditing} disableMarkdown={true} />
+        </span>
+        {isEditing && (
+          <button type="button" onClick={() => { 
+            setData((prev: any) => {
+              const n = [...(prev[listKey] || [])]; 
+              n.splice(idx, 1); 
+              return { ...prev, [listKey]: n };
+            });
+          }} className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover/tool:opacity-100 transition-opacity z-10 shadow-sm"><X className="w-2.5 h-2.5" /></button>
+        )}
+      </span>
+    );
+  };
+
+  return (
+    <div className="py-10 border-t border-[#DBE2EF]/60 relative pdf-no-break">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] flex items-center gap-3 uppercase">
+          <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
+            <Wrench className="w-5 h-5" />
+          </div>
+          사용 TOOL
+        </h3>
+        {!isEditing && (
+          <button 
+            onClick={() => {
+              if (onNavClick) {
+                onNavClick('stat-board');
+              } else {
+                const el = document.getElementById('stat-board');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="text-[11px] font-bold text-[#3F72AF] bg-[#3F72AF]/10 px-3 py-1.5 rounded-full hover:bg-[#3F72AF]/20 transition-colors flex items-center gap-1 flex-shrink-0"
+          >
+            More <ArrowRight className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+      <div className="flex flex-col gap-4 pl-1">
+        {/* 상단 툴 */}
+        <div className="flex flex-wrap gap-2">
+          {(data.usedTools || []).map((tool: any, idx: number) => renderTool(tool, idx, 'usedTools'))}
+          {isEditing && (
+            <button type="button" onClick={() => { 
+              setData((prev: any) => {
+                const n = [...(prev.usedTools || []), { name: "새 툴", image: "" }]; 
+                return { ...prev, usedTools: n };
+              });
+            }} className="px-3 py-1.5 border border-dashed border-[#3F72AF]/40 text-[#3F72AF] rounded-lg text-[11px] font-bold hover:bg-[#3F72AF]/5 transition-colors flex items-center gap-1">
+              <Plus className="w-3 h-3" /> 추가
+            </button>
+          )}
+        </div>
+
+        {/* 구분선 */}
+        <div className="h-px bg-gradient-to-r from-[#DBE2EF] to-transparent w-full my-1"></div>
+
+        {/* 하단 툴 */}
+        <div className="flex flex-wrap gap-2">
+          {(data.usedToolsBottom || []).map((tool: any, idx: number) => renderTool(tool, idx, 'usedToolsBottom'))}
+          {isEditing && (
+            <button type="button" onClick={() => { 
+              setData((prev: any) => {
+                const n = [...(prev.usedToolsBottom || []), { name: "새 툴", image: "" }]; 
+                return { ...prev, usedToolsBottom: n };
+              });
+            }} className="px-3 py-1.5 border border-dashed border-[#3F72AF]/40 text-[#3F72AF] rounded-lg text-[11px] font-bold hover:bg-[#3F72AF]/5 transition-colors flex items-center gap-1">
+              <Plus className="w-3 h-3" /> 추가
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ActivitiesSection = ({ data, setData, isEditing }: any) => (
+  <div className="py-10 border-t border-[#DBE2EF]/60 relative pdf-no-break">
+    <h3 className="font-black text-[#112D4E] text-[13px] tracking-[0.15em] mb-8 flex items-center gap-3 uppercase">
+      <div className="w-9 h-9 rounded-xl bg-[#3F72AF]/10 flex items-center justify-center text-[#3F72AF] shadow-sm">
+        <Star className="w-5 h-5" />
+      </div>
+      주요 활동
+    </h3>
+    <div className="space-y-6 pl-1">
+      {(data.keyActivities || []).map((act: any, idx: number) => (
+        <div key={idx} className="relative group/act">
+          {isEditing && (
+            <button type="button" onClick={() => { 
+              setData((prev: any) => {
+                const n = [...(prev.keyActivities || [])]; 
+                n.splice(idx, 1); 
+                return { ...prev, keyActivities: n };
+              });
+            }} className="absolute -left-6 top-1 text-red-300 hover:text-red-500 z-10 opacity-0 group-hover/act:opacity-100 transition-opacity"><X className="w-3 h-3" /></button>
+          )}
+          <div className="text-[14px] font-bold text-[#112D4E] mb-1.5 leading-tight">
+            <EditableText value={act.title} onSave={(v) => { 
+              setData((prev: any) => {
+                const n = [...(prev.keyActivities || [])]; 
+                n[idx] = { ...n[idx], title: v }; 
+                return { ...prev, keyActivities: n };
+              });
+            }} isEditing={isEditing} />
+          </div>
+          <div className="text-[12px] text-[#3F72AF] font-medium leading-[1.6]">
+            <EditableText value={act.description} onSave={(v) => { 
+              setData((prev: any) => {
+                const n = [...(prev.keyActivities || [])]; 
+                n[idx] = { ...n[idx], description: v }; 
+                return { ...prev, keyActivities: n };
+              });
+            }} isEditing={isEditing} multiline />
+          </div>
+        </div>
+      ))}
+      {isEditing && <button type="button" onClick={() => { 
+        setData((prev: any) => {
+          const n = prev.keyActivities ? [...prev.keyActivities] : []; 
+          n.push({ title: "새 주요 활동", description: "활동 설명을 입력하세요" }); 
+          return { ...prev, keyActivities: n };
+        });
+      }} className="w-full py-2 border border-dashed border-[#3F72AF]/30 rounded-xl text-[11px] font-bold text-[#3F72AF] hover:bg-[#3F72AF]/5 transition-all mt-4"><Plus className="w-3 h-3 inline mr-1" /> 주요 활동 추가</button>}
+    </div>
+  </div>
+);
 
 const EducationSection = ({ data, setData, isEditing }: any) => (
   <div className="py-10 border-t border-b border-[#DBE2EF]/60 relative pdf-no-break">
