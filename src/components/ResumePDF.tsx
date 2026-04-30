@@ -45,6 +45,24 @@ const renderContent = (content: string | undefined, className?: string) => {
   );
 };
 
+// TipTap HTML → 순수 텍스트 변환 (줄바꿈 보존, 태그 제거)
+const stripHtmlToText = (html: string): string => {
+  if (!html) return '';
+  return html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+};
+
 // usedTools 배지 렌더링 헬퍼
 const renderToolBadge = (tool: any, keyPrefix: string, idx: number) => {
   const toolObj = typeof tool === 'string' ? { name: tool, image: '' } : tool;
@@ -345,23 +363,15 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                       ))}
                     </div>
                   )}
-                {/* 좌측 하단: 기본 버튼 */}
-                {statBoardDefaultBtnText && (() => {
-                  const isBtnHtml = /<[a-z][\s\S]*>/i.test(statBoardDefaultBtnText);
-                  return (
-                    <div className="mt-6 px-6 py-4 bg-[#0a1e36] rounded-2xl flex items-center justify-between gap-4 shadow-xl">
-                      {isBtnHtml ? (
-                        <span
-                          className="text-white text-[13px] font-black leading-snug flex-1 statboard-btn-text"
-                          dangerouslySetInnerHTML={{ __html: statBoardDefaultBtnText }}
-                        />
-                      ) : (
-                        <span className="text-white text-[13px] font-black leading-snug whitespace-pre-wrap flex-1">{statBoardDefaultBtnText}</span>
-                      )}
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                    </div>
-                  );
-                })()}
+                {/* 좌측 하단: 기본 버튼 - HTML 태그 제거 후 순수 텍스트로 출력 */}
+                {statBoardDefaultBtnText && (
+                  <div className="mt-6 px-6 py-4 bg-[#0a1e36] rounded-2xl flex items-center justify-between gap-4 shadow-xl">
+                    <span className="text-white text-[13px] font-black leading-snug whitespace-pre-wrap flex-1 text-center">
+                      {stripHtmlToText(statBoardDefaultBtnText)}
+                    </span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </div>
+                )}
 
                 </div>
 
@@ -382,19 +392,12 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                     {statBoardDefaultDetailTitle ? (
                       <>
                         <h3 className="text-2xl font-black text-[#112D4E] mb-6 text-center tracking-tight">{statBoardDefaultDetailTitle}</h3>
-                        {statBoardDefaultDetailDesc ? (() => {
-                          const desc = statBoardDefaultDetailDesc;
-                          const isHtml = /<[a-z][\s\S]*>/i.test(desc);
-                          return (
-                            <div
-                              className="text-[#112D4E]/80 text-[15px] leading-relaxed font-medium flex-1 text-center statboard-detail-body"
-                              dangerouslySetInnerHTML={{ __html: isHtml ? desc : desc.replace(/\n/g, '<br/>') }}
-                            />
-                          );
-                        })() : null}
-                        <div className="mt-6 pt-4 border-t border-[#DBE2EF]/60">
-                          <p className="text-xs font-bold text-[#8fabc8] text-center">좌측 항목을 클릭하면 상세 정보가 표시됩니다.</p>
-                        </div>
+                        {statBoardDefaultDetailDesc && (
+                          <div
+                            className="text-[#112D4E]/80 text-[15px] leading-relaxed font-medium flex-1 text-center statboard-detail-body"
+                            dangerouslySetInnerHTML={{ __html: statBoardDefaultDetailDesc }}
+                          />
+                        )}
                       </>
                     ) : (
                       <>
