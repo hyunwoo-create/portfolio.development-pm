@@ -89,6 +89,20 @@ export const handlePdfExport = (payload: PdfExportPayload) => {
             /* Markdown 스타일 보정 */
             .markdown-body ul, .markdown-body ol { padding-left: 1.5rem !important; margin-bottom: 1rem; }
             .markdown-body p { margin-bottom: 0.8rem; }
+            /* StatBoard 상세 내용 (TipTap HTML) 스타일 — 화면과 동일하게 */
+            .statboard-detail-body p { margin: 0 0 0.6rem; line-height: 1.75; }
+            .statboard-detail-body p:last-child { margin-bottom: 0; }
+            .statboard-detail-body ul { list-style-type: disc; padding-left: 1.4rem; margin: 0.3rem 0 0.6rem; }
+            .statboard-detail-body ol { list-style-type: decimal; padding-left: 1.4rem; margin: 0.3rem 0 0.6rem; }
+            .statboard-detail-body li { margin-bottom: 0.2rem; line-height: 1.6; }
+            .statboard-detail-body li p { margin: 0; }
+            .statboard-detail-body strong { font-weight: 700; }
+            .statboard-detail-body em { font-style: italic; }
+            .statboard-detail-body u { text-decoration: underline; }
+            .statboard-detail-body s { text-decoration: line-through; }
+            .statboard-detail-body blockquote { border-left: 3px solid rgba(63,114,175,0.5); padding: 0.4rem 0.75rem; margin: 0.5rem 0; color: #3F72AF; font-style: italic; background: rgba(63,114,175,0.06); border-radius: 0 0.5rem 0.5rem 0; }
+            .statboard-detail-body h1, .statboard-detail-body h2, .statboard-detail-body h3 { font-weight: 800; margin: 0.5rem 0 0.3rem; color: #112D4E; }
+            .statboard-detail-body br { display: block; margin: 0.3rem 0; content: ""; }
           </style>
         </head>
         <body>

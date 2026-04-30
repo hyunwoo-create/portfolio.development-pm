@@ -372,12 +372,16 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                     {statBoardDefaultDetailTitle ? (
                       <>
                         <h3 className="text-2xl font-black text-[#112D4E] mb-6 text-center tracking-tight">{statBoardDefaultDetailTitle}</h3>
-                        {statBoardDefaultDetailDesc ? (
-                          <div
-                            className="text-[#112D4E]/80 text-[15px] leading-relaxed font-medium flex-1 text-center"
-                            dangerouslySetInnerHTML={{ __html: statBoardDefaultDetailDesc.startsWith('<') ? statBoardDefaultDetailDesc : statBoardDefaultDetailDesc.replace(/\n/g, '<br/>') }}
-                          />
-                        ) : null}
+                        {statBoardDefaultDetailDesc ? (() => {
+                          const desc = statBoardDefaultDetailDesc;
+                          const isHtml = /<[a-z][\s\S]*>/i.test(desc);
+                          return (
+                            <div
+                              className="text-[#112D4E]/80 text-[15px] leading-relaxed font-medium flex-1 text-center statboard-detail-body"
+                              dangerouslySetInnerHTML={{ __html: isHtml ? desc : desc.replace(/\n/g, '<br/>') }}
+                            />
+                          );
+                        })() : null}
                         <div className="mt-6 pt-4 border-t border-[#DBE2EF]/60">
                           <p className="text-xs font-bold text-[#8fabc8] text-center">좌측 항목을 클릭하면 상세 정보가 표시됩니다.</p>
                         </div>
