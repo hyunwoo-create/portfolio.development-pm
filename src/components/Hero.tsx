@@ -183,8 +183,8 @@ export const Hero = ({ onNavClick, onToggleAdmin, isEditing, content, setContent
           </h1>
         </div>
         
-        <div className="flex flex-col items-end justify-start pointer-events-auto md:mt-16">
-          <div className="w-full max-w-[437px]">
+        <div className="flex flex-col items-end justify-start pointer-events-auto md:mt-8">
+          <div className="w-full max-w-[550px]">
             <HeroLineChart
               points={content.chartPoints || []}
               isEditing={isEditing}

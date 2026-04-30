@@ -7,9 +7,11 @@ import {
   Upload, 
   Wrench,
   Trash2,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Sparkles
 } from 'lucide-react';
 import { EditableText } from './EditableText';
+import { AdminTextEditor } from './AdminTextEditor';
 import { getExternalEmbedUrl, processImageHighQuality } from '../utils';
 import { useAppStore } from '../store';
 
@@ -54,7 +56,7 @@ const ToolCategoryDetail = ({ category, toolsInCat, isEditing, updateToolCard, r
         <div className="w-12 h-1.5 bg-[#3F72AF] rounded-full mt-4 mb-2"></div>
       </div>
       
-      <div id="tool-detail-container" className="flex-1 overflow-y-auto pr-4 custom-scrollbar flex flex-col gap-8 pb-12 scroll-smooth relative">
+      <div id="tool-detail-container" className="flex-1 overflow-y-auto pr-4 custom-scrollbar flex flex-col gap-8 pb-[60vh] scroll-smooth relative">
         {toolsInCat.map((t: any, idx: number) => (
           <div key={t.id} id={`tool-detail-${t.id}`} className="flex flex-col relative pt-2 scroll-mt-4">
              <div className="flex justify-between items-start mb-4">
@@ -106,8 +108,16 @@ const ToolCategoryDetail = ({ category, toolsInCat, isEditing, updateToolCard, r
                )}
              </div>
              
-             <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed">
-               <EditableText value={t.description || '설명을 입력하세요.'} isEditing={isEditing} multiline onSave={(v: string) => updateToolCard(t.id, 'description', v)} />
+             <div className="text-[#112D4E]/80 text-[15px] mb-6 leading-relaxed">
+               <AdminTextEditor
+                 isAdmin={isEditing}
+                 hideTitle
+                 bodyValue={t.description || ''}
+                 onBodyChange={(v: string) => updateToolCard(t.id, 'description', v)}
+                 bodyPlaceholder="상세 설명을 입력하세요..."
+                 minBodyHeight="80px"
+                 readonlyClassName="markdown-body"
+               />
              </div>
 
              {isEditing && (
@@ -251,8 +261,16 @@ export const StatBoard = ({
       <h3 className="text-3xl font-black text-[#112D4E] mb-4 leading-tight">
         <EditableText value={a.title} isEditing={isEditing} onSave={(v: string) => updateAiSkill(a.id, 'title', v)} />
       </h3>
-      <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed">
-        <EditableText value={a.description || '설명을 입력하세요.'} isEditing={isEditing} multiline onSave={(v: string) => updateAiSkill(a.id, 'description', v)} />
+      <div className="text-[#112D4E]/80 text-[15px] mb-6 leading-relaxed">
+        <AdminTextEditor
+          isAdmin={isEditing}
+          hideTitle
+          bodyValue={a.description || ''}
+          onBodyChange={(v: string) => updateAiSkill(a.id, 'description', v)}
+          bodyPlaceholder="상세 설명을 입력하세요..."
+          minBodyHeight="100px"
+          readonlyClassName="markdown-body"
+        />
       </div>
       {isEditing && (
         <div className="mb-4">
@@ -320,8 +338,13 @@ export const StatBoard = ({
 
             {/* ── AI 활용 능력 ── */}
             <div className="flex flex-col shrink-0">
-              <div className="flex items-center justify-between mb-3 pl-2">
-                <h2 className="text-[14px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">AI 활용 능력</h2>
+              <div className="flex items-center justify-between mb-4 pl-1">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-[#DBE2EF]/50 flex items-center justify-center shrink-0 border border-[#DBE2EF]/80 shadow-sm">
+                    <Sparkles className="w-4 h-4 text-[#3F72AF]" />
+                  </div>
+                  <h2 className="text-[14px] font-black tracking-[0.1em] text-[#112D4E] uppercase pt-0.5">AI 활용 능력</h2>
+                </div>
                 {isEditing && (
                   <button onClick={addAiSkill} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
                 )}
@@ -349,8 +372,13 @@ export const StatBoard = ({
 
             {/* ── 사용 TOOL ── */}
             <div className="flex flex-col shrink-0">
-              <div className="flex items-center justify-between mb-3 pl-2">
-                <h2 className="text-[14px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">사용 TOOL</h2>
+              <div className="flex items-center justify-between mb-4 pl-1">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-[#DBE2EF]/50 flex items-center justify-center shrink-0 border border-[#DBE2EF]/80 shadow-sm">
+                    <Wrench className="w-4 h-4 text-[#3F72AF]" />
+                  </div>
+                  <h2 className="text-[14px] font-black tracking-[0.1em] text-[#112D4E] uppercase pt-0.5">사용 TOOL</h2>
+                </div>
               </div>
               <div className="flex flex-col gap-4">
                 {['문서', '협업', '디자인', '개발', 'AI'].map((cat, idx, arr) => {
@@ -435,7 +463,7 @@ export const StatBoard = ({
         </div>
         
         {/* CENTER COL: User Avatar */}
-        <div className="h-[48vh] sticky top-24 flex flex-col items-center justify-center pb-4 pt-2">
+        <div className="h-[48vh] flex flex-col items-center justify-center pb-4 pt-2 z-10 self-center">
           <div className="w-full h-full relative group flex items-center justify-center">
             <img src={userImage || "https://picsum.photos/400/800"} alt="Avatar" className="w-[120%] h-[120%] max-w-[none] object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)] group-hover:scale-[1.05] transition-transform duration-1000" />
             

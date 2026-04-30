@@ -2,7 +2,7 @@ import React from 'react';
 import { Plus, X } from 'lucide-react';
 
 export interface ChartPoint {
-  value: number; // -10 ~ 10
+  value: number; // -15 ~ 15
   label: string;
 }
 
@@ -14,12 +14,12 @@ interface HeroLineChartProps {
 
 const LINE_COLOR = '#E05C6A';
 
-const W = 364, H = 160;
+const W = 480, H = 160;
 const PAD_X = 24, PAD_TOP = 32, PAD_BOTTOM = 24;
 const CHART_W = W - PAD_X * 2;
 const CHART_H = H - PAD_TOP - PAD_BOTTOM;
 
-const toSvgY = (val: number) => PAD_TOP + (CHART_H / 2) * (1 - val / 10);
+const toSvgY = (val: number) => PAD_TOP + (CHART_H / 2) * (1 - val / 15);
 const toSvgX = (i: number, len: number) => {
   if (len <= 1) return W / 2;
   return PAD_X + (i / (len - 1)) * CHART_W;
@@ -38,7 +38,7 @@ export const HeroLineChart = ({ points, isEditing, onChange }: HeroLineChartProp
     onChange(points.map((p, idx) => idx === i ? { ...p, ...patch } : p));
   };
 
-  const clamp = (v: number) => Math.max(-10, Math.min(10, v));
+  const clamp = (v: number) => Math.max(-15, Math.min(15, v));
 
   return (
     <div className="w-full">
@@ -109,7 +109,7 @@ export const HeroLineChart = ({ points, isEditing, onChange }: HeroLineChartProp
       {isEditing && (
         <div className="mt-3 p-3 bg-white/60 rounded-xl border border-[#3F72AF]/15 backdrop-blur-sm space-y-1.5">
           <p className="text-[10px] font-black text-[#3F72AF] uppercase tracking-widest mb-2">
-            그래프 데이터 입력 (-10 ~ 10)
+            그래프 데이터 입력 (-15 ~ 15)
           </p>
 
           {points.map((p, i) => (
@@ -120,8 +120,8 @@ export const HeroLineChart = ({ points, isEditing, onChange }: HeroLineChartProp
               {/* 값 입력 */}
               <input
                 type="number"
-                min={-10}
-                max={10}
+                min={-15}
+                max={15}
                 step={0.5}
                 value={p.value}
                 onChange={e => updatePoint(i, { value: clamp(Number(e.target.value)) })}

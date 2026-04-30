@@ -204,7 +204,7 @@ export const EducationSection = ({ data, setData, isEditing }: any) => (
             {(edu.details || []).map((d: string, i: number) => (
               <div key={i} className="group/item relative flex items-start gap-1.5 text-[12px] text-[#3F72AF] font-medium">
                 <span className="font-bold shrink-0 mt-[1px]">•</span>
-                <span className="flex-1">
+                <span className="flex-1 [&_.markdown-body]:!text-[#3F72AF] [&_.markdown-body_*]:!text-[#3F72AF] [&_.markdown-body_p]:!mb-0">
                   <EditableText value={d} onSave={(v) => { 
                     setData((prev: any) => {
                       const n = [...(prev.education || [])]; 
@@ -293,7 +293,7 @@ export const ExperienceSection = ({ data, setData, isEditing }: any) => (
               {(exp.details || []).map((d: string, i: number) => (
                 <div key={i} className="group/detail relative flex items-start gap-1.5">
                   <span className="font-bold shrink-0 mt-[1px]">•</span>
-                  <span className="flex-1 whitespace-pre-wrap">
+                  <span className="flex-1 whitespace-pre-wrap [&_.markdown-body]:!text-[#3F72AF] [&_.markdown-body_*]:!text-[#3F72AF] [&_.markdown-body_p]:!mb-0">
                     <EditableText
                       value={d}
                       multiline
