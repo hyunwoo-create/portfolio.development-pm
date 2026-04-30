@@ -10,6 +10,9 @@ export interface PdfExportPayload {
   aiSkills?: any;
   toolCards?: any;
   userImage?: string;
+  statBoardDefaultBtnText?: string;
+  statBoardDefaultDetailTitle?: string;
+  statBoardDefaultDetailDesc?: string;
 }
 
 /**
