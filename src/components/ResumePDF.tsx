@@ -101,7 +101,7 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
           <td style={{ padding: 0 }}>
             <div style={{
               background: '#112D4E',
-              padding: '12px 40px',
+              padding: '12px 60px 12px 40px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -355,11 +355,33 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                   )}
                 </div>
 
-                {/* 우측: 기본 안내 박스 */}
+                {/* 우측: 첫 번째 AI 스킬 상세 내용 또는 기본 안내 */}
                 <div className="col-span-5 pt-12 z-10">
-                  <div className="bg-white/70 backdrop-blur-2xl rounded-[3rem] p-12 border-2 border-white shadow-2xl flex flex-col items-center justify-center text-center" style={{ height: '400px' }}>
-                    <Wrench className="w-12 h-12 mb-4 opacity-30 text-[#8fabc8]"/>
-                    <p className="text-sm font-bold text-[#8fabc8]">좌측 항목을 클릭하면<br/>상세 정보가 표시됩니다.</p>
+                  <div className="bg-white/70 backdrop-blur-2xl rounded-[3rem] p-12 border-2 border-white shadow-2xl flex flex-col" style={{ minHeight: '400px' }}>
+                    {aiSkills && aiSkills.length > 0 ? (() => {
+                      const a = aiSkills[0];
+                      return (
+                        <>
+                          <h3 className="text-2xl font-black text-[#112D4E] mb-6 text-center tracking-tight">{a.title}</h3>
+                          {a.description ? (
+                            <div
+                              className="text-[#112D4E]/80 text-[15px] leading-relaxed font-medium flex-1"
+                              dangerouslySetInnerHTML={{ __html: a.description }}
+                            />
+                          ) : (
+                            <p className="text-sm font-medium text-[#8fabc8] text-center flex-1 flex items-center justify-center">설명이 없습니다.</p>
+                          )}
+                          <div className="mt-6 pt-4 border-t border-[#DBE2EF]/60">
+                            <p className="text-xs font-bold text-[#8fabc8] text-center">좌측 항목을 클릭하면 상세 정보가 표시됩니다.</p>
+                          </div>
+                        </>
+                      );
+                    })() : (
+                      <>
+                        <Wrench className="w-12 h-12 mb-4 opacity-30 text-[#8fabc8] mx-auto" />
+                        <p className="text-sm font-bold text-[#8fabc8] text-center">좌측 항목을 클릭하면<br/>상세 정보가 표시됩니다.</p>
+                      </>
+                    )}
                   </div>
                 </div>
 
