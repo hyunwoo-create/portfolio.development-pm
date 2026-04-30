@@ -106,6 +106,14 @@ export const handlePdfExport = (payload: PdfExportPayload) => {
             /* StatBoard 버튼 내 TipTap HTML 스타일 */
             .statboard-btn-text p { margin: 0; color: white; line-height: 1.5; text-align: center; }
             .statboard-btn-text br { display: inline; }
+            /* 형광펜(mark) 하프 하이라이트 효과 (PDF 배경색 White 기준) */
+            mark {
+              background-image: linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 50%, transparent 50%) !important;
+              padding: 0.05em 0.25em !important;
+              border-radius: 2px !important;
+              -webkit-box-decoration-break: clone !important;
+              box-decoration-break: clone !important;
+            }
           </style>
         </head>
         <body>

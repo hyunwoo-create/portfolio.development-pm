@@ -349,7 +349,7 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
               
               <section className="px-12 pt-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px', display: 'flex', flexDirection: 'column' }}>
                 {/* 상단: AI능력(좌) + 아바타(중) + 기본 안내(우) */}
-                <div className="grid gap-8 flex-1 items-start relative" style={{ gridTemplateColumns: '1.2fr 260px 1.5fr' }}>
+                <div className="grid gap-8 flex-1 items-start relative" style={{ gridTemplateColumns: '1.2fr 240px 1.6fr' }}>
                 
                 {/* 좌측: AI 능력 목록 */}
                 <div className="flex flex-col gap-6 pt-12 z-10 w-full">
@@ -388,14 +388,15 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
 
                 {/* 우측: statBoard 기본 상세 내용 */}
                 <div className="pt-12 z-10 w-full">
-                  <div className="bg-white/70 backdrop-blur-2xl rounded-[3rem] p-12 border-2 border-white shadow-2xl flex flex-col" style={{ minHeight: '400px' }}>
+                  <div className="bg-white/70 backdrop-blur-2xl rounded-[3rem] px-8 py-12 border-2 border-white shadow-2xl flex flex-col" style={{ minHeight: '400px' }}>
                     {statBoardDefaultDetailTitle ? (
                       <>
                         <h3 className="text-2xl font-black text-[#112D4E] mb-6 text-center tracking-tight">{statBoardDefaultDetailTitle}</h3>
                         {statBoardDefaultDetailDesc && (
-                          <div className="text-[#112D4E]/80 text-[14px] leading-relaxed font-medium flex-1 text-center whitespace-pre-wrap">
-                            {statBoardDefaultDetailDesc}
-                          </div>
+                          <div
+                            className="text-[#112D4E]/80 text-[14px] leading-relaxed font-medium flex-1 text-center statboard-detail-body"
+                            dangerouslySetInnerHTML={{ __html: statBoardDefaultDetailDesc }}
+                          />
                         )}
                       </>
                     ) : (
@@ -444,7 +445,7 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
 
 
       {/* Resume Grid */}
-      <div className="break-before-page">
+      <div className="break-before-page px-12 pt-8">
         
         <div className="grid grid-cols-[280px_1fr] gap-12">
         {/* Sidebar */}
@@ -544,9 +545,9 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                 {data.keyActivities.map((act: any, idx: number) => (
                   <div key={idx} className="relative group/act">
                     <div className="text-[14px] font-bold text-[#112D4E] mb-1.5 leading-tight">{act.title}</div>
-                    <div className="text-[12px] text-[#3F72AF] font-medium leading-[1.6]">
-                      {act.description}
-                    </div>
+                    {act.description && act.description.startsWith('<')
+                      ? <div className="text-[12px] text-[#3F72AF] font-medium leading-[1.6] [&_p]:m-0" dangerouslySetInnerHTML={{ __html: act.description }} />
+                      : <div className="text-[12px] text-[#3F72AF] font-medium leading-[1.6] whitespace-pre-wrap">{act.description}</div>}
                   </div>
                 ))}
               </div>
@@ -604,7 +605,9 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                         </div>
                       ))}
                     </div>
-                    <div className="text-[12px] font-bold text-[#112D4E] whitespace-pre-wrap leading-[1.6] pt-1">{exp.period}</div>
+                    {exp.period && exp.period.startsWith('<')
+                      ? <div className="text-[12px] font-bold text-[#112D4E] whitespace-pre-wrap leading-[1.6] pt-1 [&_p]:m-0" dangerouslySetInnerHTML={{ __html: exp.period }} />
+                      : <div className="text-[12px] font-bold text-[#112D4E] whitespace-pre-wrap leading-[1.6] pt-1">{exp.period}</div>}
                   </div>
                 </div>
               ))}
