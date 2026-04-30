@@ -349,7 +349,7 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
               
               <section className="px-12 pt-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px', display: 'flex', flexDirection: 'column' }}>
                 {/* 상단: AI능력(좌) + 아바타(중) + 기본 안내(우) */}
-                <div className="grid gap-8 flex-1 items-start relative" style={{ gridTemplateColumns: '1.2fr 380px 1.5fr' }}>
+                <div className="grid gap-8 flex-1 items-start relative" style={{ gridTemplateColumns: '1.2fr 260px 1.5fr' }}>
                 
                 {/* 좌측: AI 능력 목록 */}
                 <div className="flex flex-col gap-6 pt-12 z-10 w-full">
@@ -393,10 +393,9 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                       <>
                         <h3 className="text-2xl font-black text-[#112D4E] mb-6 text-center tracking-tight">{statBoardDefaultDetailTitle}</h3>
                         {statBoardDefaultDetailDesc && (
-                          <div
-                            className="text-[#112D4E]/80 text-[15px] leading-relaxed font-medium flex-1 text-center statboard-detail-body"
-                            dangerouslySetInnerHTML={{ __html: statBoardDefaultDetailDesc }}
-                          />
+                          <div className="text-[#112D4E]/80 text-[14px] leading-relaxed font-medium flex-1 text-center whitespace-pre-wrap">
+                            {statBoardDefaultDetailDesc}
+                          </div>
                         )}
                       </>
                     ) : (
