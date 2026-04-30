@@ -34,6 +34,137 @@ const StatBoardMobileAccordion = ({ title, isActive, onClick, children }: any) =
 
 
 
+const ToolCategoryDetail = ({ category, toolsInCat, isEditing, updateToolCard, removeToolCard, targetId }: any) => {
+  useEffect(() => {
+    if (targetId) {
+      setTimeout(() => {
+        const el = document.getElementById(`tool-detail-${targetId}`);
+        const container = document.getElementById('tool-detail-container');
+        if (el && container) {
+          container.scrollTo({ top: el.offsetTop, behavior: 'smooth' });
+        }
+      }, 50);
+    }
+  }, [category, targetId]);
+
+  return (
+    <div className="flex flex-col h-full animate-fade-in relative z-10 w-full">
+      <div className="flex flex-col mb-8 shrink-0">
+        <h2 className="text-4xl font-black text-[#112D4E] tracking-tight">{category}</h2>
+        <div className="w-12 h-1.5 bg-[#3F72AF] rounded-full mt-4 mb-2"></div>
+      </div>
+      
+      <div id="tool-detail-container" className="flex-1 overflow-y-auto pr-4 custom-scrollbar flex flex-col gap-8 pb-12 scroll-smooth relative">
+        {toolsInCat.map((t: any, idx: number) => (
+          <div key={t.id} id={`tool-detail-${t.id}`} className="flex flex-col relative pt-2 scroll-mt-4">
+             <div className="flex justify-between items-start mb-4">
+               <div className="flex items-center gap-4">
+                 <div className="w-[62px] h-[62px] bg-white rounded-2xl flex items-center justify-center shadow-lg border border-[#DBE2EF] p-2.5 relative group shrink-0">
+                    {t.iconUrl
+                      ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm" alt={t.name}/>
+                      : <Wrench className="w-7 h-7 text-[#3F72AF]"/>}
+                    {isEditing && (
+                      <div className="absolute inset-0 bg-black/60 rounded-2xl opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity p-1.5 gap-1.5 z-20">
+                        <input
+                          className="text-[8px] bg-white text-[#112D4E] p-1 rounded w-full focus:outline-none text-center"
+                          placeholder="URL"
+                          value={t.iconUrl || ''}
+                          onChange={(e) => updateToolCard(t.id, 'iconUrl', e.target.value)}
+                        />
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); document.getElementById(`tool-icon-upload-${t.id}`)?.click(); }}
+                          className="w-full bg-white text-[#112D4E] rounded text-[8px] font-bold py-1 flex items-center justify-center gap-1 hover:bg-gray-200"
+                        >
+                          <Upload className="w-2 h-2" /> 파일
+                        </button>
+                        <input 
+                          type="file" 
+                          id={`tool-icon-upload-${t.id}`} 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            try {
+                              const base64 = await processImageHighQuality(file);
+                              updateToolCard(t.id, 'iconUrl', base64);
+                            } catch (err) {
+                              console.error(err);
+                              alert('이미지 업로드 중 오류가 발생했습니다.');
+                            }
+                          }} 
+                        />
+                      </div>
+                    )}
+                 </div>
+                 <h3 className="text-[28px] font-black text-[#112D4E] leading-tight pt-1">
+                   <EditableText value={t.name} isEditing={isEditing} onSave={(v: string) => updateToolCard(t.id, 'name', v)} />
+                 </h3>
+               </div>
+               {isEditing && (
+                 <button onClick={() => removeToolCard(t.id)} className="text-red-400 hover:text-red-600 bg-red-50 p-1.5 rounded-lg transition-colors mt-2"><X className="w-4 h-4"/></button>
+               )}
+             </div>
+             
+             <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed">
+               <EditableText value={t.description || '설명을 입력하세요.'} isEditing={isEditing} multiline onSave={(v: string) => updateToolCard(t.id, 'description', v)} />
+             </div>
+
+             {isEditing && (
+                <div className="mb-4">
+                  <label className="text-[10px] font-bold text-[#3F72AF] mb-1 block uppercase tracking-wider">이미지 URL</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={t.imageUrl || ''}
+                      onChange={(e) => updateToolCard(t.id, 'imageUrl', e.target.value)}
+                      placeholder="https://..."
+                      className="flex-1 border border-[#DBE2EF] rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#3F72AF]"
+                    />
+                    <button
+                      onClick={() => document.getElementById(`tool-img-upload-${t.id}`)?.click()}
+                      className="bg-[#112D4E] text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-[#1A59A7] flex items-center gap-1 shrink-0"
+                    >
+                      <Upload className="w-3 h-3" /> 파일
+                    </button>
+                    <input 
+                      type="file" 
+                      id={`tool-img-upload-${t.id}`} 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const base64 = await processImageHighQuality(file);
+                          updateToolCard(t.id, 'imageUrl', base64);
+                        } catch (err) {
+                          console.error(err);
+                          alert('이미지 업로드 중 오류가 발생했습니다.');
+                        }
+                      }} 
+                    />
+                  </div>
+                </div>
+              )}
+              {t.imageUrl && (
+                <div className="w-full rounded-2xl overflow-hidden border border-[#DBE2EF] shadow-sm">
+                  <img src={t.imageUrl} alt={t.name} className="w-full h-auto object-cover" />
+                </div>
+              )}
+              {idx < toolsInCat.length - 1 && <hr className="mt-12 border-t-2 border-dashed border-[#DBE2EF]/50" />}
+          </div>
+        ))}
+        {toolsInCat.length === 0 && (
+          <div className="flex-1 flex items-center justify-center text-[#3F72AF]/50 font-bold text-sm">
+            등록된 툴이 없습니다.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const StatBoard = ({ 
   isEditing, 
   userImage, 
@@ -85,14 +216,16 @@ export const StatBoard = ({
     }
   };
 
-  const addToolCard = () => {
-    const newCard = { id: Date.now().toString(), name: '새 도구', iconUrl: '', description: '설명을 입력하세요.', imageUrl: '' };
+  const addToolCard = (category: string = '문서') => {
+    const newCard = { id: Date.now().toString(), name: '새 도구', category, iconUrl: '', description: '설명을 입력하세요.', imageUrl: '' };
     setToolCards([...(toolCards || []), newCard]);
   };
 
   const removeToolCard = (id: string) => {
     setToolCards((toolCards || []).filter((t: any) => t.id !== id));
-    setHoveredItem(null);
+    if (hoveredItem?.type !== 'toolCategory') {
+      setHoveredItem(null);
+    }
   };
 
   const updateToolCard = (id: string, field: string, value: string) => {
@@ -167,53 +300,7 @@ export const StatBoard = ({
     </div>
   );
 
-  const renderToolCardDetail = (t: any) => (
-    <div className="flex flex-col h-full animate-fade-in relative z-10 w-full">
-      <div className="flex justify-between items-start mb-6">
-        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-[#DBE2EF] p-3 relative group">
-          {t.iconUrl
-            ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm" alt={t.name}/>
-            : <Wrench className="w-8 h-8 text-[#3F72AF]"/>}
-          {isEditing && (
-            <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity p-2">
-              <input
-                className="text-[8px] bg-white text-[#112D4E] p-1 rounded w-full focus:outline-none"
-                placeholder="Icon URL"
-                value={t.iconUrl || ''}
-                onChange={(e) => updateToolCard(t.id, 'iconUrl', e.target.value)}
-              />
-            </div>
-          )}
-        </div>
-        {isEditing && (
-          <button onClick={() => removeToolCard(t.id)} className="text-red-400 hover:text-red-600 bg-red-50 p-1.5 rounded-lg transition-colors"><X className="w-4 h-4"/></button>
-        )}
-      </div>
-      <h3 className="text-3xl font-black text-[#112D4E] mb-4">
-        <EditableText value={t.name} isEditing={isEditing} onSave={(v: string) => updateToolCard(t.id, 'name', v)} />
-      </h3>
-      <div className="text-[#112D4E]/80 text-sm mb-6 leading-relaxed">
-        <EditableText value={t.description || '설명을 입력하세요.'} isEditing={isEditing} multiline onSave={(v: string) => updateToolCard(t.id, 'description', v)} />
-      </div>
-      {isEditing && (
-        <div className="mb-4">
-          <label className="text-[10px] font-bold text-[#3F72AF] mb-1 block uppercase tracking-wider">이미지 URL</label>
-          <input
-            type="text"
-            value={t.imageUrl || ''}
-            onChange={(e) => updateToolCard(t.id, 'imageUrl', e.target.value)}
-            placeholder="https://..."
-            className="w-full border border-[#DBE2EF] rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#3F72AF]"
-          />
-        </div>
-      )}
-      {t.imageUrl && (
-        <div className="mt-auto w-full rounded-2xl overflow-hidden border border-[#DBE2EF] shadow-sm">
-          <img src={t.imageUrl} alt={t.name} className="w-full h-auto object-cover" />
-        </div>
-      )}
-    </div>
-  );
+
 
   return (
     <section id="stat-board" className="pt-7 pb-14 px-6 max-w-[1400px] mx-auto relative z-20 bg-[#F9F7F7]">
@@ -225,11 +312,11 @@ export const StatBoard = ({
       </div>
 
       {/* DESKTOP 3-COLUMN */}
-      <div className="hidden lg:grid gap-8 items-start relative select-none w-full" style={{ gridTemplateColumns: '1.2fr 380px 1.5fr' }}>
+      <div className="hidden lg:grid gap-8 items-stretch relative select-none w-full" style={{ gridTemplateColumns: '1.2fr 380px 1.5fr' }}>
         
         {/* LEFT COL: AI 활용 능력 + 사용 TOOL */}
-        <div className="flex flex-col pr-4 h-[48vh] py-2 w-full overflow-y-auto custom-scrollbar">
-          <div className="flex flex-col gap-8 w-full pb-4 min-h-full">
+        <div className="flex flex-col pr-4 py-2 w-full">
+          <div className="flex flex-col gap-8 w-full pb-4">
 
             {/* ── AI 활용 능력 ── */}
             <div className="flex flex-col shrink-0">
@@ -264,33 +351,61 @@ export const StatBoard = ({
             <div className="flex flex-col shrink-0">
               <div className="flex items-center justify-between mb-3 pl-2">
                 <h2 className="text-[14px] font-black tracking-[0.1em] text-[#8fabc8] uppercase">사용 TOOL</h2>
-                {isEditing && (
-                  <button onClick={addToolCard} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
-                )}
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                {toolCards?.map((t: any) => (
-                  <div
-                    key={t.id}
-                    onClick={() => setHoveredItem({ type: 'toolCard', data: t })}
-                    className={`p-3 rounded-xl cursor-pointer transition-all duration-300 border flex items-center gap-2 group ${
-                      hoveredItem?.data?.id === t.id
-                        ? 'bg-[#0a1e36] border-[#0a1e36] shadow-md scale-[1.02]'
-                        : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] shadow-sm hover:scale-[1.02]'
-                    }`}
-                  >
-                    {t.iconUrl
-                      ? <img src={t.iconUrl} className="w-5 h-5 object-contain shrink-0" alt={t.name}/>
-                      : <Wrench className={`w-4 h-4 shrink-0 transition-colors ${
-                          hoveredItem?.data?.id === t.id ? 'text-white' : 'text-[#3F72AF] group-hover:text-white'
-                        }`}/>}
-                    <span className={`font-black text-[13px] leading-tight transition-colors ${
-                      hoveredItem?.data?.id === t.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
-                    }`}>
-                      {t.name}
-                    </span>
-                  </div>
-                ))}
+              <div className="flex flex-col gap-4">
+                {['문서', '협업', '디자인', '개발', 'AI'].map((cat, idx, arr) => {
+                  const toolsInCat = (toolCards || []).filter((t: any) => t.category === cat);
+                  return (
+                    <div key={cat} className="flex flex-col">
+                      <div className="flex items-center justify-between mb-3 pl-2 group/cat">
+                        <span 
+                          onClick={() => setHoveredItem({ type: 'toolCategory', category: cat })}
+                          className="text-[16px] font-black tracking-wide text-[#112D4E] cursor-pointer hover:text-[#3F72AF] transition-colors drop-shadow-sm"
+                        >
+                          {cat}
+                        </span>
+                        {isEditing && (
+                          <button onClick={() => addToolCard(cat)} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]">
+                            <Plus className="w-2.5 h-2.5"/>추가
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        {toolsInCat.map((t: any) => (
+                          <div
+                            key={t.id}
+                            onClick={() => setHoveredItem({ type: 'toolCategory', category: cat, targetId: t.id })}
+                            className={`p-2 rounded-xl cursor-pointer transition-all duration-300 border flex items-center gap-2 group relative ${
+                              hoveredItem?.targetId === t.id
+                                ? 'bg-[#0a1e36] border-[#0a1e36] shadow-md scale-[1.02]'
+                                : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] shadow-sm hover:scale-[1.02]'
+                            }`}
+                          >
+                            {t.iconUrl
+                              ? <img src={t.iconUrl} className="w-4 h-4 object-contain shrink-0" alt={t.name}/>
+                              : <Wrench className={`w-3 h-3 shrink-0 transition-colors ${
+                                  hoveredItem?.targetId === t.id ? 'text-white' : 'text-[#3F72AF] group-hover:text-white'
+                                }`}/>}
+                            <span className={`font-black text-[12px] truncate leading-tight transition-colors ${
+                              hoveredItem?.targetId === t.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
+                            }`}>
+                              {t.name}
+                            </span>
+                            {isEditing && (
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); removeToolCard(t.id); }} 
+                                className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-600 shadow-sm"
+                              >
+                                <X className="w-2.5 h-2.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      {idx < arr.length - 1 && <hr className="mt-4 border-t border-[#DBE2EF] opacity-60" />}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -391,14 +506,23 @@ export const StatBoard = ({
         </div>
         
         {/* RIGHT COL: Hover Details */}
-        <div className="h-[48vh] sticky top-24 pt-4">
-          <div className="h-full bg-white/70 backdrop-blur-2xl rounded-[3rem] p-10 lg:p-12 border-2 border-white shadow-2xl overflow-hidden flex flex-col w-full relative">
+        <div className="relative w-full h-full">
+          <div className="absolute top-4 bottom-4 inset-x-0 bg-white/70 backdrop-blur-2xl rounded-[3rem] p-10 lg:p-12 border-2 border-white shadow-2xl overflow-hidden flex flex-col w-full">
             <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#3F72AF]/5 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[#112D4E]/5 rounded-full blur-3xl pointer-events-none"></div>
             
             {hoveredItem ? (
               hoveredItem.type === 'aiSkill'  ? renderAiDetail(hoveredItem.data) :
-              renderToolCardDetail(hoveredItem.data)
+              hoveredItem.type === 'toolCategory' ? (
+                <ToolCategoryDetail 
+                  category={hoveredItem.category} 
+                  targetId={hoveredItem.targetId} 
+                  toolsInCat={(toolCards || []).filter((t: any) => t.category === hoveredItem.category)}
+                  isEditing={isEditing}
+                  updateToolCard={updateToolCard}
+                  removeToolCard={removeToolCard}
+                />
+              ) : null
             ) : (
               renderDefaultDetail()
             )}
@@ -456,20 +580,43 @@ export const StatBoard = ({
           </StatBoardMobileAccordion>
 
           <StatBoardMobileAccordion title="사용 TOOL" isActive={mobileCategory === 'toolCards'} onClick={() => setMobileCategory(mobileCategory === 'toolCards' ? '' : 'toolCards')}>
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              {isEditing && (
-                <button onClick={addToolCard} className="col-span-2 flex items-center justify-center gap-2 mb-2 w-full py-3 border-2 border-dashed border-[#1A59A7]/30 rounded-xl text-[#1A59A7] font-bold hover:bg-[#1A59A7]/5"><Plus className="w-4 h-4"/>TOOL 추가</button>
-              )}
-              {toolCards?.map((t: any) => (
-                <div key={t.id} className="bg-white rounded-[1.5rem] p-5 shadow flex flex-col items-center text-center border border-[#DBE2EF]">
-                  <div className="w-12 h-12 mb-3">
-                    {t.iconUrl
-                      ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm" alt={t.name}/>
-                      : <Wrench className="w-full h-full text-[#3F72AF]"/>}
+            <div className="flex flex-col gap-6 pt-2">
+              {['문서', '협업', '디자인', '개발', 'AI'].map((cat, idx, arr) => {
+                const toolsInCat = (toolCards || []).filter((t: any) => t.category === cat);
+                return (
+                  <div key={cat} className="flex flex-col">
+                    <div className="flex items-center justify-between mb-4 pl-1">
+                      <span className="text-[15px] font-black tracking-wide text-[#112D4E] drop-shadow-sm">{cat}</span>
+                      {isEditing && (
+                        <button onClick={() => addToolCard(cat)} className="flex items-center gap-1 text-[10px] font-bold bg-[#1A59A7]/10 text-[#1A59A7] px-3 py-1 rounded-lg hover:bg-[#1A59A7]/20 transition-colors">
+                          <Plus className="w-3 h-3"/>추가
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {toolsInCat.map((t: any) => (
+                        <div key={t.id} className="bg-white rounded-xl p-3 shadow-sm flex flex-col items-center text-center border border-[#DBE2EF] relative">
+                          {isEditing && (
+                            <button 
+                              onClick={() => removeToolCard(t.id)} 
+                              className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 z-10 hover:bg-red-600 shadow-sm"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                          <div className="w-8 h-8 mb-2">
+                            {t.iconUrl
+                              ? <img src={t.iconUrl} className="w-full h-full object-contain drop-shadow-sm" alt={t.name}/>
+                              : <Wrench className="w-full h-full text-[#3F72AF]"/>}
+                          </div>
+                          <div className="font-bold text-[#112D4E] text-[10px] leading-tight break-keep">{t.name}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {idx < arr.length - 1 && <hr className="mt-6 border-t border-[#DBE2EF] opacity-40" />}
                   </div>
-                  <div className="font-bold text-[#112D4E] text-xs leading-tight">{t.name}</div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </StatBoardMobileAccordion>
         </div>
