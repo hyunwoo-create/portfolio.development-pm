@@ -349,10 +349,10 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
               
               <section className="px-12 pt-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px', display: 'flex', flexDirection: 'column' }}>
                 {/* 상단: AI능력(좌) + 아바타(중) + 기본 안내(우) */}
-                <div className="grid grid-cols-12 gap-8 flex-1 items-start relative">
+                <div className="grid gap-8 flex-1 items-start relative" style={{ gridTemplateColumns: '1.2fr 380px 1.5fr' }}>
                 
                 {/* 좌측: AI 능력 목록 */}
-                <div className="col-span-3 flex flex-col gap-6 pt-12 z-10">
+                <div className="flex flex-col gap-6 pt-12 z-10 w-full">
                   {aiSkills?.length > 0 && (
                     <div className="flex flex-col gap-3">
                       <h2 className="text-sm font-black tracking-[0.1em] text-[#8fabc8] uppercase mb-1">AI 활용 능력</h2>
@@ -376,7 +376,7 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                 </div>
 
                 {/* 중앙: 아바타 */}
-                <div className="col-span-4 h-[700px] relative flex items-center justify-center z-20">
+                <div className="h-[700px] relative flex items-center justify-center z-20 w-full">
                   {userImage && (
                     <img
                       src={userImage}
@@ -387,7 +387,7 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                 </div>
 
                 {/* 우측: statBoard 기본 상세 내용 */}
-                <div className="col-span-5 pt-12 z-10">
+                <div className="pt-12 z-10 w-full">
                   <div className="bg-white/70 backdrop-blur-2xl rounded-[3rem] p-12 border-2 border-white shadow-2xl flex flex-col" style={{ minHeight: '400px' }}>
                     {statBoardDefaultDetailTitle ? (
                       <>
