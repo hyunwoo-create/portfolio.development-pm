@@ -346,12 +346,22 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                     </div>
                   )}
                 {/* 좌측 하단: 기본 버튼 */}
-                {statBoardDefaultBtnText && (
-                  <div className="mt-6 px-6 py-4 bg-[#0a1e36] rounded-2xl flex items-center justify-between gap-4 shadow-xl">
-                    <span className="text-white text-[13px] font-black leading-snug whitespace-pre-wrap">{statBoardDefaultBtnText}</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                  </div>
-                )}
+                {statBoardDefaultBtnText && (() => {
+                  const isBtnHtml = /<[a-z][\s\S]*>/i.test(statBoardDefaultBtnText);
+                  return (
+                    <div className="mt-6 px-6 py-4 bg-[#0a1e36] rounded-2xl flex items-center justify-between gap-4 shadow-xl">
+                      {isBtnHtml ? (
+                        <span
+                          className="text-white text-[13px] font-black leading-snug flex-1 statboard-btn-text"
+                          dangerouslySetInnerHTML={{ __html: statBoardDefaultBtnText }}
+                        />
+                      ) : (
+                        <span className="text-white text-[13px] font-black leading-snug whitespace-pre-wrap flex-1">{statBoardDefaultBtnText}</span>
+                      )}
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                  );
+                })()}
 
                 </div>
 

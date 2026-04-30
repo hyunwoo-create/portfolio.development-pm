@@ -103,6 +103,9 @@ export const handlePdfExport = (payload: PdfExportPayload) => {
             .statboard-detail-body blockquote { border-left: 3px solid rgba(63,114,175,0.5); padding: 0.4rem 0.75rem; margin: 0.5rem 0; color: #3F72AF; font-style: italic; background: rgba(63,114,175,0.06); border-radius: 0 0.5rem 0.5rem 0; }
             .statboard-detail-body h1, .statboard-detail-body h2, .statboard-detail-body h3 { font-weight: 800; margin: 0.5rem 0 0.3rem; color: #112D4E; }
             .statboard-detail-body br { display: block; margin: 0.3rem 0; content: ""; }
+            /* StatBoard 버튼 내 TipTap HTML 스타일 */
+            .statboard-btn-text p { margin: 0; color: white; line-height: 1.5; text-align: center; }
+            .statboard-btn-text br { display: inline; }
           </style>
         </head>
         <body>
