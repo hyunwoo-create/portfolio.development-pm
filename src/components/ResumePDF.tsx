@@ -59,7 +59,7 @@ const renderHeroChart = (points: any[]) => {
   const PAD_X = 24, PAD_TOP = 32, PAD_BOTTOM = 24;
   const CHART_W = W - PAD_X * 2;
   const CHART_H = H - PAD_TOP - PAD_BOTTOM;
-  const toSvgY = (val: number) => PAD_TOP + (CHART_H / 2) * (1 - val / 10);
+  const toSvgY = (val: number) => PAD_TOP + (CHART_H / 2) * (1 - val / 15);
   const toSvgX = (i: number, len: number) => {
     if (len <= 1) return W / 2;
     return PAD_X + (i / (len - 1)) * CHART_W;
@@ -171,7 +171,7 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                 </div>
 
                 {/* Col2 Row1: Line Chart */}
-                <div className="flex flex-col items-end justify-start mt-12">
+                <div className="flex flex-col items-end justify-start mt-8 mr-8">
                   <div className="w-full" style={{ maxWidth: '380px' }}>
                     {renderHeroChart(heroContent.chartPoints || [])}
                   </div>
@@ -343,22 +343,29 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                     </div>
                   )}
 
-                  {/* 사용 TOOL */}
-                  {toolCards?.length > 0 && (
-                    <div className="flex flex-col gap-3">
-                      <h2 className="text-sm font-black tracking-[0.1em] text-[#8fabc8] uppercase mb-1">사용 TOOL</h2>
-                      <div className="grid grid-cols-2 gap-2">
-                        {toolCards.map((t: any) => (
-                          <div key={t.id} className="p-3 rounded-xl bg-white border border-[#DBE2EF] shadow-sm flex items-center gap-2">
-                            {t.iconUrl
-                              ? <img src={t.iconUrl} className="w-5 h-5 object-contain shrink-0" alt={t.name} />
-                              : <Wrench className="w-4 h-4 shrink-0 text-[#3F72AF]" />}
-                            <span className="font-black text-[13px] text-[#112D4E]">{t.name}</span>
+                  {/* 사용 TOOL - 카테고리별 그룹 */}
+                  {toolCards?.length > 0 && (() => {
+                    const cats = ['문서', '협업', '디자인', '개발', 'AI'];
+                    const byCat = cats.map(cat => ({ cat, items: toolCards.filter((t: any) => t.category === cat) })).filter(g => g.items.length > 0);
+                    return (
+                      <div className="flex flex-col gap-3">
+                        <h2 className="text-sm font-black tracking-[0.1em] text-[#8fabc8] uppercase mb-1">사용 TOOL</h2>
+                        {byCat.map(g => (
+                          <div key={g.cat} className="flex flex-col gap-1.5">
+                            <div className="text-[10px] font-black text-[#3F72AF] tracking-widest uppercase">{g.cat}</div>
+                            {g.items.map((t: any) => (
+                              <div key={t.id} className="p-2.5 rounded-xl bg-white border border-[#DBE2EF] shadow-sm flex items-center gap-2">
+                                {t.iconUrl
+                                  ? <img src={t.iconUrl} className="w-4 h-4 object-contain shrink-0" alt={t.name} />
+                                  : <Wrench className="w-3.5 h-3.5 shrink-0 text-[#3F72AF]" />}
+                                <span className="font-black text-[12px] text-[#112D4E]">{t.name}</span>
+                              </div>
+                            ))}
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
 
                 {/* 중앙: 아바타 (전체 높이) */}
@@ -372,12 +379,37 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                   )}
                 </div>
 
-                {/* 우측: 상세 정보 안내 박스 */}
+                {/* 우측: 첫 번째 AI 스킬 상세 + 툴 카드 요약 */}
                 <div className="col-span-5 pt-12 z-10">
-                  <div className="h-[500px] bg-white/70 backdrop-blur-2xl rounded-[3rem] p-12 border-2 border-white shadow-2xl overflow-hidden flex flex-col items-center justify-center text-center">
-                    <Wrench className="w-12 h-12 mb-4 opacity-30 text-[#8fabc8]"/>
-                    <p className="text-sm font-bold text-[#8fabc8]">좌측 항목을 클릭하면<br/>상세 정보가 표시됩니다.</p>
-                  </div>
+                  {/* AI 스킬 첫 번째 항목 상세 */}
+                  {aiSkills && aiSkills.length > 0 && (() => {
+                    const a = aiSkills[0];
+                    return (
+                      <div className="bg-white/70 rounded-[2rem] p-8 border-2 border-white shadow-xl mb-6">
+                        <div className="text-[10px] font-bold text-[#3F72AF] tracking-widest uppercase bg-[#3F72AF]/10 px-3 py-1 rounded-full inline-block mb-4">AI SKILL</div>
+                        <h3 className="text-2xl font-black text-[#112D4E] mb-3">{a.title}</h3>
+                        {a.description && (
+                          <div className="text-[#112D4E]/70 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: a.description.startsWith('<') ? a.description : a.description }} />
+                        )}
+                      </div>
+                    );
+                  })()}
+                  {/* 툴 카드 요약 grid */}
+                  {toolCards && toolCards.length > 0 && (
+                    <div className="bg-white/70 rounded-[2rem] p-6 border-2 border-white shadow-xl">
+                      <h4 className="text-xs font-black text-[#8fabc8] tracking-widest uppercase mb-4">사용 TOOL 상세</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {toolCards.slice(0, 8).map((t: any) => (
+                          <div key={t.id} className="p-2.5 rounded-xl bg-[#F9F7F7] border border-[#DBE2EF] flex items-center gap-2">
+                            {t.iconUrl
+                              ? <img src={t.iconUrl} className="w-5 h-5 object-contain shrink-0" alt={t.name} />
+                              : <Wrench className="w-4 h-4 shrink-0 text-[#3F72AF]" />}
+                            <span className="font-bold text-[12px] text-[#112D4E] truncate">{t.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
               </div>
@@ -545,7 +577,9 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                       {(exp.details || []).map((d: string, i: number) => (
                         <div key={i} className="group/detail relative flex items-start gap-1.5">
                           <span className="font-bold shrink-0 mt-[1px]">•</span>
-                          <span className="flex-1 whitespace-pre-wrap">{d}</span>
+                          {d && d.startsWith('<')
+                            ? <span className="flex-1 whitespace-pre-wrap text-[#3F72AF]" dangerouslySetInnerHTML={{ __html: d }} />
+                            : <span className="flex-1 whitespace-pre-wrap">{d}</span>}
                         </div>
                       ))}
                     </div>
@@ -590,7 +624,7 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
             <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
               <User className="text-[#112D4E] w-6 h-6" /> 한 줄 소개
             </h3>
-            <div className="text-[#112D4E] leading-relaxed font-medium">
+            <div className="text-[#112D4E] leading-relaxed font-medium" style={data.summaryStyle || {}}>
               {renderContent(data.summary || '')}
             </div>
           </section>
