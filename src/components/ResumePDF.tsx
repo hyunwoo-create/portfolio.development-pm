@@ -101,15 +101,15 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
           <td style={{ padding: 0 }}>
             <div style={{
               background: '#112D4E',
-              padding: '8px 40px',
+              padding: '12px 40px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               printColorAdjust: 'exact',
               WebkitPrintColorAdjust: 'exact',
             }}>
-              <span style={{ color: '#DBE2EF', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}>PORTFOLIO</span>
-              <a href="https://hyunwoo-create.github.io/portfolio/" target="_blank" rel="noopener noreferrer" style={{ color: '#7FB3E8', fontSize: '11px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+              <span style={{ color: '#DBE2EF', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em' }}>PORTFOLIO</span>
+              <a href="https://hyunwoo-create.github.io/portfolio/" target="_blank" rel="noopener noreferrer" style={{ color: '#7FB3E8', fontSize: '16px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
                 https://hyunwoo-create.github.io/portfolio/
               </a>
             </div>
@@ -326,12 +326,12 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
           {(aiSkills?.length > 0 || toolCards?.length > 0 || userImage) && (
             <div className="break-before-page">
               
-              <section className="px-12 pt-12 pb-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px' }}>
-                <div className="grid grid-cols-12 gap-8 h-full items-start relative">
+              <section className="px-12 pt-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px', display: 'flex', flexDirection: 'column' }}>
+                {/* 상단: AI능력(좌) + 아바타(중) + 기본 안내(우) */}
+                <div className="grid grid-cols-12 gap-8 flex-1 items-start relative">
                 
-                {/* 좌측: AI 능력 및 사용 TOOL */}
-                <div className="col-span-3 flex flex-col gap-12 pt-12 z-10">
-                  {/* AI 활용 능력 */}
+                {/* 좌측: AI 능력 목록 */}
+                <div className="col-span-3 flex flex-col gap-6 pt-12 z-10">
                   {aiSkills?.length > 0 && (
                     <div className="flex flex-col gap-3">
                       <h2 className="text-sm font-black tracking-[0.1em] text-[#8fabc8] uppercase mb-1">AI 활용 능력</h2>
@@ -342,34 +342,10 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                       ))}
                     </div>
                   )}
-
-                  {/* 사용 TOOL - 카테고리별 그룹 */}
-                  {toolCards?.length > 0 && (() => {
-                    const cats = ['문서', '협업', '디자인', '개발', 'AI'];
-                    const byCat = cats.map(cat => ({ cat, items: toolCards.filter((t: any) => t.category === cat) })).filter(g => g.items.length > 0);
-                    return (
-                      <div className="flex flex-col gap-3">
-                        <h2 className="text-sm font-black tracking-[0.1em] text-[#8fabc8] uppercase mb-1">사용 TOOL</h2>
-                        {byCat.map(g => (
-                          <div key={g.cat} className="flex flex-col gap-1.5">
-                            <div className="text-[10px] font-black text-[#3F72AF] tracking-widest uppercase">{g.cat}</div>
-                            {g.items.map((t: any) => (
-                              <div key={t.id} className="p-2.5 rounded-xl bg-white border border-[#DBE2EF] shadow-sm flex items-center gap-2">
-                                {t.iconUrl
-                                  ? <img src={t.iconUrl} className="w-4 h-4 object-contain shrink-0" alt={t.name} />
-                                  : <Wrench className="w-3.5 h-3.5 shrink-0 text-[#3F72AF]" />}
-                                <span className="font-black text-[12px] text-[#112D4E]">{t.name}</span>
-                              </div>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
                 </div>
 
-                {/* 중앙: 아바타 (전체 높이) */}
-                <div className="col-span-4 h-[900px] relative flex items-center justify-center z-20">
+                {/* 중앙: 아바타 */}
+                <div className="col-span-4 h-[700px] relative flex items-center justify-center z-20">
                   {userImage && (
                     <img
                       src={userImage}
@@ -379,42 +355,43 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                   )}
                 </div>
 
-                {/* 우측: 첫 번째 AI 스킬 상세 + 툴 카드 요약 */}
+                {/* 우측: 기본 안내 박스 */}
                 <div className="col-span-5 pt-12 z-10">
-                  {/* AI 스킬 첫 번째 항목 상세 */}
-                  {aiSkills && aiSkills.length > 0 && (() => {
-                    const a = aiSkills[0];
-                    return (
-                      <div className="bg-white/70 rounded-[2rem] p-8 border-2 border-white shadow-xl mb-6">
-                        <div className="text-[10px] font-bold text-[#3F72AF] tracking-widest uppercase bg-[#3F72AF]/10 px-3 py-1 rounded-full inline-block mb-4">AI SKILL</div>
-                        <h3 className="text-2xl font-black text-[#112D4E] mb-3">{a.title}</h3>
-                        {a.description && (
-                          <div className="text-[#112D4E]/70 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: a.description.startsWith('<') ? a.description : a.description }} />
-                        )}
-                      </div>
-                    );
-                  })()}
-                  {/* 툴 카드 요약 grid */}
-                  {toolCards && toolCards.length > 0 && (
-                    <div className="bg-white/70 rounded-[2rem] p-6 border-2 border-white shadow-xl">
-                      <h4 className="text-xs font-black text-[#8fabc8] tracking-widest uppercase mb-4">사용 TOOL 상세</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {toolCards.slice(0, 8).map((t: any) => (
-                          <div key={t.id} className="p-2.5 rounded-xl bg-[#F9F7F7] border border-[#DBE2EF] flex items-center gap-2">
-                            {t.iconUrl
-                              ? <img src={t.iconUrl} className="w-5 h-5 object-contain shrink-0" alt={t.name} />
-                              : <Wrench className="w-4 h-4 shrink-0 text-[#3F72AF]" />}
-                            <span className="font-bold text-[12px] text-[#112D4E] truncate">{t.name}</span>
+                  <div className="bg-white/70 backdrop-blur-2xl rounded-[3rem] p-12 border-2 border-white shadow-2xl flex flex-col items-center justify-center text-center" style={{ height: '400px' }}>
+                    <Wrench className="w-12 h-12 mb-4 opacity-30 text-[#8fabc8]"/>
+                    <p className="text-sm font-bold text-[#8fabc8]">좌측 항목을 클릭하면<br/>상세 정보가 표시됩니다.</p>
+                  </div>
+                </div>
+
+                </div>
+
+                {/* 하단: 사용 TOOL 카테고리별 가로 정렬 */}
+                {toolCards?.length > 0 && (() => {
+                  const cats = ['문서', '협업', '디자인', '개발', 'AI'];
+                  const byCat = cats.map(cat => ({ cat, items: toolCards.filter((t: any) => t.category === cat) })).filter(g => g.items.length > 0);
+                  return (
+                    <div className="border-t border-[#DBE2EF]/60 pt-8 pb-12 mt-4">
+                      <h2 className="text-sm font-black tracking-[0.15em] text-[#8fabc8] uppercase mb-6">사용 TOOL</h2>
+                      <div className="grid gap-6" style={{ gridTemplateColumns: `repeat(${byCat.length}, 1fr)` }}>
+                        {byCat.map(g => (
+                          <div key={g.cat} className="flex flex-col gap-2">
+                            <div className="text-[11px] font-black text-[#3F72AF] tracking-widest uppercase pb-1 border-b border-[#DBE2EF]/60 mb-1">{g.cat}</div>
+                            {g.items.map((t: any) => (
+                              <div key={t.id} className="px-3 py-2 rounded-xl bg-white border border-[#DBE2EF] shadow-sm flex items-center gap-2">
+                                {t.iconUrl
+                                  ? <img src={t.iconUrl} className="w-4 h-4 object-contain shrink-0" alt={t.name} />
+                                  : <Wrench className="w-3.5 h-3.5 shrink-0 text-[#3F72AF]" />}
+                                <span className="font-black text-[12px] text-[#112D4E]">{t.name}</span>
+                              </div>
+                            ))}
                           </div>
                         ))}
                       </div>
                     </div>
-                  )}
-                </div>
-
-              </div>
-            </section>
-          </div>
+                  );
+                })()}
+              </section>
+            </div>
           )}
 
         </div>
