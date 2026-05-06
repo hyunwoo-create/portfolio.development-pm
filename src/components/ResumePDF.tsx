@@ -130,8 +130,8 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
               WebkitPrintColorAdjust: 'exact',
             }}>
               <span style={{ color: '#DBE2EF', fontSize: '16px', fontWeight: 700, letterSpacing: '0.08em' }}>PORTFOLIO</span>
-              <a href="https://hyunwoo-create.github.io/portfolio/" target="_blank" rel="noopener noreferrer" style={{ color: '#7FB3E8', fontSize: '16px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
-                https://hyunwoo-create.github.io/portfolio/
+              <a href="https://hyunwoo-create.github.io/portfolio.development-pm/" target="_blank" rel="noopener noreferrer" style={{ color: '#7FB3E8', fontSize: '16px', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                https://hyunwoo-create.github.io/portfolio.development-pm/
               </a>
             </div>
             <div style={{ height: '32px', background: '#F9F7F7' }} />
