@@ -76,8 +76,8 @@ const renderToolBadge = (tool: any, keyPrefix: string, idx: number) => {
 
 const renderHeroChart = (points: any[]) => {
   if (!points || points.length === 0) return null;
-  const W = 364, H = 160;
-  const PAD_X = 24, PAD_TOP = 32, PAD_BOTTOM = 24;
+  const W = 364, H = 240;
+  const PAD_X = 24, PAD_TOP = 48, PAD_BOTTOM = 40;
   const CHART_W = W - PAD_X * 2;
   const CHART_H = H - PAD_TOP - PAD_BOTTOM;
   const toSvgY = (val: number) => PAD_TOP + (CHART_H / 2) * (1 - val / 15);
@@ -92,7 +92,7 @@ const renderHeroChart = (points: any[]) => {
       ).join(' ')
     : '';
   return (
-    <svg viewBox="0 0 364 160" className="w-[437px]" style={{ overflow: 'visible' }}>
+    <svg viewBox="0 0 364 240" className="w-[437px]" style={{ overflow: 'visible' }}>
       <line x1={PAD_X} y1={zeroY} x2={W - PAD_X} y2={zeroY} stroke="rgba(17,45,78,0.15)" strokeWidth="1" />
       <text x={PAD_X - 6} y={zeroY + 3.5} fontSize="9" fill="rgba(17,45,78,0.4)" textAnchor="end">0</text>
       {pathD && <path d={pathD} fill="none" stroke="#E05C6A" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />}
@@ -258,16 +258,20 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                     </div>
                     <div className="space-y-8 relative">
                       {/* 눈금선 */}
-                      <div className="absolute inset-0 left-20 flex justify-between pointer-events-none z-0 mt-2">
-                        <div className="h-full ml-4 relative flex items-start">
-                          <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20" />
-                          <span className="absolute -top-6 -translate-x-1/2 text-[10px] font-bold text-[#3F72AF] opacity-50 bg-white px-1">0</span>
-                        </div>
-                        <div className="h-full mr-12 relative flex items-start">
-                          <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20" />
-                          <span className="absolute -top-6 -translate-x-1/2 text-xs font-black text-[#1A59A7] bg-white px-1.5 py-0.5 shadow-sm rounded z-10 border border-[#DBE2EF]">
-                            {aboutContent.chartTotal || 100}
-                          </span>
+                      <div className="absolute inset-0 flex pointer-events-none z-0 mt-2 pr-4">
+                        <div className="w-14 shrink-0"></div>
+                        <div className="w-4 shrink-0"></div>
+                        <div className="flex-1 flex justify-between h-full pr-12">
+                          <div className="h-full relative flex items-start">
+                            <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20" />
+                            <span className="absolute -top-8 -translate-x-1/2 text-[10px] font-bold text-[#3F72AF] opacity-50 bg-white px-1">0</span>
+                          </div>
+                          <div className="h-full relative flex items-start">
+                            <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20" />
+                            <span className="absolute -top-8 -translate-x-1/2 text-xs font-black text-[#1A59A7] bg-white px-1.5 py-0.5 shadow-sm rounded z-10 border border-[#DBE2EF]">
+                              {aboutContent.chartTotal || 100}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       {/* 막대 */}

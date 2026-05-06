@@ -94,17 +94,21 @@ export const About = ({ isEditing, content, setContent, onMoreMeClick }: AboutPr
             
             <div className="space-y-8 relative">
               {/* Vertical Grid Lines (Cosmetic) */}
-              <div className="absolute inset-0 left-20 flex justify-between pointer-events-none z-0 mt-2">
-                <div className="h-full ml-4 relative flex items-start">
-                  <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20"></div>
-                  <span className="absolute -top-6 -translate-x-1/2 text-[10px] font-bold text-[#3F72AF] opacity-50 bg-white px-1">0</span>
-                </div>
-                <div className="h-full mr-12 relative flex items-start">
-                  <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20"></div>
-                  <span className="absolute -top-6 -translate-x-1/2 text-xs font-black text-[#1A59A7] bg-white px-1.5 py-0.5 shadow-sm rounded z-10 border border-[#DBE2EF]">{totalParam}</span>
+              <div className="absolute inset-0 flex pointer-events-none z-0 mt-2 pr-4">
+                <div className="w-14 shrink-0"></div>
+                <div className="w-4 shrink-0"></div>
+                <div className="flex-1 flex justify-between h-full pr-12">
+                  <div className="h-full relative flex items-start">
+                    <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20"></div>
+                    <span className="absolute -top-8 -translate-x-1/2 text-[10px] font-bold text-[#3F72AF] opacity-50 bg-white px-1">0</span>
+                  </div>
+                  <div className="h-full relative flex items-start">
+                    <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20"></div>
+                    <span className="absolute -top-8 -translate-x-1/2 text-xs font-black text-[#1A59A7] bg-white px-1.5 py-0.5 shadow-sm rounded z-10 border border-[#DBE2EF]">{totalParam}</span>
+                  </div>
                 </div>
               </div>
-
+              
               {skills.map((num) => {
                 const v = num === 1 ? v1 : num === 2 ? v2 : v3;
                 const p = Math.min((v / totalParam) * 100, 100);
@@ -115,6 +119,8 @@ export const About = ({ isEditing, content, setContent, onMoreMeClick }: AboutPr
                       value={content[`skill${num}Name`] || `역량 ${String.fromCharCode(64 + num)}`} 
                       onSave={(v) => setContent({...content, [`skill${num}Name`]: v})} 
                       isEditing={isEditing} 
+                      multiline
+                      disableMarkdown
                     />
                   </div>
                   <div className="flex-1 flex flex-col group w-full">

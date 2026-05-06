@@ -191,22 +191,52 @@ export const EditableText = ({
   return (
     <div className="relative w-full" ref={containerRef}>
       {multiline ? (
-        <div className="w-full" style={style}>
-          <AdminTextEditor
-            isAdmin={true}
-            bodyValue={value || ''}
-            onBodyChange={onSave}
-            hideTitle={true}
-            className={`admin-minimal-editor ${className}`}
-            minBodyHeight="80px"
-            bodyPlaceholder="내용을 입력하세요..."
-          />
-          {styleData && onStyleSave && (
-            <div className="mt-2">
-              <TextStyleEditor style={styleData} onStyleChange={handleStyleChange} />
-            </div>
-          )}
-        </div>
+        disableMarkdown ? (
+          <div className="w-full relative">
+            {isFocused && styleData && onStyleSave && (
+              <div className="absolute bottom-full left-0 z-[100] mb-2 pointer-events-auto">
+                <TextStyleEditor style={styleData} onStyleChange={handleStyleChange} />
+              </div>
+            )}
+            <textarea
+              className={`w-full max-w-full bg-[#DBE2EF]/40 border border-[#3F72AF]/20 rounded px-2 py-1 text-[#1A59A7] focus:outline-none focus:border-[#112D4E] resize-none ${className}`}
+              value={value || ''}
+              onChange={(e) => {
+                onSave(e.target.value);
+                e.target.style.height = 'auto';
+                e.target.style.height = e.target.scrollHeight + 'px';
+              }}
+              onFocus={(e) => {
+                setIsFocused(true);
+                e.target.style.height = 'auto';
+                e.target.style.height = e.target.scrollHeight + 'px';
+              }}
+              onBlur={(e) => {
+                if (containerRef.current?.contains(e.relatedTarget as Node)) return;
+                setIsFocused(false);
+              }}
+              style={style}
+              rows={2}
+            />
+          </div>
+        ) : (
+          <div className="w-full" style={style}>
+            <AdminTextEditor
+              isAdmin={true}
+              bodyValue={value || ''}
+              onBodyChange={onSave}
+              hideTitle={true}
+              className={`admin-minimal-editor ${className}`}
+              minBodyHeight="80px"
+              bodyPlaceholder="내용을 입력하세요..."
+            />
+            {styleData && onStyleSave && (
+              <div className="mt-2">
+                <TextStyleEditor style={styleData} onStyleChange={handleStyleChange} />
+              </div>
+            )}
+          </div>
+        )
       ) : (
         <div className="w-full relative">
           {isFocused && styleData && onStyleSave && (
