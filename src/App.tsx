@@ -4,11 +4,9 @@ import { motion, AnimatePresence } from 'motion/react';
 // Types
 import { Project } from './types';
 
-// Constants
-// (Constants are now initialized directly within the store)
-
 // Hooks
 import { useAppStore } from './store';
+import { useSiteId } from './contexts/SiteContext';
 
 // Components
 import { Navbar } from './components/Navbar';
@@ -19,12 +17,17 @@ import { PortfolioGallery } from './components/PortfolioGallery';
 import { ProjectDetail } from './components/ProjectDetail';
 import { Resume } from './components/Resume';
 import { Footer, BackToTop } from './components/Common';
+import { SiteManager } from './components/SiteManager';
 
 const App = () => {
   // --- View State ---
   const [view, setView] = useState<'home' | 'all-projects' | 'portfolio' | 'project-detail' | 'resume'>('home');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [prevView, setPrevView] = useState<string>('home');
+  const [isSiteManagerOpen, setIsSiteManagerOpen] = useState(false);
+
+  // --- Site ID from URL ---
+  const initialSiteId = useSiteId();
 
   // --- Content State (Zustand Store) ---
   const {
@@ -35,8 +38,8 @@ const App = () => {
   } = useAppStore();
 
   useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
+    fetchAll(initialSiteId);
+  }, []);
 
   // --- Handlers ---
   const changeView = useCallback((newView: any) => {
@@ -130,7 +133,8 @@ const App = () => {
         currentView={view} 
         onNavClick={handleNavClick} 
         isEditing={isEditing} 
-        setIsEditing={setIsEditing} 
+        setIsEditing={setIsEditing}
+        onOpenSiteManager={() => setIsSiteManagerOpen(true)}
       />
 
       {isLoading ? (
@@ -223,6 +227,14 @@ const App = () => {
 
       <Footer />
       <BackToTop />
+
+      {/* Site Manager Modal (admin only) */}
+      {isEditing && (
+        <SiteManager
+          isOpen={isSiteManagerOpen}
+          onClose={() => setIsSiteManagerOpen(false)}
+        />
+      )}
     </div>
   );
 };

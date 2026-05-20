@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Lock, Settings, X } from 'lucide-react';
+import { Home, Lock, Settings, X, FolderOpen } from 'lucide-react';
 import { PasswordModal } from './PasswordModal';
+import { useAppStore } from '../store';
 
 interface NavbarProps {
   setView: (v: any) => void;
@@ -9,11 +10,14 @@ interface NavbarProps {
   onNavClick: (id: string) => void;
   isEditing: boolean;
   setIsEditing: (v: boolean) => void;
+  onOpenSiteManager?: () => void;
 }
 
-export const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing }: NavbarProps) => {
+export const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditing, onOpenSiteManager }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const { siteId, sites } = useAppStore();
+  const currentSiteName = sites.find(s => s.id === siteId)?.name || siteId;
 
   const navLinks = [
     { label: '소개', view: 'home', action: () => { setView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsMenuOpen(false); } },
@@ -90,6 +94,17 @@ export const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditi
 
         {/* Right: Admin & Mobile Menu */}
         <div className="pointer-events-auto flex items-center gap-2 relative">
+          {/* Site Manager Button (admin only) */}
+          {isEditing && onOpenSiteManager && (
+            <button
+              onClick={onOpenSiteManager}
+              className="hidden md:flex items-center gap-2 h-12 px-4 bg-[#F9F7F7] rounded-2xl hover:bg-[#112D4E]/10 transition-colors shadow-xl shadow-[#112D4E]/15 border border-[#3F72AF]/30"
+              title="사이트 관리"
+            >
+              <FolderOpen className="w-4 h-4 text-[#3F72AF]" />
+              <span className="text-xs font-bold text-[#112D4E] max-w-[120px] truncate">{currentSiteName}</span>
+            </button>
+          )}
           <button
             onClick={handleAdminClick}
             className="hidden md:flex w-12 h-12 items-center justify-center bg-[#F9F7F7] rounded-2xl hover:bg-[#112D4E]/10 transition-colors shadow-xl shadow-[#112D4E]/15 border border-[#3F72AF]/30"
@@ -135,6 +150,15 @@ export const Navbar = ({ setView, currentView, onNavClick, isEditing, setIsEditi
               {isEditing ? <Lock className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
               {isEditing ? '관리자 모드 완료' : '관리자 모드'}
             </button>
+            {isEditing && onOpenSiteManager && (
+              <button
+                onClick={() => { onOpenSiteManager(); setIsMenuOpen(false); }}
+                className="w-full flex items-center justify-start gap-2 px-4 py-3 text-[#3F72AF] font-bold rounded-xl hover:bg-[#DBE2EF] transition-colors"
+              >
+                <FolderOpen className="w-4 h-4" />
+                사이트 관리 ({currentSiteName})
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
