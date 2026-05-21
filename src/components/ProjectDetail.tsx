@@ -366,52 +366,14 @@ export const ProjectDetail = ({ project, onBack, isEditing, onSaveContent, onUpd
       </div>
 
       {/* 4. 최하단: 마크다운 텍스트 컨텐츠 */}
-      <div className="glass rounded-[2rem] p-8 md:p-12 markdown-body shadow-sm border border-[#DBE2EF]">
-        {isEditing ? (
-          <AdminTextEditor
-            isAdmin={isEditing}
-            hideTitle={true}
-            bodyValue={project.content || ''}
-            onBodyChange={onSaveContent}
-            minBodyHeight="600px"
-          />
-        ) : (
-          <ReactMarkdown 
-            remarkPlugins={[remarkGfm]}
-            urlTransform={(url) => url}
-            components={{
-              a: ({node, ...props}) => {
-                const href = props.href ? decodeURIComponent(props.href) : '';
-                if (href.includes('style:')) {
-                  const stylePart = href.split('style:')[1];
-                  const styleParts = stylePart.split(';');
-                  const customStyle: any = {};
-                  styleParts.forEach(part => {
-                    const [key, val] = part.split(':');
-                    if (key && val) {
-                      const camelKey = key.trim().replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-                      customStyle[camelKey] = val.trim();
-                    }
-                  });
-                  return (
-                    <span 
-                      style={customStyle} 
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                      className="cursor-text"
-                    >
-                      {props.children}
-                    </span>
-                  );
-                }
-                return <a {...props} className="text-[#3F72AF] hover:underline" target="_blank" rel="noopener noreferrer" />;
-              },
-              p: ({node, ...props}) => <p className="mb-4 last:mb-0" {...props} />,
-              br: () => <br />
-            }}
-          >
-            {project.content}
-          </ReactMarkdown>
-        )}
+      <div className="glass rounded-[2rem] p-8 md:p-12 shadow-sm border border-[#DBE2EF]">
+        <AdminTextEditor
+          isAdmin={isEditing}
+          hideTitle={true}
+          bodyValue={project.content || ''}
+          onBodyChange={onSaveContent}
+          minBodyHeight="600px"
+        />
       </div>
     </motion.section>
   );
