@@ -371,7 +371,9 @@ export const ProjectDetail = ({ project, onBack, isEditing, onSaveContent, onUpd
           isAdmin={isEditing}
           hideTitle={true}
           bodyValue={project.content || ''}
-          onBodyChange={onSaveContent}
+          onBodyChange={(val) => {
+            if (isEditing) onSaveContent(val);
+          }}
           minBodyHeight="600px"
         />
       </div>

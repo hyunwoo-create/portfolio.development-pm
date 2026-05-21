@@ -114,7 +114,7 @@ export const AdminTextEditor = ({
         )}
         <div className="markdown-body" style={readonlyBodyStyle}>
           {/* HTML이 포함된 경우 직접 렌더링, 아니면 마크다운으로 처리 (하위 호환성) */}
-          {bodyValue?.startsWith('<') ? (
+          {bodyValue?.trim().startsWith('<') ? (
             <div dangerouslySetInnerHTML={{ __html: bodyValue }} />
           ) : (
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
