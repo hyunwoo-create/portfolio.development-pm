@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Project } from '../types';
 import { getExternalEmbedUrl } from '../utils';
+import { AdminTextEditor } from './AdminTextEditor';
 
 interface ProjectDetailProps {
   project: Project;
@@ -367,10 +368,12 @@ export const ProjectDetail = ({ project, onBack, isEditing, onSaveContent, onUpd
       {/* 4. 최하단: 마크다운 텍스트 컨텐츠 */}
       <div className="glass rounded-[2rem] p-8 md:p-12 markdown-body shadow-sm border border-[#DBE2EF]">
         {isEditing ? (
-          <textarea
-            className="w-full h-[600px] bg-[#DBE2EF]/20 border border-[#DBE2EF] rounded-2xl p-6 text-[#1A59A7] font-mono text-sm focus:outline-none focus:border-[#112D4E] transition-colors shadow-inner"
-            value={project.content}
-            onChange={(e) => onSaveContent(e.target.value)}
+          <AdminTextEditor
+            isAdmin={isEditing}
+            hideTitle={true}
+            bodyValue={project.content || ''}
+            onBodyChange={onSaveContent}
+            minBodyHeight="600px"
           />
         ) : (
           <ReactMarkdown 
