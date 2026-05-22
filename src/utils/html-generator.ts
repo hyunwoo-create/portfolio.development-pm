@@ -102,44 +102,44 @@ export const generatePortfolioHtml = (
 
     <!-- Categories Display (static design) -->
     <div class="flex flex-wrap gap-3 mb-10 pb-6 border-b border-[#DBE2EF]/50">
-      ${categories.map((cat, i) => \`
-        <div class="px-5 py-2.5 rounded-full text-sm font-bold border flex items-center gap-2 \${i === 0 ? 'bg-[#112D4E] text-white border-[#112D4E] shadow-md' : 'bg-white text-[#8fabc8] border-[#DBE2EF]'}">
-          \${cat}
+      ${categories.map((cat, i) => `
+        <div class="px-5 py-2.5 rounded-full text-sm font-bold border flex items-center gap-2 ${i === 0 ? 'bg-[#112D4E] text-white border-[#112D4E] shadow-md' : 'bg-white text-[#8fabc8] border-[#DBE2EF]'}">
+          ${cat}
         </div>
-      \`).join('')}
+      `).join('')}
     </div>
 
     <!-- Projects Grid -->
     <div class="grid grid-cols-2 gap-8 avoid-break">
-      ${projects.map(project => \`
-        <a href="#" data-project-id="\${project.id}" class="project-card group flex flex-col bg-white rounded-3xl border border-[#DBE2EF] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative cursor-pointer no-underline block avoid-break" target="_blank">
+      ${projects.map(project => `
+        <a href="#" data-project-id="${project.id}" class="project-card group flex flex-col bg-white rounded-3xl border border-[#DBE2EF] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative cursor-pointer no-underline block avoid-break" target="_blank">
           <div class="aspect-[4/3] relative overflow-hidden bg-[#F9F7F7]">
             <img
-              src="\${project.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070'}"
-              alt="\${project.title}"
+              src="${project.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070'}"
+              alt="${project.title}"
               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>
           <div class="p-8 flex-1 flex flex-col">
             <div class="text-[#C08D50] font-bold text-xs mb-2 tracking-widest uppercase">
-              \${project.details?.[0] || '서브 카테고리'}
+              ${project.details?.[0] || '서브 카테고리'}
             </div>
             <h3 class="text-2xl font-black text-[#112D4E] mb-4 leading-tight group-hover:text-[#3F72AF] transition-colors">
-              \${project.title}
+              ${project.title}
             </h3>
             <div class="flex flex-wrap gap-2 mb-4">
-              \${(project.tags || []).map(tag => \`
+              ${(project.tags || []).map(tag => `
                 <span class="px-3 py-1 border border-[#DBE2EF] rounded-full text-[11px] text-[#8fabc8] font-bold bg-[#F9F7F7]">
-                  \${tag}
+                  ${tag}
                 </span>
-              \`).join('')}
+              `).join('')}
             </div>
             <div class="text-[#8fabc8] text-sm leading-relaxed mb-6 flex-1">
-              \${project.description}
+              ${project.description}
             </div>
           </div>
         </a>
-      \`).join('')}
+      `).join('')}
     </div>
 
   </div>

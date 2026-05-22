@@ -73,7 +73,7 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
           </button>
-          {!isEditing && (
+          {isEditing && (
             <button
               onClick={handleHtmlExport}
               className="flex items-center gap-2 px-5 py-2.5 bg-[#3F72AF] text-white text-sm font-bold rounded-xl shadow-md hover:bg-[#112D4E] hover:-translate-y-0.5 transition-all"
