@@ -159,7 +159,7 @@ export const generatePortfolioHtml = (
         if (!baseUrl) return;
         
         // Ensure the URL starts with http:// or https://
-        if (!/^https?:\/\//i.test(baseUrl)) {
+        if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
           baseUrl = 'https://' + baseUrl;
         }
 
