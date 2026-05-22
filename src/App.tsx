@@ -159,7 +159,8 @@ const App = () => {
           onClick={() => {
             import('./utils/html-generator').then(({ generatePortfolioHtml }) => {
               const activeProjects = (portfolioData || []).filter(p => (portfolioCategories || []).includes(p.category));
-              const htmlContent = generatePortfolioHtml(activeProjects, portfolioCategories || [], portfolioDescription || '');
+              const currentUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+              const htmlContent = generatePortfolioHtml(activeProjects, portfolioCategories || [], portfolioDescription || '', currentUrl);
               const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');

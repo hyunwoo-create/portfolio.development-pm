@@ -3,7 +3,8 @@ import { Project } from '../types';
 export const generatePortfolioHtml = (
   projects: Project[],
   categories: string[],
-  description: string
+  description: string,
+  currentUrl: string
 ): string => {
   // HTML template similar to portfolio-cover.html but maps through live data
   return `
@@ -54,6 +55,7 @@ export const generatePortfolioHtml = (
       <input 
         type="text" 
         id="link-input" 
+        value="${currentUrl}"
         class="flex-1 max-w-2xl px-4 py-2 rounded-xl border border-[#DBE2EF] bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#3F72AF] text-[15px] font-medium transition-all"
         placeholder="포트폴리오 주소 입력 (예: https://hyunwoo-create.github.io/portfolio.development-pm/com2us/)"
       />
@@ -152,7 +154,7 @@ export const generatePortfolioHtml = (
       const mainLink = document.getElementById('main-link');
       const projectCards = document.querySelectorAll('.project-card');
 
-      const updateLinks = () => {
+      const updateLinks = (isInitial = false) => {
         let baseUrl = linkInput.value.trim();
         if (!baseUrl) return;
         
@@ -184,14 +186,19 @@ export const generatePortfolioHtml = (
           }
         });
 
-        alert('모든 링크가 업데이트 되었습니다!\\n각 카드를 눌러 연결을 확인해보세요.');
+        if (!isInitial) {
+          alert('모든 링크가 업데이트 되었습니다!\\n각 카드를 눌러 연결을 확인해보세요.');
+        }
       };
 
-      applyBtn.addEventListener('click', updateLinks);
+      applyBtn.addEventListener('click', () => updateLinks(false));
       
       linkInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') updateLinks();
+        if (e.key === 'Enter') updateLinks(false);
       });
+      
+      // Auto-apply on load
+      updateLinks(true);
     });
   </script>
 </body>
