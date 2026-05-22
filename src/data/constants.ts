@@ -93,14 +93,7 @@ export const PORTFOLIO_PROJECTS: Project[] = [
     color: 'from-blue-500 to-cyan-400',
     tags: ['React', 'TypeScript'],
     details: ['UI/UX 설계', '애니메이션 최적화'],
-    content: '# Project Content\n\nDetailed description here.',
-    chartPoints: [
-      { x: 30, y: 80, label: "Planning", detail: "초기 기획" },
-      { x: 120, y: 50, label: "Design", detail: "디자인" },
-      { x: 200, y: 60, label: "Execution", detail: "개발" },
-      { x: 280, y: 30, label: "Troubleshoot", detail: "디버깅" },
-      { x: 370, y: 15, label: "Impact", detail: "런칭" },
-    ]
+    content: '# Project Content\n\nDetailed description here.'
   }
 ];
 
