@@ -156,6 +156,11 @@ export const generatePortfolioHtml = (
         let baseUrl = linkInput.value.trim();
         if (!baseUrl) return;
         
+        // Ensure the URL starts with http:// or https://
+        if (!/^https?:\/\//i.test(baseUrl)) {
+          baseUrl = 'https://' + baseUrl;
+        }
+
         // Remove trailing slash if exists to ensure format compatibility
         if (baseUrl.endsWith('/')) {
             baseUrl = baseUrl.slice(0, -1);
