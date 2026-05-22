@@ -9,8 +9,15 @@
       (function(){
         var q = window.location.search;
         if (q && q.indexOf('?p=') === 0) {
-          var decoded = decodeURIComponent(q.slice(3));
-          var path = '/' + decoded;
+          var params = q.slice(1).split('&');
+          var p = '', qParam = '';
+          for (var i = 0; i < params.length; i++) {
+            if (params[i].startsWith('p=')) p = params[i].slice(2);
+            if (params[i].startsWith('q=')) qParam = params[i].slice(2);
+          }
+          var decodedPath = decodeURIComponent(p);
+          var decodedQuery = qParam ? '?' + decodeURIComponent(qParam).replace(/~and~/g, '&') : '';
+          var path = '/' + decodedPath + decodedQuery;
           window.history.replaceState(null, '', path);
         }
       })();
