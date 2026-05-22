@@ -32,7 +32,7 @@ export const generatePortfolioHtml = (
       #no-print { display: none !important; }
       .page-break { page-break-before: always; }
       .avoid-break { page-break-inside: avoid; }
-      #main-content { min-height: 100vh; padding: 0 !important; margin: 0 !important; background: #F9F7F7 !important; }
+      #main-content { min-height: 100vh; max-width: 100% !important; width: 100% !important; padding: 20px 40px !important; margin: 0 !important; background: #F9F7F7 !important; }
     }
     
     .glass {
@@ -79,7 +79,7 @@ export const generatePortfolioHtml = (
   <!-- ===============================
        [2] Main Content (Printable)
   ================================ -->
-  <div id="main-content" class="pt-[100px] pb-16 px-10 w-[1000px] mx-auto bg-[#F9F7F7]">
+  <div id="main-content" class="pt-[100px] pb-16 px-8 max-w-[800px] w-full mx-auto bg-[#F9F7F7]">
     
     <!-- Top Big Button -->
     <div class="w-full flex justify-center mb-16 pt-8">
@@ -162,7 +162,11 @@ export const generatePortfolioHtml = (
         }
 
         // Update top main link
-        mainLink.href = baseUrl;
+        if (baseUrl.includes('?')) {
+           mainLink.href = baseUrl + '&view=portfolio';
+        } else {
+           mainLink.href = baseUrl + '?view=portfolio';
+        }
 
         // Update each project card
         projectCards.forEach(card => {

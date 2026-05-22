@@ -46,6 +46,8 @@ const App = () => {
     if (isLoading || !portfolioData || portfolioData.length === 0) return;
     const searchParams = new URLSearchParams(window.location.search);
     const projectId = searchParams.get('project');
+    const viewParam = searchParams.get('view');
+    
     if (projectId) {
       const proj = portfolioData.find((p: Project) => p.id === projectId);
       if (proj) {
@@ -56,6 +58,10 @@ const App = () => {
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({path: newUrl}, '', newUrl);
       }
+    } else if (viewParam === 'portfolio') {
+        setView('portfolio');
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({path: newUrl}, '', newUrl);
     }
   }, [isLoading, portfolioData]);
 
@@ -152,7 +158,8 @@ const App = () => {
         <button
           onClick={() => {
             import('./utils/html-generator').then(({ generatePortfolioHtml }) => {
-              const htmlContent = generatePortfolioHtml(portfolioData || [], portfolioCategories || [], portfolioDescription || '');
+              const activeProjects = (portfolioData || []).filter(p => (portfolioCategories || []).includes(p.category));
+              const htmlContent = generatePortfolioHtml(activeProjects, portfolioCategories || [], portfolioDescription || '');
               const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
@@ -164,7 +171,7 @@ const App = () => {
               URL.revokeObjectURL(url);
             });
           }}
-          className="fixed bottom-8 right-8 z-[9999] flex items-center gap-2 px-6 py-4 bg-gradient-to-r from-[#3F72AF] to-[#112D4E] text-white text-base font-black rounded-full shadow-2xl hover:scale-105 transition-transform border-4 border-white"
+          className="fixed bottom-8 right-8 z-[9999] flex items-center gap-2 px-6 py-4 bg-gradient-to-r from-[#3F72AF] to-[#112D4E] text-white text-base font-black rounded-full shadow-2xl hover:scale-105 transition-transform border-4 border-white print:hidden"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           포트폴리오 추출
