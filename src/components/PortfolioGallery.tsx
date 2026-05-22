@@ -43,6 +43,21 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
     setProjects([...projects, newProject]);
   };
 
+  const handleHtmlExport = () => {
+    import('../utils/html-generator').then(({ generatePortfolioHtml }) => {
+      const htmlContent = generatePortfolioHtml(projects, categories, description || '');
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'portfolio-slide.html';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
+  };
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -51,12 +66,23 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
       className="pt-32 pb-24 px-6 max-w-7xl mx-auto"
     >
       <div className="mb-12">
-        <button
-          onClick={() => setView('home')}
-          className="flex items-center gap-2 text-[#112D4E] hover:text-[#3F72AF] transition-colors mb-8 group font-bold"
-        >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
-        </button>
+        <div className="flex items-center justify-between mb-8">
+          <button
+            onClick={() => setView('home')}
+            className="flex items-center gap-2 text-[#112D4E] hover:text-[#3F72AF] transition-colors group font-bold"
+          >
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 돌아가기
+          </button>
+          {!isEditing && (
+            <button
+              onClick={handleHtmlExport}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#3F72AF] text-white text-sm font-bold rounded-xl shadow-md hover:bg-[#112D4E] hover:-translate-y-0.5 transition-all"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              HTML 다운로드
+            </button>
+          )}
+        </div>
         <h1 className="text-4xl md:text-5xl font-black text-[#112D4E] mb-4 tracking-tight">포트폴리오</h1>
         <div className="text-[#8fabc8] text-sm md:text-base font-medium">
           {setDescription ? (

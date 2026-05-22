@@ -41,6 +41,24 @@ const App = () => {
     fetchAll(initialSiteId);
   }, []);
 
+  // --- Parse ?project= query string for direct landing ---
+  useEffect(() => {
+    if (isLoading || !portfolioData || portfolioData.length === 0) return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const projectId = searchParams.get('project');
+    if (projectId) {
+      const proj = portfolioData.find((p: Project) => p.id === projectId);
+      if (proj) {
+        setSelectedProject(proj);
+        setPrevView('portfolio'); // Go back to portfolio gallery
+        setView('project-detail');
+        // Clear the parameter without reloading so it doesn't trigger again on refresh
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({path: newUrl}, '', newUrl);
+      }
+    }
+  }, [isLoading, portfolioData]);
+
   // --- Handlers ---
   const changeView = useCallback((newView: any) => {
     setView(newView);
