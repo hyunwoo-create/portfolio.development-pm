@@ -26,7 +26,7 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
     }
   }, [categories, activeCategory]);
 
-  const activeProjects = projects.filter(p => p.category === activeCategory);
+  const activeProjects = projects; // 전체 프로젝트 표시 (카테고리 필터링 제거)
 
   const handleAddProject = () => {
     const newProject: Project = {
@@ -74,36 +74,7 @@ export const PortfolioGallery = ({ onProjectClick, isEditing, projects, setProje
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3 mb-10 pb-6 border-b border-[#DBE2EF]/50">
-        {categories.map((cat, i) => (
-          <button
-            key={i}
-            onClick={() => !isEditing && setActiveCategory(cat)}
-            className={`px-5 py-2.5 rounded-full text-[13px] md:text-sm font-bold transition-all border flex items-center gap-2 ${
-              activeCategory === cat && !isEditing
-                ? 'bg-[#112D4E] text-white border-[#112D4E] shadow-md'
-                : 'bg-white text-[#8fabc8] border-[#DBE2EF] hover:border-[#3F72AF] hover:text-[#3F72AF]'
-            }`}
-          >
-            {isEditing && setCategories ? (
-              <EditableText
-                value={cat}
-                isEditing={isEditing}
-                onSave={(v) => {
-                  const newCats = [...categories];
-                  newCats[i] = v;
-                  setCategories(newCats);
-                  const updatedProjects = projects.map(p => p.category === cat ? { ...p, category: v } : p);
-                  setProjects(updatedProjects);
-                  if (activeCategory === cat) setActiveCategory(v);
-                }}
-              />
-            ) : (
-              cat
-            )}
-          </button>
-        ))}
-      </div>
+
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {activeProjects.map((project) => {

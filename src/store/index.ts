@@ -77,20 +77,50 @@ const recursivelySanitize = (obj: any): any => {
   return obj;
 };
 
+// ─── Circuit breaker (prevents hammering a dead Supabase) ────────────────
+let _circuitOpen = false;
+let _circuitOpenedAt = 0;
+const CIRCUIT_OPEN_MS = 60_000; // 60초 동안 재시도 차단
+
+const isCircuitOpen = (): boolean => {
+  if (!_circuitOpen) return false;
+  // 60초 경과 시 자동 복구 (half-open)
+  if (Date.now() - _circuitOpenedAt > CIRCUIT_OPEN_MS) {
+    _circuitOpen = false;
+    console.info('[CircuitBreaker] Auto-reset after cooldown');
+    return false;
+  }
+  return true;
+};
+
+const openCircuit = () => {
+  if (!_circuitOpen) {
+    _circuitOpen = true;
+    _circuitOpenedAt = Date.now();
+    console.warn('[CircuitBreaker] OPEN — Supabase unreachable, skipping requests for 60s');
+  }
+};
+
+const resetCircuit = () => {
+  _circuitOpen = false;
+  _circuitOpenedAt = 0;
+  console.info('[CircuitBreaker] Manually reset');
+};
+
 // ─── Fetch with timeout ────────────────────────────────────────────────────
-const fetchWithTimeout = (url: string, options: RequestInit, timeoutMs = 10000): Promise<Response> => {
+const fetchWithTimeout = (url: string, options: RequestInit, timeoutMs = 15000): Promise<Response> => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
 };
 
-// ─── Retry wrapper ─────────────────────────────────────────────────────────
+// ─── Retry wrapper (exponential backoff) ──────────────────────────────────
 const fetchWithRetry = async (
   url: string,
   options: RequestInit,
-  retries = 2,
-  delayMs = 800,
-  timeoutMs = 10000,
+  retries = 3,
+  delayMs = 1000,
+  timeoutMs = 15000,
 ): Promise<Response> => {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -100,28 +130,115 @@ const fetchWithRetry = async (
       const isLastAttempt = attempt === retries;
       if (isLastAttempt) throw err;
 
-      // Abort = timeout, don't retry on explicit user abort
+      const backoffDelay = delayMs * Math.pow(2, attempt); // exponential backoff
       if (err.name === 'AbortError') {
-        console.warn(`[fetchWithRetry] Timeout on attempt ${attempt + 1}/${retries + 1}. Retrying in ${delayMs}ms…`);
+        console.warn(`[fetchWithRetry] Timeout on attempt ${attempt + 1}/${retries + 1}. Retrying in ${backoffDelay}ms…`);
       } else {
-        console.warn(`[fetchWithRetry] Network error on attempt ${attempt + 1}/${retries + 1}. Retrying in ${delayMs}ms…`);
+        console.warn(`[fetchWithRetry] Network error on attempt ${attempt + 1}/${retries + 1}. Retrying in ${backoffDelay}ms…`);
       }
-      await new Promise(resolve => setTimeout(resolve, delayMs * (attempt + 1)));
+      await new Promise(resolve => setTimeout(resolve, backoffDelay));
     }
   }
   throw new Error('fetchWithRetry: exhausted all retries');
 };
 
-// ─── Save failure tracking (throttled alert to avoid spam) ────────────────
-let lastAlertTime = 0;
-const ALERT_THROTTLE_MS = 15_000;
+// ─── Save failure tracking (non-blocking toast instead of alert) ──────────
+let lastToastTime = 0;
+const TOAST_THROTTLE_MS = 30_000; // 30초 쿨다운
+let _toastElement: HTMLDivElement | null = null;
+
+const showToast = (message: string, durationMs = 6000) => {
+  // Remove existing toast
+  if (_toastElement && _toastElement.parentNode) {
+    _toastElement.parentNode.removeChild(_toastElement);
+  }
+  const el = document.createElement('div');
+  el.style.cssText = `
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:99999;
+    background:#1a1a2e; color:#fff; padding:14px 28px; border-radius:14px;
+    font-size:13px; font-weight:600; box-shadow:0 8px 32px rgba(0,0,0,0.25);
+    display:flex; align-items:center; gap:10px; max-width:90vw;
+    animation: toast-in 0.3s ease-out;
+  `;
+  el.innerHTML = `<span style="font-size:18px">⚠️</span><span>${message}</span>`;
+  // Add animation keyframes if not already present
+  if (!document.getElementById('toast-keyframes')) {
+    const style = document.createElement('style');
+    style.id = 'toast-keyframes';
+    style.textContent = '@keyframes toast-in{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
+    document.head.appendChild(style);
+  }
+  document.body.appendChild(el);
+  _toastElement = el;
+  setTimeout(() => {
+    if (el.parentNode) {
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.3s';
+      setTimeout(() => el.parentNode?.removeChild(el), 300);
+    }
+  }, durationMs);
+};
 
 const notifySaveFailure = (key: string, statusCode?: number) => {
   const now = Date.now();
-  if (now - lastAlertTime < ALERT_THROTTLE_MS) return;
-  lastAlertTime = now;
   const detail = statusCode ? `HTTP ${statusCode}` : '네트워크 연결 오류';
-  alert(`⚠️ 데이터 저장에 실패했습니다 (${key} / ${detail}).\n잠시 후 다시 시도하거나, 창을 닫기 전에 데이터를 백업해 주세요.`);
+  console.warn(`[Save Failed] key=${key} detail=${detail}`);
+  if (now - lastToastTime < TOAST_THROTTLE_MS) return; // 30초 내 중복 알림 억제
+  lastToastTime = now;
+  showToast(`저장 실패 (${key}) — 자동 재시도 중입니다.`, 5000);
+};
+
+// ─── Failed save retry queue ─────────────────────────────────────────────
+interface PendingWrite { siteId: string; key: string; value: any; retryCount: number; }
+const _pendingRetries: Map<string, PendingWrite> = new Map();
+let _retryTimerId: ReturnType<typeof setTimeout> | null = null;
+
+const scheduleRetryQueue = () => {
+  if (_retryTimerId || _pendingRetries.size === 0) return;
+  _retryTimerId = setTimeout(async () => {
+    _retryTimerId = null;
+    const entries = Array.from(_pendingRetries.entries());
+    for (const [qKey, item] of entries) {
+      try {
+        const dbKey = makeDbKey(item.siteId, item.key);
+        const sanitizedValue = recursivelySanitize(item.value);
+        const res = await fetchWithTimeout(
+          SUPABASE_CONTENT_API,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({
+              password: (import.meta as any).env?.VITE_ADMIN_PASSWORD || 'qwer154',
+              key: dbKey,
+              value: sanitizedValue,
+            }),
+          },
+          20000,
+        );
+        if (res.ok) {
+          _pendingRetries.delete(qKey);
+          console.info(`[RetryQueue] Successfully saved key=${dbKey}`);
+        } else {
+          item.retryCount++;
+          if (item.retryCount >= 5) {
+            _pendingRetries.delete(qKey);
+            console.error(`[RetryQueue] Giving up on key=${dbKey} after 5 retries`);
+          }
+        }
+      } catch {
+        item.retryCount++;
+        if (item.retryCount >= 5) {
+          _pendingRetries.delete(qKey);
+        }
+      }
+    }
+    // 남은 항목이 있으면 다시 스케줄
+    if (_pendingRetries.size > 0) scheduleRetryQueue();
+  }, 10_000); // 10초 후 재시도
 };
 
 // ─── Custom debounce ──────────────────────────────────────────────────────
@@ -138,6 +255,13 @@ function clearAllDebounceTimers() {
 }
 
 const saveToSupabase = async (siteId: string, key: string, value: any) => {
+  // Circuit breaker: Supabase가 다운된 상태면 저장 시도 자체를 건너뜀
+  if (isCircuitOpen()) {
+    console.warn(`[saveToSupabase] Circuit open, skipping save for key=${key}`);
+    _pendingRetries.set(`${siteId}::${key}`, { siteId, key, value, retryCount: 0 });
+    return;
+  }
+
   try {
     const sanitizedValue = recursivelySanitize(value);
     
@@ -168,18 +292,23 @@ const saveToSupabase = async (siteId: string, key: string, value: any) => {
           value: sanitizedValue,
         }),
       },
-      2,    // retries
-      800,  // base delay ms
-      12000 // timeout ms
+      1,     // retries (reduced — circuit breaker handles recovery)
+      1000,  // base delay ms
+      10000  // timeout ms
     );
 
     if (!response.ok) {
       console.error(`[Supabase Save Error] key=${dbKey} status=${response.status}`);
       notifySaveFailure(dbKey, response.status);
+      _pendingRetries.set(`${siteId}::${key}`, { siteId, key, value, retryCount: 0 });
+      scheduleRetryQueue();
     }
   } catch (e: any) {
     console.error(`[Supabase Exception] key=${key}`, e);
+    openCircuit(); // 네트워크 실패 시 circuit 열기
     notifySaveFailure(key);
+    _pendingRetries.set(`${siteId}::${key}`, { siteId, key, value, retryCount: 0 });
+    scheduleRetryQueue();
   }
 };
 
@@ -247,6 +376,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   sites: [{ id: 'default', name: '기본 사이트', slug: 'default', createdAt: new Date().toISOString() }],
   
   fetchSites: async () => {
+    // Circuit breaker: Supabase 다운 시 fetchSites 건너뜀
+    if (isCircuitOpen()) {
+      console.warn('[fetchSites] Circuit open, skipping');
+      return;
+    }
     try {
       const res = await fetchWithRetry(
         SUPABASE_CONTENT_API,
@@ -256,7 +390,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           },
         },
-        2, 600, 10000,
+        1, 800, 8000, // 줄인 재시도: 1회, 8초 타임아웃
       );
       if (!res.ok) return;
       const allData = await res.json();
@@ -264,11 +398,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (allData[SITE_REGISTRY_KEY]) {
         set({ sites: allData[SITE_REGISTRY_KEY] });
       } else {
-        // 레지스트리가 없으면 기본값
         set({ sites: [{ id: 'default', name: '기본 사이트', slug: 'default', createdAt: new Date().toISOString() }] });
       }
     } catch (e) {
       console.error('[Store] Failed to fetch sites:', e);
+      openCircuit();
     }
   },
 
@@ -443,6 +577,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     const siteId = overrideSiteId || get().siteId;
     _isFetching = true;
     clearAllDebounceTimers();
+    
+    // "다시 시도" 클릭 시 circuit breaker 리셋
+    resetCircuit();
+    
     set({ isLoading: true, fetchError: null, siteId });
     try {
       const res = await fetchWithRetry(
@@ -453,9 +591,9 @@ export const useAppStore = create<AppState>((set, get) => ({
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           },
         },
-        3,     // retries
-        600,   // base delay ms
-        12000  // timeout ms
+        1,     // retries (reduced from 3 — fast fallback to defaults)
+        1000,  // base delay ms
+        8000   // timeout ms (reduced from 20s — faster error detection)
       );
 
       if (!res.ok) {
@@ -465,16 +603,26 @@ export const useAppStore = create<AppState>((set, get) => ({
       const allData = await res.json();
 
       // 사이트 레지스트리도 함께 로딩
-      if (allData[SITE_REGISTRY_KEY]) {
-        set({ sites: allData[SITE_REGISTRY_KEY] });
+      const fetchedSites = allData[SITE_REGISTRY_KEY] || [{ id: 'default', name: '기본 사이트', slug: 'default' }];
+      set({ sites: fetchedSites });
+
+      // 상속(Prototype) 체인을 통해 데이터를 병합
+      // default -> parent -> current 순으로 덮어씌움 (Base64 중복 저장 방지)
+      let finalData: any = {};
+      const currentSite = fetchedSites.find((s: any) => s.id === siteId) || { id: 'default' };
+      
+      const chain: string[] = [];
+      let pointer: any = currentSite;
+      while (pointer && !chain.includes(pointer.id)) {
+        chain.unshift(pointer.id);
+        pointer = fetchedSites.find((s: any) => s.id === pointer.parentId);
       }
+      if (!chain.includes('default')) chain.unshift('default');
 
-      // 현재 siteId에 해당하는 데이터만 필터링
-      const data = filterDataBySiteId(allData, siteId);
-
-      // 사이트 데이터가 비어있으면 default fallback
-      const hasData = Object.keys(data).length > 0;
-      const finalData = hasData ? data : filterDataBySiteId(allData, 'default');
+      for (const pId of chain) {
+        const pData = filterDataBySiteId(allData, pId);
+        finalData = { ...finalData, ...pData };
+      }
 
       if (finalData) {
         set((state) => ({
@@ -501,6 +649,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch (e: any) {
       console.error('[Store] Failed to fetch initial data:', e);
       _isFetching = false;
+      openCircuit(); // Supabase 접속 실패 → circuit 열기
       set({ isLoading: false, fetchError: e?.message ?? 'Network error' });
     }
   },

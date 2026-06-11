@@ -205,12 +205,7 @@ const App = () => {
                 content={heroContent} 
                 setContent={(v) => updateContent('hero_content', v)} 
               />
-              <About 
-                isEditing={isEditing} 
-                content={aboutContent} 
-                setContent={(v) => updateContent('about_content', v)} 
-                onMoreMeClick={() => setView('resume')}
-              />
+
               <StatBoard 
                 isEditing={isEditing}
                 userImage={userImage}

@@ -322,12 +322,7 @@ export const StatBoard = ({
 
   return (
     <section id="stat-board" className="pt-7 pb-14 px-6 max-w-[1400px] mx-auto relative z-20 bg-[#F9F7F7]">
-      <div className="w-full flex justify-center mb-10 pointer-events-none">
-        <div className="flex flex-col items-center animate-pulse opacity-90">
-          <span className="text-[11px] md:text-sm font-black tracking-widest text-[#3F72AF] mb-2 uppercase drop-shadow-sm">SCROLL</span>
-          <div className="w-[2px] h-16 md:h-24 bg-gradient-to-b from-[#3F72AF] via-[#3F72AF] to-transparent shadow-sm"></div>
-        </div>
-      </div>
+
 
       {/* DESKTOP 3-COLUMN */}
       <div className="hidden lg:grid gap-8 items-stretch relative select-none w-full" style={{ gridTemplateColumns: '1.2fr 380px 1.5fr' }}>
@@ -336,39 +331,7 @@ export const StatBoard = ({
         <div className="flex flex-col pr-4 py-2 w-full">
           <div className="flex flex-col gap-8 w-full pb-4">
 
-            {/* ── AI 활용 능력 ── */}
-            <div className="flex flex-col shrink-0">
-              <div className="flex items-center justify-between mb-4 pl-1">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-[#DBE2EF]/50 flex items-center justify-center shrink-0 border border-[#DBE2EF]/80 shadow-sm">
-                    <Sparkles className="w-4 h-4 text-[#3F72AF]" />
-                  </div>
-                  <h2 className="text-[14px] font-black tracking-[0.1em] text-[#112D4E] uppercase pt-0.5">AI 활용 능력</h2>
-                </div>
-                {isEditing && (
-                  <button onClick={addAiSkill} className="flex items-center gap-1 text-[9px] font-bold bg-white text-[#112D4E] px-2 py-0.5 rounded border border-[#DBE2EF] hover:bg-[#DBE2EF]"><Plus className="w-2.5 h-2.5"/>추가</button>
-                )}
-              </div>
-              <div className="flex flex-col gap-2">
-                {aiSkills?.map((a: any) => (
-                  <div
-                    key={a.id}
-                    onClick={() => setHoveredItem({ type: 'aiSkill', data: a })}
-                    className={`p-3 lg:p-4 rounded-xl cursor-pointer transition-all duration-300 border group ${
-                      hoveredItem?.data?.id === a.id
-                        ? 'bg-[#0a1e36] border-[#0a1e36] shadow-xl translate-x-3 scale-[1.02]'
-                        : 'bg-white border-[#DBE2EF] hover:bg-[#0a1e36] hover:border-[#0a1e36] hover:translate-x-1 shadow-sm'
-                    }`}
-                  >
-                    <div className={`font-black text-[15px] leading-tight transition-colors ${
-                      hoveredItem?.data?.id === a.id ? 'text-white' : 'text-[#112D4E] group-hover:text-white'
-                    }`}>
-                      {a.title}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+
 
             {/* ── 사용 TOOL ── */}
             <div className="flex flex-col shrink-0">
