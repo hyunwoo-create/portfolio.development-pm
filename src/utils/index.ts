@@ -6,16 +6,31 @@ export const downloadPdf = (dataUrl: string, name: string) => {
   a.click();
 };
 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdnhhbndhbWdiaGx1YnJuZHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NzQ0NDAsImV4cCI6MjA5MTM1MDQ0MH0.b4MvsylK--ZJrkjWZnkzcSHpjHxYiyJTA-lYsI8Ij4Y';
+const STORAGE_API = 'https://bovxanwamgbhlubrndyl.supabase.co/storage/v1/object/portfolio-images';
+const PUBLIC_URL_BASE = 'https://bovxanwamgbhlubrndyl.supabase.co/storage/v1/object/public/portfolio-images';
+
+async function uploadBlobToSupabase(blob: Blob, ext: string = 'webp'): Promise<string> {
+  const filename = `img_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+  const res = await fetch(`${STORAGE_API}/${filename}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': blob.type || `image/${ext}`,
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+    },
+    body: blob
+  });
+  if (!res.ok) throw new Error('Upload failed');
+  return `${PUBLIC_URL_BASE}/${filename}`;
+}
+
 export const processImageHighQuality = (file: File, maxWidth: number = 800): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
-        // Step-down scaling algorithm (전문화된 이미지 리사이징 기법)
-        // 브라우저의 기본 리사이징은 한번에 크게 줄일 때 계단 현상(Aliasing)과 무아레 패턴이 발생합니다.
-        // 이를 방지하기 위해 절반씩 단계적으로 줄여나가며 고화질을 유지합니다.
-        
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         if (!ctx) {
@@ -23,27 +38,38 @@ export const processImageHighQuality = (file: File, maxWidth: number = 800): Pro
           return;
         }
 
-        // 서버 payload 한도(512KB) 초과를 막기 위해 최적화된 타겟 해상도 설정
         const targetWidth = maxWidth;
         let currWidth = img.width;
         let currHeight = img.height;
 
-        // 원본 자체가 이미 충분히 작다면 가공하지 않음
+        const handleCanvasOutput = (targetCanvas: HTMLCanvasElement) => {
+          targetCanvas.toBlob(async (blob) => {
+            if (blob) {
+              try {
+                const url = await uploadBlobToSupabase(blob, 'webp');
+                resolve(url);
+              } catch (err) {
+                console.error('Storage upload failed, falling back to base64', err);
+                resolve(targetCanvas.toDataURL('image/webp', 0.8));
+              }
+            } else {
+              resolve(targetCanvas.toDataURL('image/webp', 0.8));
+            }
+          }, 'image/webp', 0.8);
+        };
+
         if (currWidth <= targetWidth) {
-          // 그래도 WebP로 변환하여 용량 최소화
           canvas.width = currWidth;
           canvas.height = currHeight;
           ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL('image/webp', 0.8));
+          handleCanvasOutput(canvas);
           return;
         }
 
-        // 초기 시작 캔버스 설정
         canvas.width = currWidth;
         canvas.height = currHeight;
         ctx.drawImage(img, 0, 0);
 
-        // 단계적 축소 (보통 50%씩 줄이는 것이 가장 결과가 좋음)
         while (currWidth * 0.5 > targetWidth) {
           currWidth *= 0.5;
           currHeight *= 0.5;
@@ -63,7 +89,6 @@ export const processImageHighQuality = (file: File, maxWidth: number = 800): Pro
           ctx.drawImage(tempCanvas, 0, 0);
         }
 
-        // 최종 타겟 크기로 정밀 조정
         const finalScale = targetWidth / currWidth;
         const finalWidth = targetWidth;
         const finalHeight = currHeight * finalScale;
@@ -71,7 +96,7 @@ export const processImageHighQuality = (file: File, maxWidth: number = 800): Pro
         const finalCanvas = document.createElement('canvas');
         const finalCtx = finalCanvas.getContext('2d');
         if (!finalCtx) {
-          resolve(canvas.toDataURL('image/webp', 0.8));
+          handleCanvasOutput(canvas);
           return;
         }
 
@@ -81,8 +106,7 @@ export const processImageHighQuality = (file: File, maxWidth: number = 800): Pro
         finalCtx.imageSmoothingQuality = 'high';
         finalCtx.drawImage(canvas, 0, 0, finalWidth, finalHeight);
 
-        // WebP 80% 품질로 대폭 압축하여 용량 문제 완벽 해결
-        resolve(finalCanvas.toDataURL('image/webp', 0.8));
+        handleCanvasOutput(finalCanvas);
       };
       img.onerror = () => reject(new Error('Failed to load image'));
       img.src = e.target?.result as string;
