@@ -321,7 +321,7 @@ export const StatBoard = ({
 
 
   return (
-    <section id="stat-board" className="pt-7 pb-14 px-6 max-w-[1400px] mx-auto relative z-20 bg-[#F9F7F7]">
+    <section id="stat-board" className="pt-24 pb-14 px-6 max-w-[1400px] mx-auto relative z-20 bg-[#F9F7F7]">
 
 
       {/* DESKTOP 3-COLUMN */}
