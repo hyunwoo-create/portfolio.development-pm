@@ -2,8 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ScrollText, Plus, X, LayoutGrid, Pencil, Check } from 'lucide-react';
 import { EditableText } from './EditableText';
 import { ResumeData, SelfIntroTab, IntroCard } from '../types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 
 const VIZ_MARKER = '(시각화)';
+
+const parseMarkdownInHtml = (html: string) => {
+  if (!html) return html;
+  let parsed = html;
+  parsed = parsed.replace(/<p>(?:\s|&nbsp;|<br>)*---(?:\s|&nbsp;|<br>)*<\/p>/gi, '<hr />');
+  parsed = parsed.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  parsed = parsed.replace(/<p>(?:\s|&nbsp;|<br>)*###\s+(.*?)<\/p>/gi, '<h3>$1</h3>');
+  parsed = parsed.replace(/<p>(?:\s|&nbsp;|<br>)*##\s+(.*?)<\/p>/gi, '<h2>$1</h2>');
+  parsed = parsed.replace(/<p>(?:\s|&nbsp;|<br>)*#\s+(.*?)<\/p>/gi, '<h1>$1</h1>');
+  parsed = parsed.replace(/<p>(?:\s|&nbsp;|<br>)*&gt;\s+(.*?)<\/p>/gi, '<blockquote>$1</blockquote>');
+  return parsed;
+};
 
 const FlowArrow = ({ faded = false }: { faded?: boolean }) => (
   <div className="flex items-center justify-center flex-shrink-0 self-center px-1">
@@ -227,19 +242,31 @@ const TabContent = ({
           <React.Fragment key={i}>
             {/* Text Segment */}
             {seg.trim().length > 0 && (
-              <EditableText
-                value={seg}
-                onSave={(v) => {
-                  const np = [...segments]; np[i] = v;
-                  onUpdateTab({ content: buildContent(np) });
-                }}
-                isEditing={isEditing}
-                multiline
-                className="text-[15px] leading-[1.8] font-semibold text-[#1A374D] markdown-body"
-                style={tab.style || {}}
-                styleData={tab.style || {}}
-                onStyleSave={(s) => onUpdateTab({ style: s })}
-              />
+              isEditing ? (
+                <EditableText
+                  value={seg}
+                  onSave={(v) => {
+                    const np = [...segments]; np[i] = v;
+                    onUpdateTab({ content: buildContent(np) });
+                  }}
+                  isEditing={true}
+                  multiline
+                  className="text-[15px] leading-[1.8] font-semibold text-[#1A374D] markdown-body"
+                  style={tab.style || {}}
+                  styleData={tab.style || {}}
+                  onStyleSave={(s) => onUpdateTab({ style: s })}
+                />
+              ) : (
+                <div className="text-[15px] leading-[1.8] font-semibold text-[#1A374D] markdown-body" style={tab.style || {}}>
+                  {seg.trim().startsWith('<') ? (
+                    <div dangerouslySetInnerHTML={{ __html: parseMarkdownInHtml(seg) }} />
+                  ) : (
+                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                      {seg || ''}
+                    </ReactMarkdown>
+                  )}
+                </div>
+              )
             )}
 
             {/* Marker Visualization Block (only between segments) */}
