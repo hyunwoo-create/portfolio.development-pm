@@ -121,5 +121,6 @@ export interface ResumeData {
    description: string;
  }[];
  totalExperience?: string;
+ portfolioUrl?: string;
 }
 
