@@ -148,7 +148,7 @@ export const ProjectDetail = ({ project, onBack, isEditing, onSaveContent, onUpd
 
       {/* 2. 중간: 미디어 뷰어 */}
       <div className="rounded-[1.5rem] overflow-hidden mb-8 bg-white border border-[#DBE2EF] shadow-sm relative">
-        <div className="relative aspect-[16/9] md:aspect-[21/9] bg-[#F9F7F7]">
+        <div className="relative aspect-[4/3] md:aspect-[21/14] bg-[#F9F7F7]">
           <AnimatePresence mode="wait">
             {activeTab === 'image' && (
               <motion.div key="image" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0">
@@ -281,7 +281,19 @@ export const ProjectDetail = ({ project, onBack, isEditing, onSaveContent, onUpd
                   {pdfObjectUrl ? (
                     (() => {
                       const isGoogleDrive = pdfObjectUrl.includes('drive.google.com');
-                      const finalUrl = isGoogleDrive ? pdfObjectUrl : `${pdfObjectUrl}#toolbar=0&navpanes=0&scrollbar=0`;
+                      // 구글 드라이브 URL → /preview 임베드 형식으로 변환
+                      const toGoogleDrivePreview = (url: string): string => {
+                        // https://drive.google.com/file/d/FILE_ID/view... 형식
+                        const fileMatch = url.match(/\/file\/d\/([^/?\s]+)/);
+                        if (fileMatch) return `https://drive.google.com/file/d/${fileMatch[1]}/preview`;
+                        // https://drive.google.com/open?id=FILE_ID 형식
+                        const openMatch = url.match(/[?&]id=([^&\s]+)/);
+                        if (openMatch) return `https://drive.google.com/file/d/${openMatch[1]}/preview`;
+                        return url;
+                      };
+                      const finalUrl = isGoogleDrive
+                        ? toGoogleDrivePreview(pdfObjectUrl)
+                        : `${pdfObjectUrl}#toolbar=0&navpanes=0&scrollbar=0`;
                       
                       return (
                         <iframe 
