@@ -223,20 +223,21 @@ export const ResumePDF = ({ data, heroContent, aiSkills, toolCards, userImage, s
                   })}
                 </div>
 
-                {/* Bottom Center: Portfolio Link Button (Row 3, Col 1-2) */}
-                <div className="col-span-2 flex justify-center items-end pb-4 z-30">
-                  <a href={data.portfolioUrl || "https://hyunwoo-create.github.io/portfolio.development-pm/"} target="_blank" rel="noopener noreferrer" 
-                     className="px-16 py-5 bg-[#112D4E] text-white rounded-[2rem] font-black text-[26px] flex items-center gap-6 shadow-[0_15px_40px_rgba(17,45,78,0.4)] hover:-translate-y-1 transition-transform" 
-                     style={{ textDecoration: 'none', border: '3px solid rgba(255,255,255,0.9)' }}>
-                    <span className="tracking-tight">포트폴리오 확인하기</span>
-                    <div className="bg-white text-[#112D4E] p-2.5 rounded-xl shadow-sm">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                    </div>
-                  </a>
-                </div>
               </div>
             </section>
           )}
+
+          {/* Bottom Center: Portfolio Link Button (Moved below the 1000px section so it sits in the empty space) */}
+          <div className="w-full flex justify-center items-center pb-12 pt-8 z-30" style={{ minHeight: '160px' }}>
+            <a href={data.portfolioUrl || "https://hyunwoo-create.github.io/portfolio.development-pm/"} target="_blank" rel="noopener noreferrer" 
+                className="px-16 py-5 bg-[#112D4E] text-white rounded-[2rem] font-black text-[26px] flex items-center gap-6 shadow-[0_15px_40px_rgba(17,45,78,0.4)] hover:-translate-y-1 transition-transform" 
+                style={{ textDecoration: 'none', border: '3px solid rgba(255,255,255,0.9)' }}>
+              <span className="tracking-tight">포트폴리오 확인하기</span>
+              <div className="bg-white text-[#112D4E] p-2.5 rounded-xl shadow-sm">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </div>
+            </a>
+          </div>
 
 
           {/* ── StatBoard Section (Page 3) ── */}
