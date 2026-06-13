@@ -56,6 +56,7 @@ const recursivelySanitize = (obj: any): any => {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj === 'string') {
     if (obj.startsWith('blob:')) return null; 
+    if (obj.startsWith('data:application/pdf;base64,')) return ''; // PDF base64 → 구글 드라이브 링크로 대체 필요
     if (obj.includes('<img') && obj.includes('src="data:image')) {
       return stripBase64Images(obj); 
     }
