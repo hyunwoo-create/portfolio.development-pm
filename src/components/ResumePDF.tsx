@@ -236,35 +236,36 @@ export const ResumePDF = ({ data, heroContent, aiSkills, toolCards, userImage, s
 
 
           {/* ── StatBoard Section (Page 3) ── */}
-          {(aiSkills?.length > 0 || toolCards?.length > 0) && (
+          {(userImage || toolCards?.length > 0) && (
             <div className="break-before-page">
               
               <section className="px-12 pt-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px', display: 'flex', flexDirection: 'column' }}>
                 {/* 상단: AI능력(좌) + 기본 안내(우) */}
                 <div className="grid gap-8 flex-1 items-start relative" style={{ gridTemplateColumns: '1fr 1.8fr' }}>
                 
-                {/* 좌측: AI 능력 목록 */}
-                <div className="flex flex-col gap-6 pt-12 z-10 w-full">
-                  {aiSkills?.length > 0 && (
-                    <div className="flex flex-col gap-3">
-                      <h2 className="text-sm font-black tracking-[0.1em] text-[#8fabc8] uppercase mb-1">AI 활용 능력</h2>
-                      {aiSkills.map((a: any) => (
-                        <div key={a.id} className="p-4 rounded-xl bg-white border border-[#DBE2EF] shadow-sm">
-                          <div className="font-black text-[15px] text-[#112D4E] leading-tight">{a.title}</div>
+                {/* 좌측: 아바타 이미지 및 기본 버튼 */}
+                <div className="flex flex-col gap-6 pt-12 z-10 w-full justify-start items-center">
+                  <div className="flex justify-center items-end relative z-10 w-full" style={{ height: '320px' }}>
+                    <div className="w-full h-full relative" style={{ maxWidth: '280px' }}>
+                      <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-[#DBE2EF] to-transparent rounded-t-[3rem] opacity-30" />
+                      {userImage ? (
+                        <img src={userImage} alt="Profile" className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[110%] h-auto max-h-[120%] object-contain drop-shadow-2xl" />
+                      ) : (
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4/5 h-4/5 bg-[#8fabc8]/20 rounded-t-full flex items-center justify-center">
+                          <User className="w-24 h-24 text-[#8fabc8]/50" />
                         </div>
-                      ))}
+                      )}
+                    </div>
+                  </div>
+
+                  {statBoardDefaultBtnText && (
+                    <div className="mt-2 px-6 py-4 bg-[#0a1e36] rounded-2xl flex items-center justify-between gap-4 shadow-xl w-full" style={{ maxWidth: '280px' }}>
+                      <span className="text-white text-[13px] font-black leading-snug whitespace-pre-wrap flex-1 text-center">
+                        {stripHtmlToText(statBoardDefaultBtnText)}
+                      </span>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                     </div>
                   )}
-                {/* 좌측 하단: 기본 버튼 - HTML 태그 제거 후 순수 텍스트로 출력 */}
-                {statBoardDefaultBtnText && (
-                  <div className="mt-6 px-6 py-4 bg-[#0a1e36] rounded-2xl flex items-center justify-between gap-4 shadow-xl">
-                    <span className="text-white text-[13px] font-black leading-snug whitespace-pre-wrap flex-1 text-center">
-                      {stripHtmlToText(statBoardDefaultBtnText)}
-                    </span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                  </div>
-                )}
-
                 </div>
 
                 {/* 우측: statBoard 기본 상세 내용 */}
