@@ -343,17 +343,8 @@ export const ProjectDetail = ({ project, onBack, isEditing, onSaveContent, onUpd
         >
           <ImageIcon className="w-5 h-5" /> 대표 이미지
         </button>
-        <button
-          onClick={() => setActiveTab('video')}
-          className={`group flex items-center justify-center gap-2 w-full sm:w-48 py-4 rounded-2xl font-bold transition-all border shadow-sm ${
-            activeTab === 'video' 
-              ? 'bg-[#112D4E] text-white border-[#112D4E] hover:bg-white hover:text-[#112D4E]' 
-              : 'bg-white text-[#112D4E] border-[#DBE2EF] hover:bg-[#112D4E] hover:text-white hover:border-[#112D4E]'
-          }`}
-        >
-          <Play className="w-5 h-5" /> 플레이 영상
-        </button>
         
+
         {/* 작업 문서 버튼 (툴팁 포함) */}
         <div className="relative w-full sm:w-48">
           <button
