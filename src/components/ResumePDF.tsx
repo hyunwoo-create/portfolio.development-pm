@@ -241,12 +241,8 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
               <section className="px-12 pt-12 pb-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px' }}>
               {/* Q&A 헤더 */}
               <div className="flex justify-between items-end mb-16 border-b border-[#3F72AF]/20 pb-6 gap-4">
-                <h2 className="text-3xl font-black text-[#112D4E] tracking-tight whitespace-pre-wrap">
-                  {aboutContent.titleLeft ?? 'Q. 누구를 채용해야 할까요?'}
-                </h2>
-                <h2 className="text-2xl font-black text-[#3F72AF] tracking-tight text-right whitespace-pre-wrap">
-                  {aboutContent.titleRight ?? 'A. 저 입니다. 지원자 양 현우'}
-                </h2>
+                {aboutContent.titleLeft && <h2 className="text-3xl font-black text-[#112D4E] tracking-tight whitespace-pre-wrap">{aboutContent.titleLeft}</h2>}
+                {aboutContent.titleRight && <h2 className="text-2xl font-black text-[#3F72AF] tracking-tight text-right whitespace-pre-wrap">{aboutContent.titleRight}</h2>}
               </div>
 
               {/* 2컬럼 그리드 (About.tsx 참조) */}
@@ -257,9 +253,11 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                   {/* 막대형 그래프 카드 */}
                   <div className="bg-white rounded-[2rem] shadow-lg shadow-[#112D4E]/5 border border-[#DBE2EF] p-8">
                     <div className="flex flex-col items-center justify-center mb-10">
-                      <h3 className="text-lg font-black text-[#112D4E] text-center">
-                        {aboutContent.chartTitle ?? '막대형 그래프 채용 지원자격 top3'}
-                      </h3>
+                      {aboutContent.chartTitle && (
+                        <h3 className="text-lg font-black text-[#112D4E] text-center">
+                          {aboutContent.chartTitle}
+                        </h3>
+                      )}
                     </div>
                     <div className="space-y-8 relative">
                       {/* 눈금선 */}
@@ -303,10 +301,11 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                     </div>
                   </div>
 
-                  {/* 크롤러 동영상 */}
+                  {/* 크롤러 동영상: videoUrl이 있을 때만 표시 */}
+                  {aboutContent.videoUrl && (
                   <div className="bg-white rounded-[2rem] shadow-lg shadow-[#112D4E]/5 border border-[#DBE2EF] p-8 flex flex-col items-center">
                     <h3 className="text-lg font-black text-[#112D4E] text-center mb-6">
-                      {aboutContent.videoTitle ?? "크롤러 동영상"}
+                      {aboutContent.videoTitle || "크롤러 동영상"}
                     </h3>
                     <div className="w-full aspect-video bg-[#DBE2EF]/30 rounded-2xl overflow-hidden flex items-center justify-center border border-[#DBE2EF]">
                       <div className="text-center text-[#3F72AF]">
@@ -314,34 +313,33 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                       </div>
                     </div>
                   </div>
+                  )}
                 </div>
 
                 {/* 우 컬럼: 역량 설명 텍스트 */}
                 <div className="col-span-7 flex flex-col justify-between py-6">
                   <div className="flex flex-col space-y-16 pl-16 flex-1 justify-around">
                     {[1, 2, 3].map((num) => {
-                      const title = aboutContent[`descTitle${num}`] || (
-                        num === 1 ? '역량 A에 해당하는 내용 및 역량' :
-                        num === 2 ? '역량 B에 해당하는 내용 및 역량' :
-                                   '역량 C에 해당하는 내용 및 역량'
-                      );
-                      const body = aboutContent[`descText${num}`] || (
-                        num === 1 ? '채용 공고에서 요구하는 최우선 역량을 완벽하게 충족하며, 실무에서 즉시 성과를 창출할 수 있는 기획력과 문제해결 능력을 보유하고 있습니다.' :
-                        num === 2 ? '다양한 직군과의 협업 경험을 통해 커뮤니케이션 비용을 줄이고, 복잡한 프로젝트를 리드하여 성공적인 런칭을 이끌어냅니다.' :
-                                   '데이터 수집 및 분석 자동화(크롤링) 경험을 바탕으로, 높은 수준의 기술적 이해도를 지니고 있어 개발팀과 매끄럽게 소통합니다.'
-                      );
+                      const title = aboutContent[`descTitle${num}`];
+                      const body = aboutContent[`descText${num}`];
+                      // 제목과 본문 모두 비어있으면 표시 안 함
+                      if (!title && !body) return null;
                       return (
                         <div key={num} className="relative">
                           <div className="absolute top-1/2 -left-16 w-12 -translate-y-1/2 flex items-center opacity-30 text-[#3F72AF]">
                             <div className="flex-1 border-t-2 border-dashed border-[#3F72AF]"></div>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="-ml-2"><path d="m9 18 6-6-6-6"/></svg>
                           </div>
-                          <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight">
-                            {title}
-                          </h4>
-                          <div className="text-[#3F72AF] text-[15px] leading-relaxed font-medium">
-                            {renderContent(body)}
-                          </div>
+                          {title && (
+                            <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight">
+                              {title}
+                            </h4>
+                          )}
+                          {body && (
+                            <div className="text-[#3F72AF] text-[15px] leading-relaxed font-medium">
+                              {renderContent(body)}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
