@@ -257,7 +257,7 @@ const TabContent = ({
                   onStyleSave={(s) => onUpdateTab({ style: s })}
                 />
               ) : (
-                <div className="text-[15px] leading-[1.8] font-semibold text-[#1A374D] markdown-body" style={tab.style || {}}>
+                <div className="self-intro-readonly text-[15px] leading-[1.8] font-semibold text-[#1A374D] markdown-body" style={tab.style || {}}>
                   {seg.trim().startsWith('<') ? (
                     <div dangerouslySetInnerHTML={{ __html: parseMarkdownInHtml(seg) }} />
                   ) : (

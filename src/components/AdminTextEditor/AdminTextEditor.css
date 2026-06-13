@@ -271,3 +271,18 @@
   box-decoration-break: clone;
 }
 
+/* ─── 자기소개 읽기 모드 전용: 형광펜을 수정 모드와 동일하게 표시 ───────────
+   읽기 모드 컨테이너 배경이 white/40 이므로 그라디언트 기준색을 white로 맞춤
+*/
+.self-intro-readonly mark {
+  background-image: linear-gradient(
+    to bottom,
+    #FFFFFF 0%,
+    #FFFFFF 45%,
+    transparent 45%
+  ) !important;
+  padding: 0.05em 0.25em;
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
