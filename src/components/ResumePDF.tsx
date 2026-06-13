@@ -234,129 +234,14 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
             </section>
           )}
 
-          {/* ── About Section (Page 2) ── */}
-          {aboutContent && (
-            <div className="break-before-page">
-              
-              <section className="px-12 pt-12 pb-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px' }}>
-              {/* Q&A 헤더 */}
-              <div className="flex justify-between items-end mb-16 border-b border-[#3F72AF]/20 pb-6 gap-4">
-                {aboutContent.titleLeft && <h2 className="text-3xl font-black text-[#112D4E] tracking-tight whitespace-pre-wrap">{aboutContent.titleLeft}</h2>}
-                {aboutContent.titleRight && <h2 className="text-2xl font-black text-[#3F72AF] tracking-tight text-right whitespace-pre-wrap">{aboutContent.titleRight}</h2>}
-              </div>
-
-              {/* 2컬럼 그리드 (About.tsx 참조) */}
-              <div className="grid grid-cols-12 gap-12 items-stretch">
-                
-                {/* 좌 컬럼: 차트 + 동영상 */}
-                <div className="col-span-5 flex flex-col gap-8">
-                  {/* 막대형 그래프 카드 */}
-                  <div className="bg-white rounded-[2rem] shadow-lg shadow-[#112D4E]/5 border border-[#DBE2EF] p-8">
-                    <div className="flex flex-col items-center justify-center mb-10">
-                      {aboutContent.chartTitle && (
-                        <h3 className="text-lg font-black text-[#112D4E] text-center">
-                          {aboutContent.chartTitle}
-                        </h3>
-                      )}
-                    </div>
-                    <div className="space-y-8 relative">
-                      {/* 눈금선 */}
-                      <div className="absolute inset-0 flex pointer-events-none z-0 mt-2 pr-4">
-                        <div className="w-14 shrink-0"></div>
-                        <div className="w-4 shrink-0"></div>
-                        <div className="flex-1 flex justify-between h-full pr-12">
-                          <div className="h-full relative flex items-start">
-                            <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20" />
-                            <span className="absolute -top-8 -translate-x-1/2 text-[10px] font-bold text-[#3F72AF] opacity-50 bg-white px-1">0</span>
-                          </div>
-                          <div className="h-full relative flex items-start">
-                            <div className="absolute inset-y-0 left-0 border-l border-dashed border-[#3F72AF] opacity-20" />
-                            <span className="absolute -top-8 -translate-x-1/2 text-xs font-black text-[#1A59A7] bg-white px-1.5 py-0.5 shadow-sm rounded z-10 border border-[#DBE2EF]">
-                              {aboutContent.chartTotal ?? 100}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      {/* 막대 */}
-                      {[1, 2, 3].map((num) => {
-                        const totalParam = parseInt(aboutContent.chartTotal) ?? 100;
-                        const v = parseInt(aboutContent[`skill${num}Value`]) ?? (num === 1 ? 80 : num === 2 ? 60 : 40);
-                        const p = Math.min((v / totalParam) * 100, 100);
-                        return (
-                          <div key={num} className="flex items-center gap-4 relative z-10 pr-4">
-                            <div className="w-14 text-sm font-bold text-[#112D4E] text-right whitespace-pre-wrap">
-                              {aboutContent[`skill${num}Name`] ?? `역량 ${String.fromCharCode(64 + num)}`}
-                            </div>
-                            <div className="flex-1 flex flex-col w-full">
-                              <div className="h-8 relative flex items-center w-full">
-                                <div className="h-full bg-[#3F72AF] rounded-r-md shadow-sm flex items-center justify-end px-2" style={{ width: `${p}%`, minWidth: '1.5rem', maxWidth: '100%' }}>
-                                  {p > 15 && <span className="text-white text-[10px] font-bold whitespace-nowrap px-1">{Math.round(p)}%</span>}
-                                </div>
-                                <span className="ml-3 text-sm font-black text-[#112D4E] min-w-[2rem]">{v}</span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* 크롤러 동영상: videoUrl이 있을 때만 표시 */}
-                  {aboutContent.videoUrl && (
-                  <div className="bg-white rounded-[2rem] shadow-lg shadow-[#112D4E]/5 border border-[#DBE2EF] p-8 flex flex-col items-center">
-                    <h3 className="text-lg font-black text-[#112D4E] text-center mb-6">
-                      {aboutContent.videoTitle || "크롤러 동영상"}
-                    </h3>
-                    <div className="w-full aspect-video bg-[#DBE2EF]/30 rounded-2xl overflow-hidden flex items-center justify-center border border-[#DBE2EF]">
-                      <div className="text-center text-[#3F72AF]">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-2 opacity-60"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-                      </div>
-                    </div>
-                  </div>
-                  )}
-                </div>
-
-                {/* 우 컬럼: 역량 설명 텍스트 */}
-                <div className="col-span-7 flex flex-col justify-between py-6">
-                  <div className="flex flex-col space-y-16 pl-16 flex-1 justify-around">
-                    {[1, 2, 3].map((num) => {
-                      const title = aboutContent[`descTitle${num}`];
-                      const body = aboutContent[`descText${num}`];
-                      // 제목과 본문 모두 비어있으면 표시 안 함
-                      if (!title && !body) return null;
-                      return (
-                        <div key={num} className="relative">
-                          <div className="absolute top-1/2 -left-16 w-12 -translate-y-1/2 flex items-center opacity-30 text-[#3F72AF]">
-                            <div className="flex-1 border-t-2 border-dashed border-[#3F72AF]"></div>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="-ml-2"><path d="m9 18 6-6-6-6"/></svg>
-                          </div>
-                          {title && (
-                            <h4 className="text-[17px] font-black text-[#112D4E] mb-3 leading-snug tracking-tight">
-                              {title}
-                            </h4>
-                          )}
-                          {body && (
-                            <div className="text-[#3F72AF] text-[15px] leading-relaxed font-medium">
-                              {renderContent(body)}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-              </section>
-            </div>
-          )}
 
           {/* ── StatBoard Section (Page 3) ── */}
-          {(aiSkills?.length > 0 || toolCards?.length > 0 || userImage) && (
+          {(aiSkills?.length > 0 || toolCards?.length > 0) && (
             <div className="break-before-page">
               
               <section className="px-12 pt-12 bg-[#F9F7F7]" style={{ width: '1000px', minHeight: '1050px', display: 'flex', flexDirection: 'column' }}>
-                {/* 상단: AI능력(좌) + 아바타(중) + 기본 안내(우) */}
-                <div className="grid gap-8 flex-1 items-start relative" style={{ gridTemplateColumns: '1.2fr 240px 1.6fr' }}>
+                {/* 상단: AI능력(좌) + 기본 안내(우) */}
+                <div className="grid gap-8 flex-1 items-start relative" style={{ gridTemplateColumns: '1fr 1.8fr' }}>
                 
                 {/* 좌측: AI 능력 목록 */}
                 <div className="flex flex-col gap-6 pt-12 z-10 w-full">
@@ -380,17 +265,6 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
                   </div>
                 )}
 
-                </div>
-
-                {/* 중앙: 아바타 */}
-                <div className="h-[700px] relative flex items-center justify-center z-20 w-full">
-                  {userImage && (
-                    <img
-                      src={userImage}
-                      alt="Avatar"
-                      className="w-[120%] max-w-none h-full object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.25)]"
-                    />
-                  )}
                 </div>
 
                 {/* 우측: statBoard 기본 상세 내용 */}
