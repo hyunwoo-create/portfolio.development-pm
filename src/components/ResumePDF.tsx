@@ -113,7 +113,7 @@ const renderHeroChart = (points: any[]) => {
   );
 };
 
-export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards, userImage, statBoardDefaultBtnText, statBoardDefaultDetailTitle, statBoardDefaultDetailDesc }: ResumePDFProps) => {
+export const ResumePDF = ({ data, heroContent, aiSkills, toolCards, userImage, statBoardDefaultBtnText, statBoardDefaultDetailTitle, statBoardDefaultDetailDesc }: ResumePDFProps) => {
 
   return (
     <table className="bg-[#F9F7F7] text-[#112D4E] font-sans leading-relaxed mx-auto" style={{ width: '1000px', borderCollapse: 'collapse', borderSpacing: 0 }}>
@@ -146,10 +146,10 @@ export const ResumePDF = ({ data, heroContent, aboutContent, aiSkills, toolCards
       
 
       {/* ══════════════════════════════════════════════
-          소개 페이지 — Hero + About + StatBoard
+          소개 페이지 — Hero + StatBoard
           실제 컴포넌트 HTML 구조를 그대로 재현
       ══════════════════════════════════════════════ */}
-      {(heroContent || aboutContent) && (
+      {heroContent && (
         <div className="break-after-page mb-16 bg-[#F9F7F7]">
 
           {/* ── Hero Section ── (Hero.tsx 구조 그대로) */}

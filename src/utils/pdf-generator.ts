@@ -6,7 +6,6 @@ import { ResumeData } from '../types';
 export interface PdfExportPayload {
   data: ResumeData;
   heroContent?: any;
-  aboutContent?: any;
   aiSkills?: any;
   toolCards?: any;
   userImage?: string;

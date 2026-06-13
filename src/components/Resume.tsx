@@ -133,7 +133,7 @@ export const Resume = ({ isEditing, data, setData, onNavClick }: ResumeProps) =>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => handlePdfExport({ data, heroContent, aboutContent, aiSkills, toolCards, userImage, statBoardDefaultBtnText, statBoardDefaultDetailTitle, statBoardDefaultDetailDesc })}
+              onClick={() => handlePdfExport({ data, heroContent, aiSkills, toolCards, userImage, statBoardDefaultBtnText, statBoardDefaultDetailTitle, statBoardDefaultDetailDesc })}
               className="px-6 py-3 bg-[#112D4E] text-white rounded-xl text-sm font-black flex items-center gap-2 hover:bg-[#0f1a2a] transition-all shadow-lg shadow-[#112D4E]/20"
             >
               <ScrollText className="w-4 h-4 text-white" /> 고품질 PDF 추출
