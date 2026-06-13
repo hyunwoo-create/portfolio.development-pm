@@ -223,11 +223,15 @@ export const ResumePDF = ({ data, heroContent, aiSkills, toolCards, userImage, s
                   })}
                 </div>
 
-                {/* Col2 Row2: Portfolio Link Button */}
-                <div className="flex justify-end items-end pb-8">
-                  <a href={data.portfolioUrl || "https://hyunwoo-create.github.io/portfolio.development-pm/"} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-[#3F72AF] text-white rounded-2xl font-black text-[22px] shadow-xl flex items-center gap-3 hover:-translate-y-1 transition-transform" style={{ textDecoration: 'none' }}>
-                    포트폴리오 확인하기
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                {/* Bottom Center: Portfolio Link Button (Row 3, Col 1-2) */}
+                <div className="col-span-2 flex justify-center items-end pb-4 z-30">
+                  <a href={data.portfolioUrl || "https://hyunwoo-create.github.io/portfolio.development-pm/"} target="_blank" rel="noopener noreferrer" 
+                     className="px-16 py-5 bg-[#112D4E] text-white rounded-[2rem] font-black text-[26px] flex items-center gap-6 shadow-[0_15px_40px_rgba(17,45,78,0.4)] hover:-translate-y-1 transition-transform" 
+                     style={{ textDecoration: 'none', border: '3px solid rgba(255,255,255,0.9)' }}>
+                    <span className="tracking-tight">포트폴리오 확인하기</span>
+                    <div className="bg-white text-[#112D4E] p-2.5 rounded-xl shadow-sm">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </div>
                   </a>
                 </div>
               </div>
