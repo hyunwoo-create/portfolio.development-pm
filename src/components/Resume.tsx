@@ -120,6 +120,16 @@ export const Resume = ({ isEditing, data, setData, onNavClick }: ResumeProps) =>
             </label>
           </div>
           <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-[#DBE2EF] shadow-sm mb-2">
+              <span className="text-[11px] font-black text-[#3F72AF] uppercase tracking-wider">PDF 연결 링크</span>
+              <input 
+                type="text" 
+                value={data.portfolioUrl || ''} 
+                onChange={(e) => setData({ ...data, portfolioUrl: e.target.value })}
+                placeholder="https://..."
+                className="text-[12px] font-medium text-[#112D4E] w-[200px] focus:outline-none placeholder:text-[#DBE2EF]"
+              />
+            </div>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
