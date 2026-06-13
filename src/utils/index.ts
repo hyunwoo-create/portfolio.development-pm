@@ -6,9 +6,9 @@ export const downloadPdf = (dataUrl: string, name: string) => {
   a.click();
 };
 
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvdnhhbndhbWdiaGx1YnJuZHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NzQ0NDAsImV4cCI6MjA5MTM1MDQ0MH0.b4MvsylK--ZJrkjWZnkzcSHpjHxYiyJTA-lYsI8Ij4Y';
-const STORAGE_API = 'https://bovxanwamgbhlubrndyl.supabase.co/storage/v1/object/portfolio-images';
-const PUBLIC_URL_BASE = 'https://bovxanwamgbhlubrndyl.supabase.co/storage/v1/object/public/portfolio-images';
+const SUPABASE_ANON_KEY = 'sb_publishable_Px5FTQ2On9qAkJz1TuLQ_g_KdA5R0IA';
+const STORAGE_API = 'https://pgjzgpbthanniukjefeg.supabase.co/storage/v1/object/portfolio-images';
+const PUBLIC_URL_BASE = 'https://pgjzgpbthanniukjefeg.supabase.co/storage/v1/object/public/portfolio-images';
 
 async function uploadBlobToSupabase(blob: Blob, ext: string = 'webp'): Promise<string> {
   const filename = `img_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
