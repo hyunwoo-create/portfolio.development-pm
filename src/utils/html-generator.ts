@@ -81,29 +81,27 @@ export const generatePortfolioHtml = (
   <!-- ===============================
        [2] Main Content (Printable)
   ================================ -->
-  <div id="main-content" class="pt-[100px] pb-16 px-8 max-w-[800px] w-full mx-auto bg-[#F9F7F7]">
+  <div id="main-content" class="pt-[100px] pb-16 px-8 max-w-[1100px] w-full mx-auto bg-[#F9F7F7]">
     
-    <!-- Top Big Button -->
-    <div class="w-full flex justify-center mb-6 pt-4">
+    <!-- Top Return Link -->
+    <div class="mb-4">
       <a 
         id="main-link" 
         href="#" 
-        target="_blank"
-        class="group relative inline-flex items-center justify-center px-10 py-4 bg-[#112D4E] text-white font-black text-lg tracking-tight rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
+        class="portfolio-main-link inline-flex items-center text-[#112D4E] font-bold text-sm hover:text-[#3F72AF] transition-colors"
       >
-        포트폴리오 페이지 바로 가기
-        <svg class="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        돌아가기
       </a>
     </div>
 
     <!-- Header Section -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-black text-[#112D4E] mb-2 tracking-tight">포트폴리오</h1>
-      <p class="text-[#8fabc8] text-sm font-medium">${description || '게임 기획부터 런칭까지의 메인 프로젝트와 AI/툴링을 활용한 기타 작업물 아카이브입니다.'}</p>
+    <div class="mb-8">
+      <h1 class="text-4xl font-black text-[#112D4E] tracking-tight">포트폴리오</h1>
     </div>
 
     <!-- Projects Grid -->
-    <div class="grid grid-cols-2 gap-6">
+    <div class="grid grid-cols-3 gap-6">
       ${projects.map(project => `
         <a href="#" data-project-id="${project.id}" class="project-card group flex flex-col bg-white rounded-2xl border border-[#DBE2EF] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative cursor-pointer no-underline block avoid-break" target="_blank">
           <div class="aspect-[4/3] relative overflow-hidden bg-[#F9F7F7]">
@@ -122,19 +120,44 @@ export const generatePortfolioHtml = (
             </h3>
             <div class="flex flex-wrap gap-1.5 mb-3">
               ${(project.tags || []).map(tag => `
-                <span class="px-2 py-0.5 border border-[#DBE2EF] rounded-full text-[10px] text-[#8fabc8] font-bold bg-[#F9F7F7]">
+                <span class="px-2.5 py-1 border border-[#DBE2EF] rounded-full text-[10px] text-[#8fabc8] font-bold bg-[#F9F7F7]">
                   ${tag}
                 </span>
               `).join('')}
             </div>
-            <div class="text-[#8fabc8] text-xs leading-relaxed flex-1">
+            <div class="text-[#8fabc8] text-[11px] leading-relaxed flex-1 mb-4">
               ${project.description}
             </div>
+            
+            ${project.releaseTags && project.releaseTags.length > 0 ? `
+              <div class="pt-4 border-t border-[#DBE2EF]/50 flex flex-wrap gap-2 mt-auto">
+                ${project.releaseTags.map(tag => `
+                  <div class="inline-flex items-center px-2 py-1 rounded-full border border-[#DBE2EF] bg-white text-[10px] font-bold text-[#112D4E] gap-1.5">
+                    ${tag.icon ? `<img src="${tag.icon}" alt="icon" class="w-3.5 h-3.5 rounded-sm object-cover" />` : ''}
+                    ${tag.label}
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
           </div>
         </a>
       `).join('')}
     </div>
 
+    <!-- Footer -->
+    <div class="mt-16 pt-8 pb-12 flex flex-col items-center justify-center gap-6">
+      <div class="text-center text-[11px] font-bold text-[#8fabc8]">
+        © PM 지원자 양현우 포트폴리오 All rights reserved.
+      </div>
+      <a 
+        href="#" 
+        target="_blank"
+        class="portfolio-main-link group relative flex items-center justify-center w-full max-w-[800px] py-10 bg-gradient-to-r from-red-600 to-rose-500 text-white font-black text-4xl tracking-tight rounded-3xl shadow-2xl shadow-red-600/20 hover:-translate-y-2 hover:shadow-red-600/40 transition-all duration-300"
+      >
+        포트폴리오 더 보기 !
+        <svg class="w-12 h-12 ml-5 group-hover:translate-x-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      </a>
+    </div>
   </div>
 
   <!-- Script for handling links -->
@@ -142,7 +165,7 @@ export const generatePortfolioHtml = (
     document.addEventListener('DOMContentLoaded', () => {
       const linkInput = document.getElementById('link-input');
       const applyBtn = document.getElementById('apply-btn');
-      const mainLink = document.getElementById('main-link');
+      const mainLinks = document.querySelectorAll('.portfolio-main-link');
       const projectCards = document.querySelectorAll('.project-card');
 
       const updateLinks = (isInitial = false) => {
@@ -161,8 +184,10 @@ export const generatePortfolioHtml = (
             return urlObj.toString();
           };
 
-          // Update top main link
-          mainLink.href = createUrl('view', 'portfolio');
+          // Update main links
+          mainLinks.forEach(link => {
+            link.href = createUrl('view', 'portfolio');
+          });
 
           // Update each project card
           projectCards.forEach(card => {
