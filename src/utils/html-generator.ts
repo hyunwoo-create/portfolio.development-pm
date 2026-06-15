@@ -84,37 +84,28 @@ export const generatePortfolioHtml = (
   <div id="main-content" class="pt-[100px] pb-16 px-8 max-w-[800px] w-full mx-auto bg-[#F9F7F7]">
     
     <!-- Top Big Button -->
-    <div class="w-full flex justify-center mb-16 pt-8">
+    <div class="w-full flex justify-center mb-6 pt-4">
       <a 
         id="main-link" 
         href="#" 
         target="_blank"
-        class="group relative inline-flex items-center justify-center px-12 py-5 bg-[#112D4E] text-white font-black text-xl tracking-tight rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
+        class="group relative inline-flex items-center justify-center px-10 py-4 bg-[#112D4E] text-white font-black text-lg tracking-tight rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
       >
         포트폴리오 페이지 바로 가기
-        <svg class="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        <svg class="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
       </a>
     </div>
 
     <!-- Header Section -->
-    <div class="mb-12">
-      <h1 class="text-4xl font-black text-[#112D4E] mb-4 tracking-tight">포트폴리오</h1>
-      <p class="text-[#8fabc8] text-base font-medium">${description || '게임 기획부터 런칭까지의 메인 프로젝트와 AI/툴링을 활용한 기타 작업물 아카이브입니다.'}</p>
-    </div>
-
-    <!-- Categories Display (static design) -->
-    <div class="flex flex-wrap gap-3 mb-10 pb-6 border-b border-[#DBE2EF]/50">
-      ${categories.map((cat, i) => `
-        <div class="px-5 py-2.5 rounded-full text-sm font-bold border flex items-center gap-2 ${i === 0 ? 'bg-[#112D4E] text-white border-[#112D4E] shadow-md' : 'bg-white text-[#8fabc8] border-[#DBE2EF]'}">
-          ${cat}
-        </div>
-      `).join('')}
+    <div class="mb-6">
+      <h1 class="text-3xl font-black text-[#112D4E] mb-2 tracking-tight">포트폴리오</h1>
+      <p class="text-[#8fabc8] text-sm font-medium">${description || '게임 기획부터 런칭까지의 메인 프로젝트와 AI/툴링을 활용한 기타 작업물 아카이브입니다.'}</p>
     </div>
 
     <!-- Projects Grid -->
-    <div class="grid grid-cols-2 gap-8 avoid-break">
+    <div class="grid grid-cols-2 gap-6">
       ${projects.map(project => `
-        <a href="#" data-project-id="${project.id}" class="project-card group flex flex-col bg-white rounded-3xl border border-[#DBE2EF] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative cursor-pointer no-underline block avoid-break" target="_blank">
+        <a href="#" data-project-id="${project.id}" class="project-card group flex flex-col bg-white rounded-2xl border border-[#DBE2EF] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative cursor-pointer no-underline block avoid-break" target="_blank">
           <div class="aspect-[4/3] relative overflow-hidden bg-[#F9F7F7]">
             <img
               src="${project.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070'}"
@@ -122,21 +113,21 @@ export const generatePortfolioHtml = (
               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>
-          <div class="p-8 flex-1 flex flex-col">
-            <div class="text-[#C08D50] font-bold text-xs mb-2 tracking-widest uppercase">
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="text-[#C08D50] font-bold text-[10px] mb-1 tracking-widest uppercase">
               ${project.details?.[0] || '서브 카테고리'}
             </div>
-            <h3 class="text-2xl font-black text-[#112D4E] mb-4 leading-tight group-hover:text-[#3F72AF] transition-colors">
+            <h3 class="text-xl font-black text-[#112D4E] mb-3 leading-tight group-hover:text-[#3F72AF] transition-colors">
               ${project.title}
             </h3>
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="flex flex-wrap gap-1.5 mb-3">
               ${(project.tags || []).map(tag => `
-                <span class="px-3 py-1 border border-[#DBE2EF] rounded-full text-[11px] text-[#8fabc8] font-bold bg-[#F9F7F7]">
+                <span class="px-2 py-0.5 border border-[#DBE2EF] rounded-full text-[10px] text-[#8fabc8] font-bold bg-[#F9F7F7]">
                   ${tag}
                 </span>
               `).join('')}
             </div>
-            <div class="text-[#8fabc8] text-sm leading-relaxed mb-6 flex-1">
+            <div class="text-[#8fabc8] text-xs leading-relaxed flex-1">
               ${project.description}
             </div>
           </div>
@@ -163,28 +154,24 @@ export const generatePortfolioHtml = (
           baseUrl = 'https://' + baseUrl;
         }
 
-        // Remove trailing slash if exists to ensure format compatibility
-        if (baseUrl.endsWith('/')) {
-            baseUrl = baseUrl.slice(0, -1);
-        }
+        try {
+          const createUrl = (paramKey, paramVal) => {
+            const urlObj = new URL(baseUrl);
+            urlObj.searchParams.set(paramKey, paramVal);
+            return urlObj.toString();
+          };
 
-        // Update top main link
-        if (baseUrl.includes('?')) {
-           mainLink.href = baseUrl + '&view=portfolio';
-        } else {
-           mainLink.href = baseUrl + '?view=portfolio';
-        }
+          // Update top main link
+          mainLink.href = createUrl('view', 'portfolio');
 
-        // Update each project card
-        projectCards.forEach(card => {
-          const projectId = card.getAttribute('data-project-id');
-          // Add ?project= query string. Assumes baseUrl does not already contain query params.
-          if (baseUrl.includes('?')) {
-             card.href = baseUrl + '&project=' + projectId;
-          } else {
-             card.href = baseUrl + '?project=' + projectId;
-          }
-        });
+          // Update each project card
+          projectCards.forEach(card => {
+            const projectId = card.getAttribute('data-project-id');
+            card.href = createUrl('project', projectId);
+          });
+        } catch (e) {
+          console.error('Invalid URL:', e);
+        }
 
         if (!isInitial) {
           alert('모든 링크가 업데이트 되었습니다!\\n각 카드를 눌러 연결을 확인해보세요.');
